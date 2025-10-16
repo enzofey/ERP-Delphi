@@ -1,0 +1,121 @@
+object LogsForm: TLogsForm
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'LogsForm'
+  ClientHeight = 691
+  ClientWidth = 1029
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1029
+    Height = 691
+    Align = alClient
+    TabOrder = 0
+    object lblInicio: TLabel
+      Left = 32
+      Top = 32
+      Width = 32
+      Height = 15
+      Caption = 'In'#237'cio:'
+    end
+    object lblFinal: TLabel
+      Left = 208
+      Top = 32
+      Width = 28
+      Height = 15
+      Caption = 'Final:'
+    end
+    object lblDescricao: TLabel
+      Left = 376
+      Top = 32
+      Width = 54
+      Height = 15
+      Caption = 'Descri'#231#227'o:'
+    end
+    object lblTela: TLabel
+      Left = 32
+      Top = 61
+      Width = 23
+      Height = 15
+      Caption = 'Tela:'
+    end
+    object DTPInicio: TDateTimePicker
+      Left = 70
+      Top = 32
+      Width = 123
+      Height = 23
+      Date = 45858.000000000000000000
+      Time = 0.956180520835914600
+      Kind = dtkDateTime
+      TabOrder = 0
+    end
+    object DTPFinal: TDateTimePicker
+      Left = 242
+      Top = 32
+      Width = 119
+      Height = 23
+      Date = 45858.000000000000000000
+      Time = 0.956180520835914600
+      Kind = dtkDateTime
+      TabOrder = 1
+    end
+    object btnConsultar: TButton
+      Left = 32
+      Top = 600
+      Width = 145
+      Height = 57
+      Caption = 'Consultar'
+      TabOrder = 2
+      OnClick = btnConsultarClick
+    end
+    object Grid: TDBGrid
+      Left = 32
+      Top = 96
+      Width = 969
+      Height = 481
+      DataSource = LogModule.dsLogs
+      ReadOnly = True
+      TabOrder = 3
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -12
+      TitleFont.Name = 'Segoe UI'
+      TitleFont.Style = []
+    end
+    object btnFechar: TButton
+      Left = 856
+      Top = 600
+      Width = 145
+      Height = 57
+      Caption = 'Fechar'
+      TabOrder = 4
+      OnClick = btnFecharClick
+    end
+    object EdtDescricao: TEdit
+      Left = 436
+      Top = 29
+      Width = 565
+      Height = 23
+      AutoSize = False
+      TabOrder = 5
+    end
+    object EdtTela: TEdit
+      Left = 70
+      Top = 61
+      Width = 156
+      Height = 23
+      AutoSize = False
+      TabOrder = 6
+    end
+  end
+end

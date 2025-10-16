@@ -1,0 +1,52 @@
+﻿object ImpressaoNFEDM: TImpressaoNFEDM
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Database=00001P'
+      'User_Name=postgres'
+      'Password=evf'
+      'DriverID=PG')
+    Connected = True
+    LoginPrompt = False
+    Left = 32
+    Top = 24
+  end
+  object qryGridNota: TFDQuery
+    Connection = Conexão
+    Left = 56
+    Top = 88
+  end
+  object dsSelectNota: TDataSource
+    DataSet = qryGridNota
+    Left = 144
+    Top = 88
+  end
+  object qryGridNotaIten: TFDQuery
+    Connection = Conexão
+    Left = 56
+    Top = 144
+  end
+  object dsSelectNotaIten: TDataSource
+    DataSet = qryGridNotaIten
+    Left = 168
+    Top = 144
+  end
+  object ConsultarFatura: TFDQuery
+    Connection = Conexão
+    SQL.Strings = (
+      '')
+    Left = 32
+    Top = 408
+  end
+  object dsConsultarFatura: TDataSource
+    DataSet = ConsultarFatura
+    Left = 136
+    Top = 408
+  end
+  object PGLink: TFDPhysPgDriverLink
+    VendorLib = 'C:\Program Files (x86)\PostgreSQL\psqlODBC\bin\libpq.dll'
+    Left = 96
+    Top = 24
+  end
+end

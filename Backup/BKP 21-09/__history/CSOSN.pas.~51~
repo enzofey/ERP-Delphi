@@ -1,0 +1,405 @@
+unit CSOSN;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.ComCtrls,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids,
+  CSOSNDM,
+  GlobalUnit,
+  Log, LogDM;
+
+type
+  TCadCSOSN = class(TForm)
+    Panel1: TPanel;
+    lblCSOSN: TLabel;
+    lblDescricao: TLabel;
+    btnAlterar: TButton;
+    btnDesistir: TButton;
+    BtnExcluir: TButton;
+    btnFechar: TButton;
+    btnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnIncluir: TButton;
+    EdtCSOSN: TEdit;
+    EdtDescricao: TEdit;
+    Grid: TDBGrid;
+    RGModo: TRadioGroup;
+    RBBase: TRadioButton;
+    RBIsento: TRadioButton;
+    RBOutros: TRadioButton;
+    lblAtivo: TLabel;
+    CBAtivo: TCheckBox;
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure GridCellClick(Column: TColumn);
+    procedure btnFecharClick(Sender: TObject);
+    procedure BtnExcluirClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadCSOSN: TCadCSOSN;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadCSOSN.FormShow(Sender: TObject);
+var I: integer;
+begin
+ CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
+ CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+ 'select * from cadcsosn';
+ CadCSOSNDM.ConsultarCSOSN.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadCSOSN.btnIncluirClick(Sender: TObject);
+var i: integer;
+begin
+ CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
+ CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+ 'select * from cadcsosn';
+ CadCSOSNDM.ConsultarCSOSN.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+ EdtCSOSN.Clear;
+ EdtDescricao.Clear;
+
+ EdtCSOSN.Enabled := True;
+ EdtDescricao.Enabled := True;
+
+ RBBase.Checked := False;
+ RBIsento.Checked := False;
+ RBOutros.Checked := False;
+
+ RBBase.Enabled := True;
+ RBIsento.Enabled := True;
+ RBOutros.Enabled := True;
+
+ CBAtivo.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnFechar.Visible := False;
+ Grid.Enabled := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+end;
+
+procedure TCadCSOSN.btnGravarIncluirClick(Sender: TObject);
+var CSOSN, Descricao, Modo, ativo: string;
+    I: integer;
+begin
+ CSOSN := EdtCSOSN.Text;
+ Descricao := EdtDescricao.Text;
+ if RBBase.Checked then Modo := 'B'
+ else if RBIsento.Checked then modo := 'I'
+ else if RBOutros.Checked then modo := 'O';
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+  
+ if EdtCSOSN.Text = '' then begin
+  ShowMessage('CSOSN não pode ser vazio!');
+  Abort;
+ End;
+
+ if EdtDescricao.Text = '' then begin
+  ShowMessage('Descrição não pode ser vazio!');
+  Abort;
+ End;
+
+ if not RBBase.Checked and not RBIsento.Checked and not RBOutros.Checked then begin
+  ShowMessage('Selecione um modo de cálculo!');
+  Abort;
+ End;
+
+ CadCSOSNDM.SelectQuery.SQL.Clear;
+ CadCSOSNDM.SelectQuery.SQL.Text :=
+ 'select * from cadcsosn where csosn = :csosn';
+ CadCSOSNDM.SelectQuery.ParamByName('csosn').AsString := csosn;
+ CadCSOSNDM.SelectQuery.Open;
+
+ if not CadCSOSNDM.SelectQuery.IsEmpty then begin
+  ShowMessage('CSOSN já cadastrado!');
+  Abort;
+ End;
+
+ CadCSOSNDM.InsertQuery.SQL.CLear;
+ CadCSOSNDM.InsertQuery.SQL.Text :=
+ 'insert into cadcsosn (CSOSN, Descricao, Modo, ativo) values (:CSOSN, :Descricao, :Modo, :ativo)';
+ CadCSOSNDM.InsertQuery.ParamByName('CSOSN').AsString := CSOSN;
+ CadCSOSNDM.InsertQuery.ParamByName('Descricao').AsString := Descricao;
+ CadCSOSNDM.InsertQuery.ParamByName('Modo').AsString := Modo;
+ CadCSOSNDM.InsertQuery.ParamByName('Ativo').AsString := Ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+ LogsDM.InserirLog.ParamByName('Descricao').AsString :=
+ 'Inseriu o CSOSN ' + CSOSN + '' + Descricao + ' para o modo de cálculo ' + Modo;
+ LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSOSN';
+ try
+  LogsDM.InserirLog.ExecSQL;
+  CadCSOSNDM.InsertQuery.ExecSQL;
+  ShowMessage('Gravado com sucesso!');
+
+  CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
+  CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+  'select * from cadcsosn';
+  CadCSOSNDM.ConsultarCSOSN.Open;
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+  EdtCSOSN.Enabled := False;
+  EdtDescricao.Enabled := False;
+
+  RBBase.Enabled := False;
+  RBIsento.Enabled := False;
+  RBOutros.Enabled := False;
+
+  CBAtivo.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnFechar.Visible := True;
+  Grid.Enabled := True;
+
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+  except
+  ShowMessage('Erro na inclusão!');
+ end;
+end;
+
+procedure TCadCSOSN.btnAlterarClick(Sender: TObject);
+var I: integer;
+begin
+ if EdtCSOSN.Text = '' then begin
+  ShowMessage('Nenhum CSOSN selecionado!');
+  Abort;
+ End;
+
+ CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
+ CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+ 'select * from cadcsosn';
+ CadCSOSNDM.ConsultarCSOSN.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+ EdtDescricao.Enabled := True;
+
+ RBBase.Enabled := True;
+ RBIsento.Enabled := True;
+ RBOutros.Enabled := True;
+
+ CBAtivo.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnFechar.Visible := False;
+ Grid.Enabled := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+end;
+
+procedure TCadCSOSN.btnGravarAlterarClick(Sender: TObject);
+var CSOSN, Descricao, Modo, ativo: string;
+begin
+ CSOSN := EdtCSOSN.Text;
+ Descricao := EdtDescricao.Text;
+ if RBBase.Checked then Modo := 'B'
+ else if RBIsento.Checked then modo := 'I'
+ else if RBOutros.Checked then modo := 'O';
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+
+ if EdtCSOSN.Text = '' then begin
+  ShowMessage('CSOSN não pode ser vazio!');
+  Abort;
+ End;
+
+ if EdtDescricao.Text = '' then begin
+  ShowMessage('Descrição não pode ser vazio!');
+  Abort;
+ End;
+
+ if not RBBase.Checked and not RBIsento.Checked and not RBOutros.Checked then begin
+  ShowMessage('Selecione um modo de cálculo!');
+  Abort;
+ End;
+
+ CadCSOSNDM.UpdateQuery.SQL.CLear;
+ CadCSOSNDM.UpdateQuery.SQL.Text :=
+ 'update cadCSOSN set descricao = :descricao, modo = :modo, ativo = :ativo where CSOSN = :CSOSN';
+ CadCSOSNDM.UpdateQuery.ParamByName('CSOSN').AsString := CSOSN;
+ CadCSOSNDM.UpdateQuery.ParamByName('Descricao').AsString := Descricao;
+ CadCSOSNDM.UpdateQuery.ParamByName('Modo').AsString := Modo;
+ CadCSOSNDM.UpdateQuery.ParamByName('Ativo').AsString := Ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+ LogsDM.InserirLog.ParamByName('Descricao').AsString :=
+ 'Alterou o CSOSN ' + CSOSN + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+ LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSOSN';
+ try
+  LogsDM.InserirLog.ExecSQL;
+  CadCSOSNDM.UpdateQuery.ExecSQL;
+  ShowMessage('Alterado com sucesso!');
+
+  CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
+  CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+  'select * from cadcsosn';
+  CadCSOSNDM.ConsultarCSOSN.Open;
+
+  EdtDescricao.Enabled := False;
+
+  RBBase.Enabled := False;
+  RBIsento.Enabled := False;
+  RBOutros.Enabled := False;
+
+  CBAtivo.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnFechar.Visible := True;
+  Grid.Enabled := True;
+
+  btnGravarAlterar.Visible := False;
+  btnDesistir.Visible := False;
+  except
+  ShowMessage('Erro na alteração!');
+ end;
+end;
+
+procedure TCadCSOSN.btnDesistirClick(Sender: TObject);
+begin
+ CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
+ CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+ 'select * from cadcsosn';
+ CadCSOSNDM.ConsultarCSOSN.Open;
+
+ EdtCSOSN.Clear;
+ EdtDescricao.Clear;
+
+ EdtCSOSN.Enabled := False;
+ EdtDescricao.Enabled := False;
+
+ RBBase.Checked := False;
+ RBIsento.Checked := False;
+ RBOutros.Checked := False;
+
+ CBAtivo.Enabled := False;
+
+ RBBase.Enabled := False;
+ RBIsento.Enabled := False;
+ RBOutros.Enabled := False;
+
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+ btnFechar.Visible := True;
+ Grid.Enabled := True;
+
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+end;
+
+procedure TCadCSOSN.BtnExcluirClick(Sender: TObject);
+var CSOSN, Descricao, Modo, ativo: string;
+begin
+ CSOSN := EdtCSOSN.Text;
+ Descricao := EdtDescricao.Text;
+ if RBBase.Checked then Modo := 'B'
+ else if RBIsento.Checked then modo := 'I'
+ else if RBOutros.Checked then modo := 'O';
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+
+ if EdtCSOSN.Text = '' then begin
+  ShowMessage('Nenhum CSOSN selecionado!');
+  Abort;
+ End;
+
+ CadCSOSNDM.UpdateQuery.SQL.CLear;
+ CadCSOSNDM.UpdateQuery.SQL.Text :=
+ 'delete from cadCSOSN where CSOSN = :CSOSN';
+ CadCSOSNDM.UpdateQuery.ParamByName('CSOSN').AsString := CSOSN;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+ LogsDM.InserirLog.ParamByName('Descricao').AsString :=
+ 'Deletou o CSOSN ' + CSOSN + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+ LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSOSN';
+ try
+  LogsDM.InserirLog.ExecSQL;
+  CadCSOSNDM.UpdateQuery.ExecSQL;
+  ShowMessage('Excluído com sucesso!');
+
+  CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
+  CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+  'select * from cadcsosn';
+  CadCSOSNDM.ConsultarCSOSN.Open;
+
+  EdtCSOSN.Clear;
+  EdtDescricao.Clear;
+
+  RBBase.Checked := False;
+  RBIsento.Checked := False;
+  RBOutros.Checked := False;
+
+  CBAtivo.Checked := True;
+  except
+  ShowMessage('Erro na exclusão!');
+ end;
+end;
+
+procedure TCadCSOSN.GridCellClick(Column: TColumn);
+var CSOSN, Descricao, Modo, ativo: String;
+begin
+ EdtCSOSN.Text := CadCSOSNDM.ConsultarCSOSN.FieldByName('CSOSN').AsString;
+ EdtDescricao.Text := CadCSOSNDM.ConsultarCSOSN.FieldByName('Descricao').AsString;
+ Modo := CadCSOSNDM.ConsultarCSOSN.FieldByName('Modo').AsString;
+ Ativo := CadCSOSNDM.ConsultarCSOSN.FieldByName('Ativo').AsString;
+
+ if Modo = 'B' then
+ RBBase.Checked := True
+ else if Modo = 'I' then
+ RBIsento.Checked := True
+ else if Modo = 'O' then
+ RBOutros.Checked := True;
+
+ if Ativo = 'S' then CBAtivo.Checked;
+end;
+
+procedure TCadCSOSN.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+end.

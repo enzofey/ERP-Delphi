@@ -1,0 +1,25 @@
+unit ReceberDM;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TReceberDataModule = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ReceberDataModule: TReceberDataModule;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

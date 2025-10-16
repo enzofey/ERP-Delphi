@@ -1,0 +1,317 @@
+unit Moeda;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Data.DB, Vcl.StdCtrls,
+  Vcl.Grids, Vcl.DBGrids,
+  MoedaDM,
+  GlobalUnit,
+  LogDM, Vcl.ComCtrls;
+
+type
+  TCadMoeda = class(TForm)
+    Pages: TPageControl;
+    CadastroPage: TTabSheet;
+    btnAlterar: TButton;
+    btnDesistir: TButton;
+    btnExcluir: TButton;
+    btnFechar: TButton;
+    btnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnIncluir: TButton;
+    CBAtivo: TCheckBox;
+    EdtCodigo: TEdit;
+    EdtDescricao: TEdit;
+    Grid: TDBGrid;
+    lblAtivo: TLabel;
+    lblCodigo: TLabel;
+    lblDescricao: TLabel;
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure GridCellClick(Column: TColumn);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadMoeda: TCadMoeda;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadMoeda.FormShow(Sender: TObject);
+var I: integer;
+begin
+ CadMoedaDM.ConsultarMoeda.SQL.Clear;
+ CadMoedaDM.ConsultarMoeda.SQL.Text :=
+ 'select * from cadmoeda';
+ CadMoedaDM.ConsultarMoeda.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadMoeda.GridCellClick(Column: TColumn);
+begin
+ EdtCodigo.Text := CadMoedaDM.ConsultarMoeda.FieldByName('codigo').AsString;
+ EdtDescricao.Text := CadMoedaDM.ConsultarMoeda.FieldByName('descricao').AsString;
+ CBAtivo.Checked := CadMoedaDM.ConsultarMoeda.FieldByName('ativo').AsString = 'S';
+end;
+
+procedure TCadMoeda.btnIncluirClick(Sender: TObject);
+var I: integer;
+begin
+ CadMoedaDM.ConsultarMoeda.SQL.Clear;
+ CadMoedaDM.ConsultarMoeda.SQL.Text :=
+ 'select * from cadmoeda';
+ CadMoedaDM.ConsultarMoeda.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+ EdtCodigo.Enabled := True;
+ EdtDescricao.Enabled := True;
+ CBAtivo.Enabled := True;
+
+ EdtCodigo.Clear;
+ EdtDescricao.Clear;
+
+ btnIncluir.Visible := False;
+ btnFechar.Visible := False;
+ btnExcluir.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+end;
+
+procedure TCadMoeda.btnGravarIncluirClick(Sender: TObject);
+var codigo, descricao, ativo: string;
+    I: Integer;
+begin
+ codigo := EdtCodigo.Text;
+ Descricao := EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+
+ CadMoedaDM.SelectQuery.SQL.Clear;
+ CadMoedaDM.SelectQuery.SQL.Text :=
+ 'select * from cadmoeda where codigo = :codigo';
+ CadMoedaDM.SelectQuery.ParamByName('codigo').AsString := codigo;
+ CadMoedaDM.SelectQuery.Open;
+
+ if not CadMoedaDM.SelectQuery.IsEmpty then begin
+  ShowMessage('Moeda já cadastrada!');
+  Abort;
+ end;
+
+ CadMoedaDM.InsertQuery.SQL.Clear;
+ CadMoedaDM.InsertQuery.SQL.Text :=
+ 'insert into cadmoeda (codigo, descricao, ativo) values (:codigo, :descricao, :ativo)';
+ CadMoedaDM.InsertQuery.ParamByName('codigo').AsString := codigo;
+ CadMoedaDM.InsertQuery.ParamByName('descricao').AsString := Descricao;
+ CadMoedaDM.InsertQuery.ParamByName('ativo').AsString := ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Inseriu a moeda ' + codigo + ' - ' + descricao + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadMoeda';
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+ try
+  CadMoedaDM.InsertQuery.ExecSQL;
+  LogsDM.InserirLog.ExecSQL;
+  ShowMessage('Cadastrado com sucesso!');
+  EdtCodigo.Enabled := False;
+  EdtDescricao.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnFechar.Visible := True;
+  btnExcluir.Visible := True;
+  btnAlterar.Visible := True;
+
+  btnGravarIncluir.Visible := False;
+  btnGravarAlterar.Visible := False;
+  btnDesistir.Visible := False;
+
+  CadMoedaDM.ConsultarMoeda.SQL.Clear;
+  CadMoedaDM.ConsultarMoeda.SQL.Text :=
+  'select * from cadmoeda';
+  CadMoedaDM.ConsultarMoeda.Open;
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+ except
+ ShowMessage('Erro na gravação!');
+ end;
+end;
+
+procedure TCadMoeda.btnAlterarClick(Sender: TObject);
+var I: integer;
+begin
+ if EdtCodigo.Text = '' then begin
+  ShowMessage('Nenhuma moeda selecionada!');
+  Abort;
+ end;
+ EdtDescricao.Enabled := True;
+ CBAtivo.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnFechar.Visible := False;
+ btnExcluir.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+
+ CadMoedaDM.ConsultarMoeda.SQL.Clear;
+ CadMoedaDM.ConsultarMoeda.SQL.Text :=
+ 'select * from cadmoeda';
+ CadMoedaDM.ConsultarMoeda.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadMoeda.btnGravarAlterarClick(Sender: TObject);
+var codigo, descricao, ativo: string;
+    I: integer;
+begin
+ codigo := EdtCodigo.Text;
+ Descricao := EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+
+ CadMoedaDM.UpdateQuery.SQL.Clear;
+ CadMoedaDM.UpdateQuery.SQL.Text :=
+ 'update cadmoeda set descricao = :descricao, ativo = :ativo where codigo = :codigo';
+ CadMoedaDM.UpdateQuery.ParamByName('codigo').AsString := codigo;
+ CadMoedaDM.UpdateQuery.ParamByName('descricao').AsString := Descricao;
+ CadMoedaDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Alterou a moeda ' + codigo + ' - ' + descricao + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadMoeda';
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+ try
+  CadMoedaDM.UpdateQuery.ExecSQL;
+  LogsDM.InserirLog.ExecSQL;
+  ShowMessage('Alterado com sucesso!');
+  EdtCodigo.Enabled := False;
+  EdtDescricao.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnFechar.Visible := True;
+  btnExcluir.Visible := True;
+  btnAlterar.Visible := True;
+
+  btnGravarIncluir.Visible := False;
+  btnGravarAlterar.Visible := False;
+  btnDesistir.Visible := False;
+
+  CadMoedaDM.ConsultarMoeda.SQL.Clear;
+  CadMoedaDM.ConsultarMoeda.SQL.Text :=
+  'select * from cadmoeda';
+  CadMoedaDM.ConsultarMoeda.Open;
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+  except
+  ShowMessage('Erro na alteração!');
+ end;
+end;
+
+procedure TCadMoeda.btnDesistirClick(Sender: TObject);
+var I: integer;
+begin
+ EdtCodigo.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+
+ EdtCodigo.Clear;
+ EdtDescricao.Clear;
+
+ btnIncluir.Visible := True;
+ btnFechar.Visible := True;
+ btnExcluir.Visible := True;
+ btnAlterar.Visible := True;
+
+ btnGravarIncluir.Visible := False;
+ btnGravarAlterar.Visible := False;
+ btnDesistir.Visible := False;
+
+ CadMoedaDM.ConsultarMoeda.SQL.Clear;
+ CadMoedaDM.ConsultarMoeda.SQL.Text :=
+ 'select * from cadmoeda';
+ CadMoedaDM.ConsultarMoeda.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadMoeda.btnExcluirClick(Sender: TObject);
+var codigo, descricao, ativo: string;
+    I: integer;
+begin
+ codigo := EdtCodigo.Text;
+ Descricao := EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+
+ if codigo = '' then begin
+  ShowMessage('Nenhuma moeda selecionada!');
+  Abort;
+ end;
+
+ CadMoedaDM.DeleteQuery.SQL.Clear;
+ CadMoedaDM.DeleteQuery.SQL.Text :=
+ 'delete from cadmoeda where codigo = :codigo';
+ CadMoedaDM.DeleteQuery.ParamByName('codigo').AsString := codigo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Excluiu a moeda ' + codigo + ' - ' + descricao + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadMoeda';
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+
+ try
+  CadMoedaDM.DeleteQuery.ExecSQL;
+  LogsDM.InserirLog.ExecSQL;
+  ShowMessage('Excluído com sucesso!');
+
+  EdtCodigo.Clear;
+  EdtDescricao.Clear;
+
+  CadMoedaDM.ConsultarMoeda.SQL.Clear;
+  CadMoedaDM.ConsultarMoeda.SQL.Text :=
+  'select * from cadmoeda';
+  CadMoedaDM.ConsultarMoeda.Open;
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+  except
+  ShowMessage('Erro na exclusão!');
+ end;
+end;
+
+procedure TCadMoeda.btnFecharClick(Sender: TObject);
+begin
+ fECHARTELA(SENDER);
+end;
+
+end.

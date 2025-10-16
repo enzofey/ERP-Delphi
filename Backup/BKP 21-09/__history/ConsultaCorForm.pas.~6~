@@ -1,0 +1,66 @@
+unit ConsultaCorForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Data.DB, Vcl.Grids,
+  Vcl.DBGrids, Vcl.StdCtrls, CorDataModule;
+
+type
+  TConsultarCor = class(TForm)
+    Panel1: TPanel;
+    GridConsultaCor: TDBGrid;
+    BtnSelecionarCor: TButton;
+    procedure FormShow(Sender: TObject);
+    procedure BtnSelecionarCorClick(Sender: TObject);
+  private
+    CCodigo: string;
+    CDescricao: string;
+    CAtivo: string;
+  public
+    function SelecionarCor: string;
+    function Descricao: string;
+    function Ativo: string;
+  end;
+
+var
+  ConsultarCor: TConsultarCor;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarCor.SelecionarCor: string;
+begin
+  CCodigo := '';
+  ShowModal;
+  Result := CCodigo;
+end;
+
+function TConsultarCor.Descricao: string;
+begin
+  Result := CDescricao;
+end;
+
+function TConsultarCor.Ativo: string;
+begin
+  Result := CAtivo;
+end;
+
+procedure TConsultarCor.FormShow(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to GridConsultaCor.Columns.Count - 1 do
+    GridConsultaCor.Columns[i].Width := GridConsultaCor.Canvas.TextWidth(GridConsultaCor.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TConsultarCor.BtnSelecionarCorClick(Sender: TObject);
+begin
+  CCodigo := CadCorModule.FDQuery.FieldByName('codigo').AsString;
+  CDescricao := CadCorModule.FDQuery.FieldByName('descricao').AsString;
+  CAtivo := CadCorModule.FDQuery.FieldByName('ativo').AsString;
+  Close;
+end;
+end.

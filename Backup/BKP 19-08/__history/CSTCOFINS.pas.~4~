@@ -1,0 +1,43 @@
+unit CSTCOFINS;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids;
+
+type
+  TCadCSTCOFINS = class(TForm)
+    Panel1: TPanel;
+    lblCSOSN: TLabel;
+    btnAlterar: TButton;
+    btnConsultar: TButton;
+    btnDesistir: TButton;
+    BtnExcluir: TButton;
+    btnFechar: TButton;
+    btnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnIncluir: TButton;
+    EdtCSOSN: TEdit;
+    EdtDescricao: TEdit;
+    Grid: TDBGrid;
+    lblDescricao: TLabel;
+    RBBase: TRadioButton;
+    RBIsento: TRadioButton;
+    RBOutros: TRadioButton;
+    RGModo: TRadioGroup;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadCSTCOFINS: TCadCSTCOFINS;
+
+implementation
+
+{$R *.dfm}
+
+end.

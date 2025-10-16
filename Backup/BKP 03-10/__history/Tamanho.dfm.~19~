@@ -1,0 +1,32 @@
+object CadTamanho: TCadTamanho
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'CadTamanho'
+  ClientHeight = 581
+  ClientWidth = 1031
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  WindowState = wsMaximized
+  TextHeight = 15
+  object PageControl1: TPageControl
+    Left = 520
+    Top = 224
+    Width = 289
+    Height = 193
+    ActivePage = PageAcesso
+    TabOrder = 0
+    object PageAcesso: TTabSheet
+      Caption = 'Acesso'
+    end
+    object PageCadastro: TTabSheet
+      Caption = 'Cadastro'
+      ImageIndex = 1
+    end
+  end
+end

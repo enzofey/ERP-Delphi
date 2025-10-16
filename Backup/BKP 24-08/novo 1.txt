@@ -1,0 +1,33 @@
+FatGeralDataModule.InsertNOTA.SQL.CLear;
+ FatGeralDataModule.InsertNOTA.SQL.Text :=
+ 'insert into nota (emp_id, serie, codcli, dtemissao, dtsaida, Natureza, valor_produtos, valor_total, qtde, ALIQ_ICMS, valor_Base_ICMS, ' +
+ 'Valor_ICMS, ALIQ_IPI, valor_Base_IPI, Valor_IPI, ALIQ_COFINS, valor_Base_COFINS, Valor_COFINS, ALIQ_PIS, valor_Base_PIS, Valor_PIS, valor_Desconto, ' +
+ 'Valor_Frete) ' +
+ 'values ' +
+ '(:EMP_ID, :serie, :codcli :dtemissao, :dtsaida, :Natureza, :valor_produtos, :valor_total, :qtde, :ALIQ_ICMS, :valor_Base_ICMS, ' +
+ ':Valor_ICMS, :ALIQ_IPI, :valor_Base_IPI, :Valor_IPI, :ALIQ_COFINS, :valor_Base_COFINS, :Valor_COFINS, :ALIQ_PIS, :valor_Base_PIS, :Valor_PIS, ' +
+ ':valor_Desconto, :Valor_Frete)';
+ FatGeralDataModule.InsertNOTA.ParamByName('EMP_ID').AsString := EmpresaLogada;
+ FatGeralDataModule.InsertNOTA.ParamByName('serie').AsString := serie;
+ FatGeralDataModule.InsertNOTA.ParamByName('codcli').AsString := entidade;
+ FatGeralDataModule.InsertNOTA.ParamByName('dtemissao').AsDatetime := dataemissao;
+ FatGeralDataModule.InsertNOTA.ParamByName('dtsaida').AsDatetime := datasaida;
+ FatGeralDataModule.InsertNOTA.ParamByName('natureza').AsString := natureza;
+ FatGeralDataModule.InsertNOTA.ParamByName('ALIQ_PIS').AsFloat := ALIQ_PIS;
+ FatGeralDataModule.InsertNOTA.ParamByName('ALIQ_COFINS').AsFloat := ALIQ_COFINS;
+ FatGeralDataModule.InsertNOTA.ParamByName('ALIQ_IPI').AsFloat := ALIQ_IPI;
+ FatGeralDataModule.InsertNOTA.ParamByName('ALIQ_ICMS').AsFloat := ALIQ_ICMS;
+ FatGeralDataModule.InsertNOTA.ParamByName('valor_Desconto').AsString := EdtValDesconto.text;
+ FatGeralDataModule.InsertNOTA.ParamByName('Valor_Frete').AsString := EdtValFrete.Text;
+
+ FatGeralDataModule.InsertNOTA.ParamByName('valor_produtos').AsFloat := valor; // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('valor_total').AsFloat := valor_total; // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('qtde').AsFloat := qtde;                  // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('valor_Base_ICMS').AsFloat := Base_ICMS;        // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('Valor_ICMS').AsFloat := Valor_ICMS;      // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('valor_Base_IPI').AsFloat := Base_IPI;          // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('Valor_IPI').AsFloat := Valor_IPI;        // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('valor_Base_COFINS').AsFloat := Base_COFINS;    // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('Valor_COFINS').AsFloat := Valor_COFINS;  // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('valor_Base_PIS').AsFloat := Base_PIS;          // somatoria
+ FatGeralDataModule.InsertNOTA.ParamByName('Valor_PIS').AsFloat := Valor_PIS;        // somatoria

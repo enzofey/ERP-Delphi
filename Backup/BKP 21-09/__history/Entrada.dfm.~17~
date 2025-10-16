@@ -1,0 +1,233 @@
+object MovEntrada: TMovEntrada
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'MovEntrada'
+  ClientHeight = 610
+  ClientWidth = 1028
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  WindowState = wsMaximized
+  OnShow = FormShow
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1028
+    Height = 610
+    Align = alClient
+    TabOrder = 0
+    ExplicitTop = -48
+    object lblCodigoProduto: TLabel
+      Left = 40
+      Top = 48
+      Width = 46
+      Height = 15
+      Caption = 'Produto:'
+    end
+    object lblCodigoCor: TLabel
+      Left = 40
+      Top = 96
+      Width = 22
+      Height = 15
+      Caption = 'Cor:'
+    end
+    object lblCodigoTamanho: TLabel
+      Left = 40
+      Top = 144
+      Width = 52
+      Height = 15
+      Caption = 'Tamanho:'
+    end
+    object lblCodigoDeposito: TLabel
+      Left = 40
+      Top = 192
+      Width = 50
+      Height = 15
+      Caption = 'Dep'#243'sito:'
+    end
+    object lblLote: TLabel
+      Left = 40
+      Top = 240
+      Width = 26
+      Height = 15
+      Caption = 'Lote:'
+    end
+    object lblQtde: TLabel
+      Left = 40
+      Top = 288
+      Width = 65
+      Height = 15
+      Caption = 'Quantidade:'
+    end
+    object SBDeposito: TSpeedButton
+      Left = 262
+      Top = 189
+      Width = 23
+      Height = 23
+    end
+    object SBTamanho: TSpeedButton
+      Left = 262
+      Top = 141
+      Width = 23
+      Height = 23
+    end
+    object SBCor: TSpeedButton
+      Left = 262
+      Top = 93
+      Width = 23
+      Height = 23
+    end
+    object SBProduto: TSpeedButton
+      Left = 262
+      Top = 45
+      Width = 23
+      Height = 23
+    end
+    object btnIncluir: TButton
+      Left = 32
+      Top = 480
+      Width = 145
+      Height = 57
+      Caption = 'Incluir'
+      TabOrder = 0
+      OnClick = btnIncluirClick
+    end
+    object btnDesistir: TButton
+      Left = 334
+      Top = 480
+      Width = 145
+      Height = 57
+      Caption = 'Desistir'
+      TabOrder = 1
+      Visible = False
+      OnClick = btnDesistirClick
+    end
+    object btnGravar: TButton
+      Left = 183
+      Top = 480
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 2
+      Visible = False
+      OnClick = btnGravarClick
+    end
+    object edtLote: TEdit
+      Left = 111
+      Top = 237
+      Width = 145
+      Height = 23
+      Enabled = False
+      TabOrder = 3
+    end
+    object EdtQtde: TEdit
+      Left = 111
+      Top = 285
+      Width = 145
+      Height = 23
+      Enabled = False
+      NumbersOnly = True
+      TabOrder = 4
+    end
+    object btnIncluirGrid: TButton
+      Left = 32
+      Top = 480
+      Width = 145
+      Height = 57
+      Caption = 'Incluir'
+      TabOrder = 5
+      Visible = False
+      OnClick = btnIncluirGridClick
+    end
+    object Grid: TStringGrid
+      Left = 296
+      Top = 45
+      Width = 681
+      Height = 308
+      ColCount = 6
+      FixedCols = 0
+      RowCount = 1
+      FixedRows = 0
+      TabOrder = 6
+    end
+    object EdtCodigoDeposito: TEdit
+      Left = 111
+      Top = 189
+      Width = 34
+      Height = 23
+      Enabled = False
+      TabOrder = 7
+    end
+    object btnFechar: TButton
+      Left = 832
+      Top = 480
+      Width = 145
+      Height = 57
+      Caption = 'Fechar'
+      TabOrder = 8
+      OnClick = btnFecharClick
+    end
+    object EdtDescricaoTamanho: TEdit
+      Left = 151
+      Top = 141
+      Width = 105
+      Height = 23
+      Enabled = False
+      TabOrder = 9
+    end
+    object EdtCodigoTamanho: TEdit
+      Left = 111
+      Top = 141
+      Width = 34
+      Height = 23
+      Enabled = False
+      TabOrder = 10
+    end
+    object EdtDescricaoDeposito: TEdit
+      Left = 151
+      Top = 189
+      Width = 105
+      Height = 23
+      Enabled = False
+      TabOrder = 11
+    end
+    object EdtCodigoCor: TEdit
+      Left = 111
+      Top = 93
+      Width = 34
+      Height = 23
+      Enabled = False
+      TabOrder = 12
+    end
+    object EdtDescricaoCor: TEdit
+      Left = 151
+      Top = 93
+      Width = 105
+      Height = 23
+      Enabled = False
+      TabOrder = 13
+    end
+    object EdtCodigoProduto: TEdit
+      Left = 111
+      Top = 45
+      Width = 34
+      Height = 23
+      Enabled = False
+      TabOrder = 14
+    end
+    object EdtDescricaoProduto: TEdit
+      Left = 151
+      Top = 45
+      Width = 105
+      Height = 23
+      Enabled = False
+      TabOrder = 15
+    end
+  end
+end

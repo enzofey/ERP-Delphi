@@ -1,0 +1,200 @@
+unit ConsultarEntidadeForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Grids, EntidadeDM,
+  Vcl.DBGrids, Vcl.ExtCtrls;
+
+type
+  TConsultarEntidade = class(TForm)
+    Panel1: TPanel;
+    Grid: TDBGrid;
+    BtnSelecionarEntidade: TButton;
+    procedure BtnSelecionarEntidadeClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    ECodigo: string;
+    ENome: string;
+    EAtivo: string;
+    ECPF: string;
+    EDDD: string;
+    ETelefone: string;
+    ERua: string;
+    ENumero: string;
+    EEstado: string;
+    EBairro: string;
+    ECidade: string;
+    EPais: string;
+    EComplemento: string;
+    ECEP: string;
+    EEmail: string;
+    EIE: string;
+    EindIE: string;
+    EConsumidor_Final: string;
+    ETipo: String;
+  public
+    function SelecionarEntidade: string;
+    function Codigo: string;
+    function Ativo: string;
+    function Nome: string;
+    function CPF: string;
+    function DDD: string;
+    function Telefone: string;
+    function Rua: string;
+    function Numero: string;
+    function Estado: string;
+    function Bairro: string;
+    function Cidade: string;
+    function IE: string;
+    function IndIE: string;
+    function Pais: string;
+    function Complemento: string;
+    function CEP: string;
+    function Consumidor_final: string;
+    function Email: string;
+    function tipo: string;
+  end;
+
+var
+  ConsultarEntidade: TConsultarEntidade;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarEntidade.SelecionarEntidade: string;
+begin
+  ECodigo := '';
+  ShowModal;
+  Result := ECodigo;
+end;
+
+function TConsultarEntidade.Nome: string;
+begin
+  Result := ENome;
+end;
+
+function TConsultarEntidade.Email: string;
+begin
+  Result := EEmail;
+end;
+
+function TConsultarEntidade.Codigo: string;
+begin
+  Result := Ecodigo;
+end;
+
+function TConsultarEntidade.Ativo: string;
+begin
+  Result := EAtivo;
+end;
+
+function TConsultarEntidade.CPF: string;
+begin
+  Result := ECPF;
+end;
+
+function TConsultarEntidade.IE: string;
+begin
+  Result := EIE;
+end;
+
+function TConsultarEntidade.IndIE: string;
+begin
+  Result := EIndIE;
+end;
+
+function TConsultarEntidade.DDD: string;
+begin
+  Result := EDDD;
+end;
+
+function TConsultarEntidade.Telefone: string;
+begin
+  Result := ETelefone;
+end;
+
+function TConsultarEntidade.Rua: string;
+begin
+  Result := ERua;
+end;
+
+function TConsultarEntidade.Numero: string;
+begin
+  Result := ENumero;
+end;
+
+function TConsultarEntidade.Estado: string;
+begin
+  Result := EEstado;
+end;
+
+function TConsultarEntidade.Bairro: string;
+begin
+  Result := EBairro;
+end;
+
+function TConsultarEntidade.Cidade: string;
+begin
+  Result := ECidade;
+end;
+
+function TConsultarEntidade.Pais: string;
+begin
+  Result := EPais;
+end;
+
+function TConsultarEntidade.Complemento: string;
+begin
+  Result := EComplemento;
+end;
+
+function TConsultarEntidade.CEP: string;
+begin
+  Result := ECEP;
+end;
+
+function TConsultarEntidade.Consumidor_Final: string;
+begin
+  Result := EConsumidor_Final;
+end;
+
+function TConsultarEntidade.Tipo: string;
+begin
+  Result := ETipo;
+end;
+
+procedure TConsultarEntidade.FormShow(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to Grid.Columns.Count - 1 do
+    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TConsultarEntidade.BtnSelecionarEntidadeClick(Sender: TObject);
+begin
+  ECodigo := CadEntidadeDM.ConsultarEntidade.FieldByName('codigo').AsString;
+  ENome := CadEntidadeDM.ConsultarEntidade.FieldByName('nome').AsString;
+  EAtivo := CadEntidadeDM.ConsultarEntidade.FieldByName('ativo').AsString;
+  ECPF := CadEntidadeDM.ConsultarEntidade.FieldByName('CPF').AsString;
+  EDDD := CadEntidadeDM.ConsultarEntidade.FieldByName('DDD').AsString;
+  ETelefone := CadEntidadeDM.ConsultarEntidade.FieldByName('Telefone').AsString;
+  ERua := CadEntidadeDM.ConsultarEntidade.FieldByName('rua').AsString;
+  ENumero := CadEntidadeDM.ConsultarEntidade.FieldByName('numero').AsString;
+  EEstado := CadEntidadeDM.ConsultarEntidade.FieldByName('Estado').AsString;
+  EBairro := CadEntidadeDM.ConsultarEntidade.FieldByName('Bairro').AsString;
+  ECidade := CadEntidadeDM.ConsultarEntidade.FieldByName('Cidade').AsString;
+  EPais := CadEntidadeDM.ConsultarEntidade.FieldByName('Pais').AsString;
+  EComplemento := CadEntidadeDM.ConsultarEntidade.FieldByName('Complemento').AsString;
+  ECEP := CadEntidadeDM.ConsultarEntidade.FieldByName('CEP').AsString;
+  EEmail := CadEntidadeDM.ConsultarEntidade.FieldByName('Email').AsString;
+  EConsumidor_final := CadEntidadeDM.ConsultarEntidade.FieldByName('Consumidor_final').AsString;
+  EIE := CadEntidadeDM.ConsultarEntidade.FieldByName('IE').AsString;
+  EIndIE := CadEntidadeDM.ConsultarEntidade.FieldByName('IndIE').AsString;
+  EIndIE := CadEntidadeDM.ConsultarEntidade.FieldByName('Tipo').AsString;
+  Close;
+end;
+end.

@@ -1,0 +1,352 @@
+unit MenuPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Menus, Vcl.ComCtrls, System.Generics.Collections,
+  Produto,
+  Cor,
+  Tamanho,
+  FaixaTamanho,
+  Deposito,
+  Entidade,
+  Estado,
+  Cidade,
+  Pais,
+  CEP,
+  Entrada,
+  Saida,
+  RelEstoque,
+  RelMovto,
+  EditorSQL,
+  Log,
+  Usuario, AlterarSenha,
+  Empresa,
+  Natureza,
+  CSTPIS, CSTCOFINS, CSTICMS, CSOSN, CSTIPI, ENQIPI, NCM, Unidade,
+  FatGeral, ImpressaoNFE,
+  Receber,
+  Moeda,
+  EntradaNF,
+  EditorRelatorioFm;
+
+type
+  TWelcome = class(TForm)
+    Menus: TMainMenu;
+    Cadastros: TMenuItem;
+    Produto: TMenuItem;
+    Cor: TMenuItem;
+    Tamanho: TMenuItem;
+    Deposito: TMenuItem;
+    Movimentacoes: TMenuItem;
+    Entrada: TMenuItem;
+    Saida: TMenuItem;
+    Relatorios: TMenuItem;
+    RelEstoque: TMenuItem;
+    PageControlPrincipal: TPageControl;
+    Entidade: TMenuItem;
+    Endereco: TMenuItem;
+    Estado: TMenuItem;
+    Cidade: TMenuItem;
+    Pais: TMenuItem;
+    CEP: TMenuItem;
+    RelMovimentacoes: TMenuItem;
+    Sistema: TMenuItem;
+    EditorSQL: TMenuItem;
+    Logs: TMenuItem;
+    CadastroDeTamanho: TMenuItem;
+    FaixaDeTamanho: TMenuItem;
+    Usuarios: TMenuItem;
+    AlterarSenha: TMenuItem;
+    CadastrodeEmpresa: TMenuItem;
+    Fiscal: TMenuItem;
+    Natureza: TMenuItem;
+    CSTs: TMenuItem;
+    ICMS: TMenuItem;
+    CSOSN: TMenuItem;
+    IPI: TMenuItem;
+    EnqIPI: TMenuItem;
+    PIS: TMenuItem;
+    COFINS: TMenuItem;
+    Administrativo: TMenuItem;
+    Faturamento: TMenuItem;
+    Geral: TMenuItem;
+    ImpressaoNFE: TMenuItem;
+    NCM: TMenuItem;
+    Unidade: TMenuItem;
+    Receber: TMenuItem;
+    Moeda: TMenuItem;
+    Compras: TMenuItem;
+    EntradaNFe: TMenuItem;
+    EditorRelatorio: TMenuItem;
+    procedure ProdutoClick(Sender: TObject);
+    procedure CorClick(Sender: TObject);
+    procedure TamanhoClick(Sender: TObject);
+    procedure DepositoClick(Sender: TObject);
+    procedure EntradaClick(Sender: TObject);
+    procedure SaidaClick(Sender: TObject);
+    procedure EntidadeClick(Sender: TObject);
+    procedure EstadoClick(Sender: TObject);
+    procedure CidadeClick(Sender: TObject);
+    procedure PaisClick(Sender: TObject);
+    procedure CEPClick(Sender: TObject);
+    procedure RelEstoqueClick(Sender: TObject);
+    procedure RelMovimentacoesClick(Sender: TObject);
+    procedure EditorSQLClick(Sender: TObject);
+    procedure LogsClick(Sender: TObject);
+    procedure FaixaDeTamanhoClick(Sender: TObject);
+    procedure UsuariosClick(Sender: TObject);
+    procedure AlterarSenhaClick(Sender: TObject);
+    procedure CadastrodeEmpresaClick(Sender: TObject);
+    procedure NaturezaClick(Sender: TObject);
+    procedure ICMSClick(Sender: TObject);
+    procedure PISClick(Sender: TObject);
+    procedure COFINSClick(Sender: TObject);
+    procedure CSOSNClick(Sender: TObject);
+    procedure IPIClick(Sender: TObject);
+    procedure EnqIPIClick(Sender: TObject);
+    procedure GeralClick(Sender: TObject);
+    procedure ImpressaoNFEClick(Sender: TObject);
+    procedure NCMClick(Sender: TObject);
+    procedure UnidadeClick(Sender: TObject);
+    procedure ReceberClick(Sender: TObject);
+    procedure MoedaClick(Sender: TObject);
+    procedure EntradaNFeClick(Sender: TObject);
+    procedure EditorRelatorioClick(Sender: TObject);
+private
+  FormulariosAbertos: TObjectList<TForm>;
+public
+  procedure AbrirAba(FormClass: TFormClass; const Titulo: string);
+  end;
+
+var
+  Welcome: TWelcome;
+
+implementation
+
+{$R *.dfm}
+
+procedure TWelcome.AbrirAba(FormClass: TFormClass; const Titulo: string);
+var
+  i: Integer;
+  AbaExistente: TTabSheet;
+  NovaTab: TTabSheet;
+  UmForm: TForm;
+begin
+  AbaExistente := nil;
+
+  for i := 0 to PageControlPrincipal.PageCount - 1 do
+  if SameText(PageControlPrincipal.Pages[i].Caption, Titulo) then
+  begin
+  AbaExistente := PageControlPrincipal.Pages[i];
+  Break;
+  end;
+
+  if Assigned(AbaExistente) then
+  begin
+  PageControlPrincipal.ActivePage := AbaExistente;
+  Exit;
+  end;
+
+  NovaTab := TTabSheet.Create(PageControlPrincipal);
+  NovaTab.PageControl := PageControlPrincipal;
+  NovaTab.Caption := Titulo;
+
+  UmForm := FormClass.Create(Self);
+  UmForm.Parent := NovaTab;
+  UmForm.Align := alClient;
+  UmForm.Show;
+
+  PageControlPrincipal.ActivePage := NovaTab;
+end;
+
+// CSTS
+
+procedure TWelcome.ICMSClick(Sender: TObject);
+begin
+  AbrirAba(TCadCSTICMS, 'Cadastro de CST ICMS');
+end;
+
+procedure TWelcome.CSOSNClick(Sender: TObject);
+begin
+  AbrirAba(TCadCSOSN, 'Cadastro de CSOSN');
+end;
+
+procedure TWelcome.COFINSClick(Sender: TObject);
+begin
+  AbrirAba(TCadCSTCOFINS, 'Cadastro de CST COFINS');
+end;
+
+procedure TWelcome.PISClick(Sender: TObject);
+begin
+  AbrirAba(TCadCSTPIS, 'Cadastro de CST PIS');
+end;
+
+procedure TWelcome.IPIClick(Sender: TObject);
+begin
+  AbrirAba(TCadCSTIPI, 'Cadastro de CST IPI');
+end;
+
+procedure TWelcome.EnqIPIClick(Sender: TObject);
+begin
+  AbrirAba(TCadEnqIPI, 'Cadastro de Enquadramento IPI');
+end;
+
+// MOVIMENTAÇÕES
+
+procedure TWelcome.EntradaClick(Sender: TObject);
+begin
+  AbrirAba(TMovEntrada, 'Entrada');
+end;
+
+procedure TWelcome.EntradaNFeClick(Sender: TObject);
+begin
+ AbrirAba(TEntradaNFForm, 'Entrada de NF-e')
+end;
+
+procedure TWelcome.SaidaClick(Sender: TObject);
+begin
+  AbrirAba(TMovSaida, 'Saída');
+end;
+
+// CADASTROS
+
+procedure TWelcome.ProdutoClick(Sender: TObject);
+begin
+  AbrirAba(TCadProduto, 'Cadastro de Produto');
+end;
+
+procedure TWelcome.DepositoClick(Sender: TObject);
+begin
+  AbrirAba(TCadDeposito, 'Cadastro de Depósito');
+end;
+
+procedure TWelcome.EntidadeClick(Sender: TObject);
+begin
+  AbrirAba(TCadEntidade, 'Cadastro de Entidade');
+end;
+
+procedure TWelcome.NaturezaClick(Sender: TObject);
+begin
+  AbrirAba(TCadNatureza, 'Cadastro de Natureza');
+end;
+
+procedure TWelcome.NCMClick(Sender: TObject);
+begin
+  AbrirAba(TCadNCM, 'Cadastro de NCM');
+end;
+
+procedure TWelcome.CorClick(Sender: TObject);
+begin
+  AbrirAba(TCadCor, 'Cadastro de Cor');
+end;
+
+procedure TWelcome.TamanhoClick(Sender: TObject);
+begin
+  AbrirAba(TCadTamanho, 'Cadastro de Tamanho');
+end;
+
+procedure TWelcome.FaixaDeTamanhoClick(Sender: TObject);
+begin
+  AbrirAba(TCadFaixaTamanho, 'Faixa de Tamanho');
+end;
+
+procedure TWelcome.UnidadeClick(Sender: TObject);
+begin
+  AbrirAba(TCadUnidade, 'Cadastro de Unidade');
+end;
+
+// FATURAMENTO
+
+procedure TWelcome.GeralClick(Sender: TObject);
+begin
+  AbrirAba(TFatGeralForm, 'Faturamento Geral');
+end;
+
+procedure TWelcome.ImpressaoNFEClick(Sender: TObject);
+begin
+ AbrirAba(TImpressaoNFEForm, 'Impressão de NFe');
+end;
+
+// RECEBER
+
+procedure TWelcome.ReceberClick(Sender: TObject);
+begin
+ AbrirAba(TReceberForm, 'Receber');
+end;
+
+// ENDEREÇOS
+
+procedure TWelcome.PaisClick(Sender: TObject);
+begin
+  AbrirAba(TCadPaisForm, 'Cadastro de País');
+end;
+
+procedure TWelcome.EstadoClick(Sender: TObject);
+begin
+  AbrirAba(TCadEstado, 'Cadastro de Estado');
+end;
+
+procedure TWelcome.CEPClick(Sender: TObject);
+begin
+ AbrirAba(TCadCEP, 'Cadastro de CEP');
+end;
+
+procedure TWelcome.CidadeClick(Sender: TObject);
+begin
+  AbrirAba(TCadCidade, 'Cadastro de Cidade');
+end;
+
+// RELATÓRIOS
+
+procedure TWelcome.RelEstoqueClick(Sender: TObject);
+begin
+  AbrirAba(TRelEstoqueForm, 'Relatório de Estoque');
+end;
+
+procedure TWelcome.RelMovimentacoesClick(Sender: TObject);
+begin
+  AbrirAba(TRelMovtoForm, 'Relatório de Movimentações');
+end;
+
+// SISTEMA
+
+procedure TWelcome.EditorRelatorioClick(Sender: TObject);
+begin
+  AbrirAba(TEditorRelatorio, 'Editor de Relatórios');
+end;
+
+Procedure TWelcome.EditorSQLClick(Sender: TObject);
+begin
+  AbrirAba(TEditorSQLForm, 'EditorSQL');
+end;
+
+procedure TWelcome.LogsClick(Sender: TObject);
+begin
+  AbrirAba(TLogsForm, 'Logs');
+end;
+
+procedure TWelcome.MoedaClick(Sender: TObject);
+begin
+ AbrirAba(TCadMoeda, 'Cadastro de Moeda');
+end;
+
+procedure TWelcome.UsuariosClick(Sender: TObject);
+begin
+  AbrirAba(TCadUsuario, 'Cadastro de Usuários');
+end;
+
+procedure TWelcome.AlterarSenhaClick(Sender: TObject);
+var
+ FormAlterarSenha: TAlterarSenhaForm;
+begin
+ FormAlterarSenha := TAlterarSenhaForm.Create(Self);
+ FormAlterarSenha.Show;
+end;
+
+procedure TWelcome.CadastrodeEmpresaClick(Sender: TObject);
+begin
+ AbrirAba(TCadEmpresa, 'Cadastro de Empresa');
+end;
+end.

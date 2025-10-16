@@ -1,0 +1,141 @@
+﻿object CadEntidadeDataModule: TCadEntidadeDataModule
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Database=estoque'
+      'User_Name=root'
+      'Server=127.0.0.1'
+      'DriverID=MySQL')
+    Connected = True
+    LoginPrompt = False
+    Left = 64
+    Top = 48
+  end
+  object dsCadEntidade: TDataSource
+    DataSet = tbCadEntidade
+    Left = 136
+    Top = 48
+  end
+  object tbCadEntidade: TFDTable
+    Active = True
+    IndexFieldNames = 'ID'
+    Connection = Conexão
+    ResourceOptions.AssignedValues = [rvEscapeExpand]
+    TableName = 'estoque.cadentidade'
+    Left = 64
+    Top = 120
+    object tbCadEntidadeID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object tbCadEntidadeCodigo: TStringField
+      FieldName = 'Codigo'
+      Origin = 'Codigo'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeNome: TStringField
+      FieldName = 'Nome'
+      Origin = 'Nome'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeCPF: TStringField
+      FieldName = 'CPF'
+      Origin = 'CPF'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeTelefone: TStringField
+      FieldName = 'Telefone'
+      Origin = 'Telefone'
+      Required = True
+      Size = 9
+    end
+    object tbCadEntidadeRua: TStringField
+      FieldName = 'Rua'
+      Origin = 'Rua'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeBairro: TStringField
+      FieldName = 'Bairro'
+      Origin = 'Bairro'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadePais: TStringField
+      FieldName = 'Pais'
+      Origin = 'Pais'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeCEP: TStringField
+      FieldName = 'CEP'
+      Origin = 'CEP'
+      Required = True
+      Size = 8
+    end
+    object tbCadEntidadeComplemento: TMemoField
+      FieldName = 'Complemento'
+      Origin = 'Complemento'
+      Required = True
+      BlobType = ftMemo
+    end
+    object tbCadEntidadeCidade: TStringField
+      FieldName = 'Cidade'
+      Origin = 'Cidade'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeNumero: TStringField
+      FieldName = 'Numero'
+      Origin = 'Numero'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeEstado: TStringField
+      FieldName = 'Estado'
+      Origin = 'Estado'
+      Required = True
+      Size = 2
+    end
+    object tbCadEntidadeAtivo: TStringField
+      FieldName = 'Ativo'
+      Origin = 'Ativo'
+      Required = True
+      Size = 1
+    end
+    object tbCadEntidadeConsumidor_Final: TStringField
+      FieldName = 'Consumidor_Final'
+      Origin = 'Consumidor_Final'
+      Required = True
+      Size = 1
+    end
+    object tbCadEntidadeDDD: TStringField
+      FieldName = 'DDD'
+      Origin = 'DDD'
+      Required = True
+      Size = 2
+    end
+  end
+  object FDQuery: TFDQuery
+    Connection = Conexão
+    Left = 136
+    Top = 120
+  end
+  object FDQuery1: TFDQuery
+    Active = True
+    Connection = Conexão
+    SQL.Strings = (
+      
+        'SELECT codigo, nome, ativo, cpf, ddd, telefone, rua, numero, est' +
+        'ado, bairro, cidade, pais, complemento, cep, consumidor_final'
+      'FROM cadentidade')
+    Left = 64
+    Top = 208
+  end
+end

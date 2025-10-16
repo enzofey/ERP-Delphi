@@ -1,0 +1,24 @@
+unit ConsultarTamanhoForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs;
+
+type
+  TConsultarTamanho = class(TForm)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ConsultarTamanho: TConsultarTamanho;
+
+implementation
+
+{$R *.dfm}
+
+end.

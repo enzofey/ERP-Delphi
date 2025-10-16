@@ -1,0 +1,32 @@
+unit GlobalUnit;
+
+interface
+
+var UsuarioLogado: String;
+var EmpresaLogada: String;
+procedure FecharTela(Sender: TObject);
+
+implementation
+
+Uses System.SysUtils, Vcl.ComCtrls, Vcl.Controls, Vcl.Forms;
+
+procedure FecharTela(Sender: TObject);
+var
+  Ctrl: TControl;
+begin
+  if not (Sender is TControl) then
+    Exit;
+
+  Ctrl := TControl(Sender);
+
+  while Assigned(Ctrl) do
+  begin
+    if Ctrl is TTabSheet then
+    begin
+      (Ctrl as TTabSheet).Free;
+      Exit;
+    end;
+    Ctrl := Ctrl.Parent;
+  end;
+end;
+end.

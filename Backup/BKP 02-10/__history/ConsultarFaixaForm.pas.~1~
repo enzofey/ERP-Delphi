@@ -1,0 +1,28 @@
+unit ConsultarFaixaForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+  TConsultarFaixa = class(TForm)
+    Panel1: TPanel;
+    btnSelecionarPais: TButton;
+    GridPais: TDBGrid;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ConsultarFaixa: TConsultarFaixa;
+
+implementation
+
+{$R *.dfm}
+
+end.

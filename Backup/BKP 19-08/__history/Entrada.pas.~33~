@@ -1,0 +1,335 @@
+unit Entrada;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls,
+  EntradaDataModule,
+  Log, LogDataModule;
+
+type
+  TMovEntrada = class(TForm)
+    Panel1: TPanel;
+    btnIncluir: TButton;
+    btnDesistir: TButton;
+    btnGravar: TButton;
+    lblCodigoProduto: TLabel;
+    CBoxProduto: TComboBox;
+    lblCodigoCor: TLabel;
+    CBoxCor: TComboBox;
+    lblCodigoTamanho: TLabel;
+    CBoxTamanho: TComboBox;
+    lblCodigoDeposito: TLabel;
+    CBoxDeposito: TComboBox;
+    lblLote: TLabel;
+    edtLote: TEdit;
+    lblQtde: TLabel;
+    EdtQtde: TEdit;
+    btnIncluirGrid: TButton;
+    Grid: TStringGrid;
+    btnFechar: TButton;
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnIncluirGridClick(Sender: TObject);
+    procedure btnGravarClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure CBoxProdutoDropDown(Sender: TObject);
+    procedure CBoxCorDropDown(Sender: TObject);
+    procedure CBoxTamanhoDropDown(Sender: TObject);
+    procedure CBoxDepositoDropDown(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+  private
+    procedure LimparTudo;
+  public
+    { Public declarations }
+  end;
+
+var
+  MovEntrada: TMovEntrada;
+
+implementation
+
+{$R *.dfm}
+
+procedure TMovEntrada.CBoxProdutoDropDown(Sender: TObject);
+begin
+  CBoxProduto.Items.Clear;
+
+  MovEntradaDataModule.CBProduto.Close;
+  MovEntradaDataModule.CBProduto.Open;
+
+  while not MovEntradaDataModule.CBProduto.Eof do
+  begin
+    CBoxProduto.Items.Add(MovEntradaDataModule.CBProduto.FieldByName('codigo').AsString);
+    MovEntradaDataModule.CBProduto.Next;
+  end;
+
+  MovEntradaDataModule.CBProduto.Close;
+end;
+
+procedure TMovEntrada.CBoxCorDropDown(Sender: TObject);
+begin
+  CBoxCor.Items.Clear;
+
+  MovEntradaDataModule.CBCor.Close;
+  MovEntradaDataModule.CBCor.Open;
+
+  while not MovEntradaDataModule.CBCor.Eof do
+  begin
+    CBoxCor.Items.Add(MovEntradaDataModule.CBCor.FieldByName('descricao').AsString);
+    MovEntradaDataModule.CBCor.Next;
+  end;
+
+  MovEntradaDataModule.CBCor.Close;
+end;
+
+procedure TMovEntrada.CBoxTamanhoDropDown(Sender: TObject);
+begin
+  CBoxTamanho.Items.Clear;
+
+  MovEntradaDataModule.CBTamanho.Close;
+  MovEntradaDataModule.CBTamanho.Open;
+
+  while not MovEntradaDataModule.CBTamanho.Eof do
+  begin
+    CBoxTamanho.Items.Add(MovEntradaDataModule.CBTamanho.FieldByName('codigo').AsString);
+    MovEntradaDataModule.CBTamanho.Next;
+  end;
+
+  MovEntradaDataModule.CBTamanho.Close;
+end;
+
+procedure TMovEntrada.CBoxDepositoDropDown(Sender: TObject);
+begin
+  CBoxDeposito.Items.Clear;
+
+  MovEntradaDataModule.CBDeposito.Close;
+  MovEntradaDataModule.CBDeposito.Open;
+
+  while not MovEntradaDataModule.CBDeposito.Eof do
+  begin
+    CBoxDeposito.Items.Add(MovEntradaDataModule.CBDeposito.FieldByName('codigo').AsString);
+    MovEntradaDataModule.CBDeposito.Next;
+  end;
+
+  MovEntradaDataModule.CBDeposito.Close;
+end;
+
+procedure TMovEntrada.FormShow(Sender: TObject);
+var i: Integer;
+begin
+ Grid.FixedRows := 0;
+ Grid.Cells[0,0] := 'Produto';
+ Grid.Cells[1,0] := 'Cor';
+ Grid.Cells[2,0] := 'Tamanho';
+ Grid.Cells[3,0] := 'Depósito';
+ Grid.Cells[4,0] := 'Lote';
+ Grid.Cells[5,0] := 'Qtde';
+end;
+
+procedure TMovEntrada.LimparTudo;
+begin
+ CBoxProduto.clear;
+ CBoxCor.clear;
+ CBoxTamanho.clear;
+ EdtLote.clear;
+ CBoxDeposito.clear;
+ EdtQtde.clear;
+
+ BtnIncluir.visible := True;
+
+ BtnGravar.Visible := False;
+ BtnDesistir.Visible := False;
+ BtnIncluirGrid.Visible := False;
+
+ CBoxProduto.Enabled := False;
+ CBoxDeposito.Enabled := False;
+ CBoxTamanho.Enabled := False;
+ CBoxCor.Enabled := False;
+ EdtQtde.Enabled := False;
+ EdtLote.Enabled := False;
+
+ Grid.RowCount := 1
+end;
+
+procedure TMovEntrada.btnIncluirClick(Sender: TObject);
+begin
+ BtnIncluir.visible := False;
+
+ BtnGravar.Visible := True;
+ BtnDesistir.Visible := True;
+ BtnIncluirGrid.Visible := True;
+
+ CBoxProduto.Enabled := True;
+ CBoxDeposito.Enabled := True;
+ CBoxTamanho.Enabled := True;
+ CBoxCor.Enabled := True;
+ EdtQtde.Enabled :=True;
+ EdtLote.Enabled :=True;
+end;
+
+procedure TMovEntrada.BtnIncluirGridClick(Sender: TObject);
+var
+ codigo, cor, tamanho, lote, deposito, qtde: string;
+ novalinha: integer;
+begin
+IF
+ CBoxProduto.Text = '' THEN
+ ShowMessage('Codigo não pode ser vazio')
+ else begin
+ IF
+ CBoxCor.Text = '' THEN
+ ShowMessage('Cor não pode ser vazia')
+ else begin
+ IF
+ CBoxTamanho.Text = '' THEN
+ ShowMessage('Tamanho não pode ser vazio')
+ else begin
+ IF
+ EdtLote.Text = '' THEN
+ EdtLote.Text := '000000'
+ else begin
+ IF
+ CBoxDeposito.Text = '' THEN
+ ShowMessage('Deposito não pode ser vazio')
+ else begin
+ IF
+ EdtQtde.Text = '' THEN
+ ShowMessage('Quantidade não pode ser vazio')
+ else begin
+ codigo := CBoxProduto.Text;
+ cor := CBoxCor.Text;
+ tamanho := CBoxTamanho.Text;
+ Lote := EdtLote.Text;
+ Deposito := CBoxDeposito.Text;
+ Qtde := EdtQtde.Text;
+
+ novalinha := Grid.RowCount;
+ Grid.RowCount := novalinha + 1;
+ Grid.Cells[0, novaLinha] := codigo;
+ Grid.Cells[1, novaLinha] := cor;
+ Grid.Cells[2, novaLinha] := tamanho;
+ Grid.Cells[3, novaLinha] := lote;
+ Grid.Cells[4, novaLinha] := deposito;
+ Grid.Cells[5, novaLinha] := qtde;
+
+ CBoxProduto.clear;
+ CBoxCor.clear;
+ CBoxTamanho.clear;
+ EdtLote.clear;
+ CBoxDeposito.clear;
+ EdtQtde.clear
+end;
+end;
+end;
+end;
+end;
+end;
+end;
+
+procedure TMovEntrada.BtnGravarClick(Sender: TObject);
+var
+  i: Integer;
+  codigo, tamanho, cor, deposito, lote, qtde, tipo, tela: string;
+  data: TDatetime;
+begin
+ data := Now;
+ tipo := 'E';
+ tela := 'MovEntrada';
+ for i := 1 to Grid.RowCount - 1 do
+ begin
+ codigo   := Grid.Cells[0, i];
+ cor      := Grid.Cells[1, i];
+ tamanho  := Grid.Cells[2, i];
+ lote     := Grid.Cells[3, i];
+ deposito := Grid.Cells[4, i];
+ qtde     := Grid.Cells[5, i];
+
+ MovEntradaDataModule.UpdateQuery.SQL.Clear;
+ MovEntradaDataModule.InsertQuery.SQL.Clear;
+
+ MovEntradaDataModule.SelectQuery.Close;
+ MovEntradaDataModule.SelectQuery.SQL.Text :=
+ 'SELECT * FROM estoque WHERE codigo=:codigo AND tamanho=:tamanho AND cor=:cor AND deposito=:deposito AND lote=:lote';
+ MovEntradaDataModule.SelectQuery.ParamByName('codigo').AsString := codigo;
+ MovEntradaDataModule.SelectQuery.ParamByName('tamanho').AsString := tamanho;
+ MovEntradaDataModule.SelectQuery.ParamByName('cor').AsString := cor;
+ MovEntradaDataModule.SelectQuery.ParamByName('deposito').AsString := deposito;
+ MovEntradaDataModule.SelectQuery.ParamByName('lote').AsString := lote;
+ MovEntradaDataModule.SelectQuery.Open;
+
+ if MovEntradaDataModule.SelectQuery.IsEmpty then begin
+
+ MovEntradaDataModule.InsertQuery.SQL.Clear;
+ MovEntradaDataModule.InsertQuery.SQL.Text :=
+ 'INSERT INTO estoque (codigo, tamanho, cor, deposito, lote, qtde) ' +
+ 'VALUES (:codigo, :tamanho, :cor, :deposito, :lote, :qtde)';
+ MovEntradaDataModule.InsertQuery.ParamByName('codigo').AsString := codigo;
+ MovEntradaDataModule.InsertQuery.ParamByName('tamanho').AsString := tamanho;
+ MovEntradaDataModule.InsertQuery.ParamByName('cor').AsString := cor;
+ MovEntradaDataModule.InsertQuery.ParamByName('deposito').AsString := deposito;
+ MovEntradaDataModule.InsertQuery.ParamByName('lote').AsString := lote;
+ MovEntradaDataModule.InsertQuery.ParamByName('qtde').AsString := qtde;
+ end
+ else begin
+
+ MovEntradaDataModule.UpdateQuery.SQL.Clear;
+ MovEntradaDataModule.UpdateQuery.SQL.Text :=
+ 'UPDATE estoque SET qtde = qtde + :qtde ' +
+ 'WHERE codigo = :codigo AND tamanho = :tamanho AND cor = :cor AND deposito = :deposito AND lote = :lote';
+ MovEntradaDataModule.UpdateQuery.ParamByName('codigo').AsString := codigo;
+ MovEntradaDataModule.UpdateQuery.ParamByName('tamanho').AsString := tamanho;
+ MovEntradaDataModule.UpdateQuery.ParamByName('cor').AsString := cor;
+ MovEntradaDataModule.UpdateQuery.ParamByName('deposito').AsString := deposito;
+ MovEntradaDataModule.UpdateQuery.ParamByName('lote').AsString := lote;
+ MovEntradaDataModule.UpdateQuery.ParamByName('qtde').AsString := qtde;
+ end;
+
+ MovEntradaDataModule.InsertProdMov.SQL.Clear;
+ MovEntradaDataModule.InsertProdMov.SQL.Text :=
+ 'INSERT INTO prodmov (codigo, cor, tamanho, deposito, lote, qtde, data, tipo) ' +
+ 'VALUES (:codigo, :cor, :tamanho, :deposito, :lote, :qtde, :data, :tipo)';
+ MovEntradaDataModule.InsertProdMov.ParamByName('codigo').AsString := codigo;
+ MovEntradaDataModule.InsertProdMov.ParamByName('cor').AsString := cor;
+ MovEntradaDataModule.InsertProdMov.ParamByName('tamanho').AsString := tamanho;
+ MovEntradaDataModule.InsertProdMov.ParamByName('deposito').AsString := deposito;
+ MovEntradaDataModule.InsertProdMov.ParamByName('lote').AsString := lote;
+ MovEntradaDataModule.InsertProdMov.ParamByName('qtde').AsString := qtde;
+ MovEntradaDataModule.InsertProdMov.ParamByName('data').AsDateTime := data;
+ MovEntradaDataModule.InsertProdMov.ParamByName('tipo').AsString := tipo;
+
+ LogModule.InserirLog.SQL.Text :=
+ 'INSERT INTO logs (descricao, tela, data) VALUES (:descricao, :tela, :data)';
+ LogModule.InserirLog.ParamByName('descricao').AsString :=
+ 'Fez entrada manual no código ' + codigo + ' na cor ' + cor +
+ ' no tamanho ' + tamanho + ' no depósito ' + deposito +
+ ' no lote ' + lote + ' em ' + qtde + ' quantidade(s)';
+ LogModule.InserirLog.ParamByName('tela').AsString := tela;
+ LogModule.InserirLog.ParamByName('data').AsDateTime := data;
+ try
+ LogModule.InserirLog.ExecSQL;
+ MovEntradaDataModule.InsertQuery.ExecSQL;
+ MovEntradaDataModule.UpdateQuery.ExecSQL;
+ MovEntradaDataModule.InsertProdMov.ExecSQL;
+ ShowMessage('Gravado com sucesso!');
+ LimparTudo;
+ except
+ ShowMessage('Erro na gravação');
+ end;
+end;
+end;
+
+
+procedure TMovEntrada.BtnDesistirClick(Sender: TObject);
+begin
+LimparTudo;
+end;
+
+procedure TMovEntrada.btnFecharClick(Sender: TObject);
+begin
+ (Parent as TTabSheet).PageControl := nil;
+ Parent.Free;
+end;
+
+end.

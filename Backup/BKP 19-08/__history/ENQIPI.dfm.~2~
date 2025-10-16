@@ -1,0 +1,28 @@
+object CadENQIPI: TCadENQIPI
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'CadENQIPI'
+  ClientHeight = 689
+  ClientWidth = 1109
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1109
+    Height = 689
+    Align = alClient
+    TabOrder = 0
+    ExplicitLeft = -467
+    ExplicitTop = -225
+    ExplicitWidth = 1091
+    ExplicitHeight = 666
+  end
+end

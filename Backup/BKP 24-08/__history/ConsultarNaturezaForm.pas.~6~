@@ -1,0 +1,131 @@
+unit ConsultarNaturezaForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Grids,
+  Vcl.DBGrids, Vcl.ExtCtrls,
+  NaturezaDataModule;
+
+type
+  TConsultarNatureza = class(TForm)
+    Panel1: TPanel;
+    Grid: TDBGrid;
+    BtnSelecionarNatureza: TButton;
+    procedure FormShow(Sender: TObject);
+    procedure BtnSelecionarNaturezaClick(Sender: TObject);
+  private
+    NatNatureza: String;
+    NatDescricao: String;
+    NatAtivo: String;
+    NatTipo: String;
+    NatCST_ICMS: String;
+    NatCSOSN: String;
+    NatCST_IPI: String;
+    NatENQ_IPI: String;
+    NatCST_PIS: String;
+    NatCST_COFINS: String;
+    NatcBenef: String;
+    NatcCredPres: String;
+  public
+   function SelecionarNatureza: string;
+   function descricao: string;
+   function natureza: string;
+   function Ativo: string;
+   function Tipo: string;
+   function CST_ICMS: string;
+   function CSOSN: string;
+   function CST_IPI: string;
+   function ENQ_IPI: string;
+   function CST_PIS: string;
+   function CST_COFINS: string;
+   function cBenef: string;
+   function cCredPres: string;
+
+  end;
+
+var
+  ConsultarNatureza: TConsultarNatureza;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TConsultarNatureza.btnSelecionarNaturezaClick(Sender: TObject);
+begin
+  NatNatureza := CadNaturezaDataModule.QueryNaturezas.FieldByName('natureza').AsString;
+  NatDescricao := CadNaturezaDataModule.QueryNaturezas.FieldByName('descricao').AsString;
+  NatAtivo := CadNaturezaDataModule.QueryNaturezas.FieldByName('ativo').AsString;
+  NatTipo := CadNaturezaDataModule.QueryNaturezas.FieldByName('tipo').AsString;
+  NatCST_ICMS := CadNaturezaDataModule.QueryNaturezas.FieldByName('CST_ICMS').AsString;
+  NatCSOSN := CadNaturezaDataModule.QueryNaturezas.FieldByName('CSOSN').AsString;
+  NatCST_IPI := CadNaturezaDataModule.QueryNaturezas.FieldByName('CST_IPI').AsString;
+  NatENQ_IPI := CadNaturezaDataModule.QueryNaturezas.FieldByName('ENQ_IPI').AsString;
+  NatCST_PIS := CadNaturezaDataModule.QueryNaturezas.FieldByName('CST_PIS').AsString;
+  NatCST_COFINS := CadNaturezaDataModule.QueryNaturezas.FieldByName('CST_COFINS').AsString;
+  NatcBenef := CadNaturezaDataModule.QueryNaturezas.FieldByName('cBenef').AsString;
+  NatcCredPres := CadNaturezaDataModule.QueryNaturezas.FieldByName('cCredPres').AsString;
+  Close;
+end;
+
+function TConsultarNatureza.SelecionarNatureza: string;
+begin
+  NatNatureza := '';
+  ShowModal;
+  Result := NatNatureza;
+end;
+
+function TConsultarNatureza.Natureza: string;
+begin
+  Result := NatNatureza;
+end;
+
+function TConsultarNatureza.Descricao: string;
+begin
+  Result := NatDescricao;
+end;
+
+function TConsultarNatureza.Ativo: string;
+begin
+  Result := NatAtivo;
+end;
+
+function TConsultarNatureza.Tipo: string;
+begin
+  Result := NatTipo;
+end;
+
+function TConsultarNatureza.CST_ICMS: string;
+begin
+  Result := NatCST_ICMS;
+end;
+
+function TConsultarNatureza.CSOSN: string;
+begin
+  Result := NatCSOSN;
+end;
+
+function TConsultarNatureza.CST_IPI: string;
+begin
+  Result := NatCST_IPI;
+end;
+
+function TConsultarNatureza.Descricao: string;
+begin
+  Result := NatDescricao;
+end;
+
+function TConsultarNatureza.Ativo: string;
+begin
+  Result := NatAtivo;
+end;
+procedure TConsultarNatureza.FormShow(Sender: TObject);
+var I: Integer;
+begin
+ for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+end.
+end.

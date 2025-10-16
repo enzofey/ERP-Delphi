@@ -1,0 +1,25 @@
+unit LogDataModule;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TLogModule = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  LogModule: TLogModule;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

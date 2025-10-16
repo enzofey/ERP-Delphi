@@ -1,0 +1,90 @@
+unit ConsultarCidadeForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Grids, CidadeDM,
+  Vcl.DBGrids, Vcl.ExtCtrls;
+
+type
+  TConsultarCidade = class(TForm)
+    Panel1: TPanel;
+    Grid: TDBGrid;
+    BtnSelecionarCidade: TButton;
+    procedure BtnSelecionarCidadeClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    CCodigo: string;
+    CAtivo: string;
+    CCidade: string;
+    CEstado: string;
+    CPais: string;
+  public
+    function SelecionarCidade: string;
+    function Codigo: string;
+    function Ativo: string;
+    function Cidade: string;
+    function Estado: string;
+    function Pais: string;
+  end;
+
+var
+  ConsultarCidade: TConsultarCidade;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarCidade.SelecionarCidade: string;
+begin
+  CCidade := '';
+  ShowModal;
+  Result := CCidade;
+end;
+
+function TConsultarCidade.Cidade: string;
+begin
+  Result := CCidade;
+end;
+
+function TConsultarCidade.Codigo: string;
+begin
+  Result := CCodigo;
+end;
+
+function TConsultarCidade.Pais: string;
+begin
+  Result := CPais;
+end;
+
+function TConsultarCidade.Ativo: string;
+begin
+  Result := CAtivo;
+end;
+
+function TConsultarCidade.Estado: string;
+begin
+  Result := CEstado;
+end;
+
+procedure TConsultarCidade.FormShow(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to Grid.Columns.Count - 1 do
+    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TConsultarCidade.BtnSelecionarCidadeClick(Sender: TObject);
+begin
+ begin
+  CCodigo := CadCidadeDM.ConsultarCidade.FieldByName('codigo').AsString;
+  CCidade := CadCidadeDM.ConsultarCidade.FieldByName('cidade').AsString;
+  CPais := CadCidadeDM.ConsultarCidade.FieldByName('pais').AsString;
+  CEstado := CadCidadeDM.ConsultarCidade.FieldByName('estado').AsString;
+  CAtivo := CadCidadeDM.ConsultarCidade.FieldByName('ativo').AsString;
+  Close;
+end;
+end;
+end.

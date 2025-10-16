@@ -1,0 +1,161 @@
+﻿object CadEntidadeDataModule: TCadEntidadeDataModule
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Database=00001P'
+      'User_Name=postgres'
+      'Password=evf'
+      'DriverID=PG')
+    Connected = True
+    LoginPrompt = False
+    Left = 32
+    Top = 24
+  end
+  object dsCadEntidade: TDataSource
+    DataSet = FDQuery1
+    Left = 104
+    Top = 312
+  end
+  object tbCadEntidade: TFDTable
+    Active = True
+    IndexFieldNames = 'ID'
+    MasterSource = dsCadEntidade
+    Connection = Conexão
+    ResourceOptions.AssignedValues = [rvEscapeExpand]
+    TableName = 'estoque.cadentidade'
+    Left = 184
+    Top = 200
+    object tbCadEntidadeID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object tbCadEntidadeCodigo: TStringField
+      FieldName = 'Codigo'
+      Origin = 'Codigo'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeNome: TStringField
+      FieldName = 'Nome'
+      Origin = 'Nome'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeCPF: TStringField
+      FieldName = 'CPF'
+      Origin = 'CPF'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeTelefone: TStringField
+      FieldName = 'Telefone'
+      Origin = 'Telefone'
+      Required = True
+      Size = 9
+    end
+    object tbCadEntidadeRua: TStringField
+      FieldName = 'Rua'
+      Origin = 'Rua'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeBairro: TStringField
+      FieldName = 'Bairro'
+      Origin = 'Bairro'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadePais: TStringField
+      FieldName = 'Pais'
+      Origin = 'Pais'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeCEP: TStringField
+      FieldName = 'CEP'
+      Origin = 'CEP'
+      Required = True
+      Size = 8
+    end
+    object tbCadEntidadeComplemento: TMemoField
+      FieldName = 'Complemento'
+      Origin = 'Complemento'
+      Required = True
+      BlobType = ftMemo
+    end
+    object tbCadEntidadeCidade: TStringField
+      FieldName = 'Cidade'
+      Origin = 'Cidade'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeNumero: TStringField
+      FieldName = 'Numero'
+      Origin = 'Numero'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeEstado: TStringField
+      FieldName = 'Estado'
+      Origin = 'Estado'
+      Required = True
+      Size = 2
+    end
+    object tbCadEntidadeAtivo: TStringField
+      FieldName = 'Ativo'
+      Origin = 'Ativo'
+      Required = True
+      Size = 1
+    end
+    object tbCadEntidadeConsumidor_Final: TStringField
+      FieldName = 'Consumidor_Final'
+      Origin = 'Consumidor_Final'
+      Required = True
+      Size = 1
+    end
+    object tbCadEntidadeDDD: TStringField
+      FieldName = 'DDD'
+      Origin = 'DDD'
+      Required = True
+      Size = 2
+    end
+    object tbCadEntidadeEmail: TStringField
+      FieldName = 'Email'
+      Origin = 'Email'
+      Required = True
+      Size = 255
+    end
+    object tbCadEntidadeIE: TStringField
+      FieldName = 'IE'
+      Origin = 'IE'
+      Required = True
+      Size = 9
+    end
+    object tbCadEntidadeIndiE: TIntegerField
+      FieldName = 'IndiE'
+      Origin = 'IndiE'
+      Required = True
+    end
+  end
+  object FDQuery: TFDQuery
+    Connection = Conexão
+    Left = 40
+    Top = 96
+  end
+  object FDQuery1: TFDQuery
+    Active = True
+    Connection = Conexão
+    SQL.Strings = (
+      'SELECT * from cadentidade')
+    Left = 40
+    Top = 272
+  end
+  object PGLink: TFDPhysPgDriverLink
+    VendorLib = 'C:\Program Files (x86)\PostgreSQL\psqlODBC\bin\libpq.dll'
+    Left = 88
+    Top = 24
+  end
+end

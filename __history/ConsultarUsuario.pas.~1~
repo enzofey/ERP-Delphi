@@ -1,0 +1,25 @@
+unit ConsultarUsuario;
+
+interface
+
+uses
+  System.SysUtils, System.Classes;
+
+type
+  TConsultarUsuarioForm = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ConsultarUsuarioForm: TConsultarUsuarioForm;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

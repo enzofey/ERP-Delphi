@@ -1,0 +1,1418 @@
+unit EntradaNF;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.DateUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.Buttons, Vcl.StdCtrls,
+  Vcl.Grids, Xml.XMLDoc, Xml.XMLIntf,
+  EntidadeDM, ConsultarEntidadeForm,
+  NaturezaDM, ConsultarNaturezaForm,
+  DepositoDM, ConsultarDepositoForm;
+
+type
+  TEntradaNFForm = class(TForm)
+    Pages: TPageControl;
+    AcessoPage: TTabSheet;
+    NotaPage: TTabSheet;
+    ItensPage: TTabSheet;
+    lblEntidade: TLabel;
+    lblFatura: TLabel;
+    EdtnNF: TEdit;
+    lblSerie: TLabel;
+    EdtSerie: TEdit;
+    lblTpDoc: TLabel;
+    EdtMod: TEdit;
+    EdtCodigoEntidade: TEdit;
+    EdtNomeEntidade: TEdit;
+    SBEntidade: TSpeedButton;
+    lblNatureza: TLabel;
+    EdtCodigoNatureza: TEdit;
+    EdtDescricaoNatureza: TEdit;
+    SBNatureza: TSpeedButton;
+    lblDeposito: TLabel;
+    EdtCodigoDeposito: TEdit;
+    EdtDescricaoDeposito: TEdit;
+    SBDeposito: TSpeedButton;
+    AbasNota: TPageControl;
+    ValoresPage: TTabSheet;
+    FinanceiroPage: TTabSheet;
+    lblvBC: TLabel;
+    lblvICMS: TLabel;
+    lblvICMSDeson: TLabel;
+    lblValorProdutos: TLabel;
+    lblValorFrete: TLabel;
+    lblValorDesconto: TLabel;
+    lblValorSeguro: TLabel;
+    lblValorOutros: TLabel;
+    EdtvProd: TEdit;
+    EdtvFrete: TEdit;
+    EdtvDesc: TEdit;
+    EdtvSeg: TEdit;
+    EdtvOutro: TEdit;
+    EdtvBC: TEdit;
+    EdtvICMS: TEdit;
+    EdtvICMSDeson: TEdit;
+    GroupICMS: TGroupBox;
+    GroupIPI: TGroupBox;
+    lblvBcIPI: TLabel;
+    lblvIPI: TLabel;
+    lblvIPIDevol: TLabel;
+    EdtvBcIPI: TEdit;
+    EdtvIPI: TEdit;
+    EdtvIPIDevol: TEdit;
+    GroupPIS: TGroupBox;
+    lblvBcPIS: TLabel;
+    lblvPIS: TLabel;
+    EdtvBcPIS: TEdit;
+    EdtvPIS: TEdit;
+    GroupCOFINS: TGroupBox;
+    lblvBcCOFINS: TLabel;
+    lblvCOFINS: TLabel;
+    EdtvBcCOFINS: TEdit;
+    EdtvCOFINS: TEdit;
+    lblvBCST: TLabel;
+    EdtvBCST: TEdit;
+    lblvST: TLabel;
+    EdtvST: TEdit;
+    lblvNF: TLabel;
+    EdtvNF: TEdit;
+    lblMoeda: TLabel;
+    EdtCodigoMoeda: TEdit;
+    EdtDescricaoMoeda: TEdit;
+    SBMoeda: TSpeedButton;
+    lblParcelas: TLabel;
+    EdtParcela1: TEdit;
+    EdtParcela2: TEdit;
+    EdtParcela4: TEdit;
+    EdtParcela3: TEdit;
+    EdtParcela7: TEdit;
+    EdtParcela8: TEdit;
+    EdtParcela5: TEdit;
+    EdtParcela6: TEdit;
+    DUPLGrid: TStringGrid;
+    btnGerarDuplicata: TButton;
+    ItensGrid: TStringGrid;
+    TributacaoItensPage: TPageControl;
+    ICMSPage: TTabSheet;
+    IPIPage: TTabSheet;
+    PISPage: TTabSheet;
+    COFINSPage: TTabSheet;
+    GBPIS: TGroupBox;
+    lblpPIS: TLabel;
+    lblvPISItem: TLabel;
+    EdtpPIS: TEdit;
+    EdtvPISItem: TEdit;
+    GBIPI: TGroupBox;
+    lblvBCIPIItem: TLabel;
+    lblvIPIItem: TLabel;
+    lblvIPIDevolItem: TLabel;
+    EdtvBCIPIItem: TEdit;
+    EdtvIPIItem: TEdit;
+    EdtvIPIDevolItem: TEdit;
+    GBICMS: TGroupBox;
+    lblvBCItem: TLabel;
+    lblvICMSItem: TLabel;
+    lblvICMSDesonItem: TLabel;
+    lblvBCSTItem: TLabel;
+    lblvICMSSTItem: TLabel;
+    EdtvBCItem: TEdit;
+    EdtvICMSItem: TEdit;
+    EdtvICMSDesonItem: TEdit;
+    EdtvBCSTItem: TEdit;
+    EdtvICMSSTItem: TEdit;
+    GBCofins: TGroupBox;
+    lblpICMS: TLabel;
+    EdtpICMS: TEdit;
+    lblCSTICMS: TLabel;
+    EdtCSTICMS: TEdit;
+    SBCSTICMS: TSpeedButton;
+    lblCSTIPI: TLabel;
+    EdtCSTIPI: TEdit;
+    SBCSTIPI: TSpeedButton;
+    lblEnqIPI: TLabel;
+    EdtEnqIPI: TEdit;
+    SBEnqIPI: TSpeedButton;
+    lblpIPI: TLabel;
+    EdtpIPI: TEdit;
+    EdtvBCPISItem: TEdit;
+    lblvBCPISItem: TLabel;
+    EdtCSTPIS: TEdit;
+    lblCSTPIS: TLabel;
+    SBCSTPIS: TSpeedButton;
+    SBCSTCOFINS: TSpeedButton;
+    EdtCSTCOFINS: TEdit;
+    lblCSTCOFINS: TLabel;
+    lblvBCCOFINSItem: TLabel;
+    EdtvBCCOFINSItem: TEdit;
+    EdtpCOFINS: TEdit;
+    lblpCOFINS: TLabel;
+    lblvCOFINSItem: TLabel;
+    EdtvCOFINSItem: TEdit;
+    lbldtEmissao: TLabel;
+    EdtDtEmissao: TDateTimePicker;
+    lblDtEntrada: TLabel;
+    EdtDtEntrada: TDateTimePicker;
+    lblChaveNFE: TLabel;
+    EdtChaveNFE: TEdit;
+    DIFALFCPGroup: TGroupBox;
+    lblvFCP: TLabel;
+    lblvFCPST: TLabel;
+    EdtvFCP: TEdit;
+    EdtvFCPST: TEdit;
+    lblvFCPSTRet: TLabel;
+    EdtvFCPSTRet: TEdit;
+    lblValorPago: TLabel;
+    EdtValorPago: TEdit;
+    btnIncluir: TButton;
+    btnIncluirXML: TButton;
+    btnAlterar: TButton;
+    btnExcluir: TButton;
+    btnConsultar: TButton;
+    btnFechar: TButton;
+    btnDesistir: TButton;
+    btnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    lblvBCUFDest: TLabel;
+    EdtvBCUFDest: TEdit;
+    lblvBCFCPUFDest: TLabel;
+    EdtvBCFCPUFDest: TEdit;
+    lblpFCPUFDest: TLabel;
+    EdtvpFCPUFDest: TEdit;
+    EdtpICMSUFDest: TEdit;
+    lblpICMSUFDest: TLabel;
+    EdtvICMSUFDest: TEdit;
+    lblvICMSUFdest: TLabel;
+    btnChaveNFE: TButton;
+    lblCSOSN: TLabel;
+    EdtCSOSN: TEdit;
+    SBCSOSN: TSpeedButton;
+    ICMSUFDestPage: TTabSheet;
+    GBDIFAL: TGroupBox;
+    lblvBCUFDestItem: TLabel;
+    lblvICMSUFDestItem: TLabel;
+    EdtvBCUFDestItem: TEdit;
+    EdtvICMSUFDestItem: TEdit;
+    GBFCP: TGroupBox;
+    lblvBCFCPItem: TLabel;
+    lblvFCPItem: TLabel;
+    Label9: TLabel;
+    lblvBCFCPSTItem: TLabel;
+    lblvFCPSTItem: TLabel;
+    lblpFCPItem: TLabel;
+    EdtvBCFCPItem: TEdit;
+    EdtvFCPItem: TEdit;
+    Edit9: TEdit;
+    EdtvBCFCPSTItem: TEdit;
+    EdtvFCPSTItem: TEdit;
+    EdtpFCPItem: TEdit;
+    EdtpMVASTItem: TEdit;
+    lblpMVASTItem: TLabel;
+    EdtpRedBCSTItem: TEdit;
+    lblpRedBCSTItem: TLabel;
+    lblpICMSSTItem: TLabel;
+    EdtpICMSSTItem: TEdit;
+    lblpFCPSTItem: TLabel;
+    EdtpFCPSTItem: TEdit;
+    lblpRedBCItem: TLabel;
+    EdtpRedBCItem: TEdit;
+    lblvICMSOpItem: TLabel;
+    EdtvICMSOpItem: TEdit;
+    lblpDifItem: TLabel;
+    EdtpDifItem: TEdit;
+    lblvICMSDifItem: TLabel;
+    EdtvICMSDifItem: TEdit;
+    lblvBCSTRetItem: TLabel;
+    EdtvBCSTRetItem: TEdit;
+    lblvICMSSTRetItem: TLabel;
+    EdtvICMSSTRetItem: TEdit;
+    lblpSTItem: TLabel;
+    EdtpSTItem: TEdit;
+    lblvICMSSubstitutoItem: TLabel;
+    EdtvICMSSubstitutoItem: TEdit;
+    lblvBCFCPSTRetItem: TLabel;
+    EdtvBCFCPSTRetItem: TEdit;
+    lblpFCPSTRetItem: TLabel;
+    EdtpFCPSTRetItem: TEdit;
+    lblvFCPSTRetItem: TLabel;
+    EdtvFCPSTRetItem: TEdit;
+    lblvBCEfetItem: TLabel;
+    EdtvBCEfetItem: TEdit;
+    lblpRedBCEfetItem: TLabel;
+    EdtpRedBCEfetItem: TEdit;
+    lblpICMSEfetItem: TLabel;
+    EdtpICMSEfetItem: TEdit;
+    lblvICMSEfetItem: TLabel;
+    EdtvICMSEfetItem: TEdit;
+    procedure FormShow(Sender: TObject);
+    procedure btnIncluirXMLClick(Sender: TObject);
+    procedure SBEntidadeClick(Sender: TObject);
+    procedure SBNaturezaClick(Sender: TObject);
+    procedure SBDepositoClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure EdtCodigoEntidadeChange(Sender: TObject);
+    procedure EdtCodigoDepositoChange(Sender: TObject);
+    procedure EdtCodigoNaturezaChange(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure ItensGridClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  EntradaNFForm: TEntradaNFForm;
+
+implementation
+
+{$R *.dfm}
+
+procedure TEntradaNFForm.FormShow(Sender: TObject);
+begin
+ ItensGrid.Cells[0,0]  := 'Produto';
+ ItensGrid.Cells[1,0]  := 'Cor';
+ ItensGrid.Cells[2,0]  := 'Tamanho';
+ ItensGrid.Cells[3,0]  := 'Depósito';
+ ItensGrid.Cells[4,0]  := 'Lote';
+ ItensGrid.Cells[5,0]  := 'Qtde';
+ ItensGrid.Cells[6,0]  := 'Preço_Uni';
+ ItensGrid.Cells[7,0]  := 'Valor';
+ ItensGrid.Cells[8,0]  := 'Natureza';
+ ItensGrid.Cells[9,0]  := 'CST_ICMS';
+ ItensGrid.Cells[10,0] := 'CSOSN';
+ ItensGrid.Cells[11,0] := 'Aliq_ICMS';
+ ItensGrid.Cells[12,0] := 'BC_ICMS';
+ ItensGrid.Cells[13,0] := 'Valor_ICMS';
+ ItensGrid.Cells[14,0] := 'Valor_ICMS_Deson';
+ ItensGrid.Cells[15,0] := 'Valor_BC_ST';
+ ItensGrid.Cells[16,0] := 'Valor_ST';
+ ItensGrid.Cells[17,0] := 'CST_IPI';
+ ItensGrid.Cells[18,0] := 'ENQ_IPI';
+ ItensGrid.Cells[19,0] := 'Aliq_IPI';
+ ItensGrid.Cells[20,0] := 'BC_IPI';
+ ItensGrid.Cells[21,0] := 'Valor_IPI';
+ ItensGrid.Cells[22,0] := 'CST_PIS';
+ ItensGrid.Cells[23,0] := 'Aliq_PIS';
+ ItensGrid.Cells[24,0] := 'BC_PIS';
+ ItensGrid.Cells[25,0] := 'Valor_PIS';
+ ItensGrid.Cells[26,0] := 'CST_COFINS';
+ ItensGrid.Cells[27,0] := 'Aliq_COFINS';
+ ItensGrid.Cells[28,0] := 'Valor_COFINS';
+ ItensGrid.Cells[29,0] := 'BC_COFINS';
+ ItensGrid.Cells[30,0] := 'Desconto';
+ ItensGrid.Cells[31,0] := 'Aliq_FCP';
+ ItensGrid.Cells[32,0] := 'Valor_FCP';
+ ItensGrid.Cells[33,0] := 'Valor_BC_FCP';
+ ItensGrid.Cells[34,0] := 'Valor_BC_FCP_ST';
+ ItensGrid.Cells[35,0] := 'Valor_FCP_ST';
+ ItensGrid.Cells[36,0] := 'Aliq_FCP_ST';
+ ItensGrid.Cells[37,0] := 'MVAST';
+ ItensGrid.Cells[38,0] := 'Perc_Red_BC_ST';
+ ItensGrid.Cells[39,0] := 'Perc_ICMS_ST';
+ ItensGrid.Cells[40,0] := 'Perc_Red_BC_ICMS';
+ ItensGrid.Cells[41,0] := 'Valor_BC_FCP_ST';
+ ItensGrid.Cells[42,0] := 'Perc_Dif';
+ ItensGrid.Cells[43,0] := 'Valor_ICMS_Oper';
+ ItensGrid.Cells[44,0] := 'Valor_ICMS_Dif';
+ ItensGrid.Cells[45,0] := 'Valor_BC_ST_Ret';
+ ItensGrid.Cells[46,0] := 'Perc_ST';
+ ItensGrid.Cells[47,0] := 'Valor_ICMS_Subst';
+ ItensGrid.Cells[48,0] := 'Valor_ICMS_ST_Ret';
+ ItensGrid.Cells[49,0] := 'Valor_BC_FCP_ST_Ret';
+ ItensGrid.Cells[50,0] := 'Perc_FCP_ST_Ret';
+ ItensGrid.Cells[51,0] := 'Valor_FCP_ST_Ret';
+ ItensGrid.Cells[52,0] := 'Perc_Red_BC_Efet';
+ ItensGrid.Cells[53,0] := 'Valor_BC_ICMS_Efet';
+ ItensGrid.Cells[54,0] := 'Perc_ICMS_Efet';
+ ItensGrid.Cells[55,0] := 'Valor_ICMS_Efet';
+ ItensGrid.Cells[56,0] := 'Valor_BC_UF_Dest';
+ ItensGrid.Cells[57,0] := 'Valor_ICMS_UF_Dest';
+ ItensGrid.Cells[58,0] := 'Valor_Frete';
+ ItensGrid.Cells[59,0] := 'Valor_IPI_Devol';
+
+ DUPLGrid.Cells[0,0] := 'Dt Emissão';
+ DUPLGrid.Cells[1,0] := 'Vencimento';
+ DUPLGrid.Cells[2,0] := 'Número';
+ DUPLGrid.Cells[3,0] := 'Entidade';
+ DUPLGrid.Cells[4,0] := 'Fatura';
+ DUPLGrid.Cells[5,0] := 'Valor Total';
+ DUPLGrid.Cells[6,0] := 'Moeda';
+ DUPLGrid.Cells[7,0] := 'Valor Pago';
+ DUPLGrid.Cells[8,0] := 'Parcela';
+ DUPLGrid.Cells[9,0] := 'Valor Parcela';
+end;
+
+procedure TEntradaNFForm.ItensGridClick(Sender: TObject);
+begin
+ if ItensGrid.Row > 1 then
+  EdtCSTICMS.Text := ItensGrid.Cells[9,ItensGrid.Row];
+  EdtCSOSN.Text := ItensGrid.Cells[10,ItensGrid.Row];
+  EdtpICMS.Text := ItensGrid.Cells[11,ItensGrid.Row];
+  EdtvBCItem.Text := ItensGrid.Cells[12, ItensGrid.Row];
+  EdtvICMSItem.Text := ItensGrid.Cells[13,ItensGrid.Row];
+  EdtvICMSDesonItem.Text := ItensGrid.Cells[14,ItensGrid.Row];
+  EdtvBCSTItem.Text := ItensGrid.Cells[15,ItensGrid.Row];
+  EdtvICMSSTItem.Text := ItensGrid.Cells[16,ItensGrid.Row];
+
+  EdtCSTIPI.Text := ItensGrid.Cells[17,ItensGrid.Row];
+  EdtENQIPI.Text := ItensGrid.Cells[18,ItensGrid.Row];
+  EdtpIPI.Text := ItensGrid.Cells[19,ItensGrid.Row];
+  EdtvBCIPIItem.Text := ItensGrid.Cells[20,ItensGrid.Row];
+  EdtvIPIItem.Text := ItensGrid.Cells[21,ItensGrid.Row];
+
+  EdtCSTPIS.Text := ItensGrid.Cells[22,ItensGrid.Row];
+  EdtpPIS.Text := ItensGrid.Cells[23,ItensGrid.Row];
+  EdtvBCPISItem.Text := ItensGrid.Cells[24,ItensGrid.Row];
+  EdtvPISItem.Text := ItensGrid.Cells[25,ItensGrid.Row];
+
+  EdtCSTCOFINS.Text := ItensGrid.Cells[26,ItensGrid.Row];
+  EdtpCOFINS.Text := ItensGrid.Cells[27,ItensGrid.Row];
+  EdtvCOFINSItem.Text := ItensGrid.Cells[28,ItensGrid.Row];
+  EdtvBCCOFINSItem.Text := ItensGrid.Cells[29,ItensGrid.Row];
+
+  EdtpFCPItem.Text := ItensGrid.Cells[31,ItensGrid.Row];
+  EdtvFCPItem.Text := ItensGrid.Cells[32,ItensGrid.Row];
+  EdtvBCFCPItem.Text := ItensGrid.Cells[33,ItensGrid.Row];
+  EdtvBCFCPSTItem.Text := ItensGrid.Cells[34,ItensGrid.Row];
+  EdtvFCPSTItem.Text := ItensGrid.Cells[35,ItensGrid.Row];
+  EdtpFCPSTItem.Text := ItensGrid.Cells[36,ItensGrid.Row];
+
+  EdtpMVASTItem.Text := ItensGrid.Cells[37,ItensGrid.Row];
+  EdtpRedBCSTItem.Text := ItensGrid.Cells[38,ItensGrid.Row];
+  EdtpICMSSTItem.Text := ItensGrid.Cells[39,ItensGrid.Row];
+  EdtpRedBCItem.Text := ItensGrid.Cells[40,ItensGrid.Row];
+  EdtpDifItem.Text := ItensGrid.Cells[41,ItensGrid.Row];
+  EdtvICMSOpItem.Text := ItensGrid.Cells[42,ItensGrid.Row];
+  EdtvICMSDifItem.Text := ItensGrid.Cells[43,ItensGrid.Row];
+  EdtvBCSTRetItem.Text := ItensGrid.Cells[44,ItensGrid.Row];
+  EdtpSTItem.Text := ItensGrid.Cells[45,ItensGrid.Row];
+  EdtvICMSSubstitutoItem.Text := ItensGrid.Cells[46,ItensGrid.Row];
+  EdtvICMSSTRetItem.Text := ItensGrid.Cells[47,ItensGrid.Row];
+  EdtvBCFCPSTRetItem.Text := ItensGrid.Cells[48,ItensGrid.Row];
+  EdtpFCPSTRetItem.Text := ItensGrid.Cells[49,ItensGrid.Row];
+  EdtvFCPSTRetItem.Text := ItensGrid.Cells[50,ItensGrid.Row];
+  EdtpRedBCEfetItem.Text := ItensGrid.Cells[51,ItensGrid.Row];
+  EdtvBCEfetItem.Text := ItensGrid.Cells[52,ItensGrid.Row];
+  EdtpICMSEfetItem.Text := ItensGrid.Cells[53,ItensGrid.Row];
+  EdtvICMSEfetItem.Text := ItensGrid.Cells[54,ItensGrid.Row];
+  EdtvBCUFDestItem.Text := ItensGrid.Cells[55,ItensGrid.Row];
+  EdtvICMSUFDestItem.Text := ItensGrid.Cells[56,ItensGrid.Row];
+  EdtvIPIDevolItem.Text := ItensGrid.Cells[59,ItensGrid.Row];
+end;
+
+procedure TEntradaNFForm.btnIncluirClick(Sender: TObject);
+begin
+ btnIncluir.Visible := False;
+ btnIncluirXML.Visible := False;
+ btnExcluir.Visible := False;
+ btnConsultar.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+
+ EdtnNF.Enabled := True;
+ EdtSerie.Enabled := True;
+ EdtMod.Enabled := True;
+ EdtCodigoEntidade.Enabled := True;
+ SBEntidade.Enabled := True;
+ EdtCodigoNatureza.Enabled := True;
+ SBNatureza.Enabled := True;
+ EdtCodigoDeposito.Enabled := True;
+ SBDeposito.Enabled := True;
+ EdtvProd.Enabled := True;
+ EdtvFrete.Enabled := True;
+ EdtvDesc.Enabled := True;
+ EdtvSeg.Enabled := True;
+ EdtvOutro.Enabled := True;
+ EdtvBC.Enabled := True;
+ EdtvICMS.Enabled := True;
+ EdtvICMSDeson.Enabled := True;
+ EdtvBcIPI.Enabled := True;
+ EdtvIPI.Enabled := True;
+ EdtvIPIDevol.Enabled := True;
+ EdtvBcPIS.Enabled := True;
+ EdtvPIS.Enabled := True;
+ EdtvBcCOFINS.Enabled := True;
+ EdtvCOFINS.Enabled := True;
+ EdtvBCST.Enabled := True;
+ EdtvST.Enabled := True;
+ EdtvNF.Enabled := True;
+ EdtCodigoMoeda.Enabled := True;
+ SBMoeda.Enabled := True;
+ EdtParcela1.Enabled := True;
+ EdtParcela2.Enabled := True;
+ EdtParcela4.Enabled := True;
+ EdtParcela3.Enabled := True;
+ EdtParcela7.Enabled := True;
+ EdtParcela8.Enabled := True;
+ EdtParcela5.Enabled := True;
+ EdtParcela6.Enabled := True;
+ DUPLGrid.Enabled := True;
+ btnGerarDuplicata.Enabled := True;
+ ItensGrid.Enabled := True;
+ EdtpPIS.Enabled := True;
+ EdtvPISItem.Enabled := True;
+ EdtvBCIPIItem.Enabled := True;
+ EdtvIPIItem.Enabled := True;
+ EdtvIPIDevolItem.Enabled := True;
+ EdtvBCItem.Enabled := True;
+ EdtvICMSItem.Enabled := True;
+ EdtvICMSDesonItem.Enabled := True;
+ EdtvBCSTItem.Enabled := True;
+ EdtvICMSSTItem.Enabled := True;
+ EdtpICMS.Enabled := True;
+ EdtCSTICMS.Enabled := True;
+ SBCSTICMS.Enabled := True;
+ EdtCSTIPI.Enabled := True;
+ SBCSTIPI.Enabled := True;
+ EdtEnqIPI.Enabled := True;
+ SBEnqIPI.Enabled := True;
+ EdtpIPI.Enabled := True;
+ EdtvBCPISItem.Enabled := True;
+ EdtCSTPIS.Enabled := True;
+ SBCSTPIS.Enabled := True;
+ SBCSTCOFINS.Enabled := True;
+ EdtCSTCOFINS.Enabled := True;
+ EdtvBCCOFINSItem.Enabled := True;
+ EdtpCOFINS.Enabled := True;
+ EdtvCOFINSItem.Enabled := True;
+ EdtDtEmissao.Enabled := True;
+ EdtDtEntrada.Enabled := True;
+ EdtChaveNFE.Enabled := True;
+ EdtvFCP.Enabled := True;
+ EdtvFCPST.Enabled := True;
+ EdtvFCPSTRet.Enabled := True;
+ EdtValorPago.Enabled := True;
+ EdtvBCUFDest.Enabled := True;
+ EdtvBCFCPUFDest.Enabled := True;
+ EdtvpFCPUFDest.Enabled := True;
+ EdtpICMSUFDest.Enabled := True;
+ EdtvICMSUFDest.Enabled := True;
+ btnChaveNFE.Enabled := True;
+end;
+
+procedure TEntradaNFForm.btnAlterarClick(Sender: TObject);
+begin
+ btnIncluir.Visible := False;
+ btnIncluirXML.Visible := False;
+ btnExcluir.Visible := False;
+ btnConsultar.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+
+ EdtCodigoNatureza.Enabled := True;
+ EdtDescricaoNatureza.Enabled := True;
+ SBNatureza.Enabled := True;
+ EdtvProd.Enabled := True;
+ EdtvFrete.Enabled := True;
+ EdtvDesc.Enabled := True;
+ EdtvSeg.Enabled := True;
+ EdtvOutro.Enabled := True;
+ EdtvBC.Enabled := True;
+ EdtvICMS.Enabled := True;
+ EdtvICMSDeson.Enabled := True;
+ EdtvBcIPI.Enabled := True;
+ EdtvIPI.Enabled := True;
+ EdtvIPIDevol.Enabled := True;
+ EdtvBcPIS.Enabled := True;
+ EdtvPIS.Enabled := True;
+ EdtvBcCOFINS.Enabled := True;
+ EdtvCOFINS.Enabled := True;
+ EdtvBCST.Enabled := True;
+ EdtvST.Enabled := True;
+ EdtvNF.Enabled := True;
+ ItensGrid.Enabled := True;
+ EdtpPIS.Enabled := True;
+ EdtvPISItem.Enabled := True;
+ EdtvBCIPIItem.Enabled := True;
+ EdtvIPIItem.Enabled := True;
+ EdtvIPIDevolItem.Enabled := True;
+ EdtvBCItem.Enabled := True;
+ EdtvICMSItem.Enabled := True;
+ EdtvICMSDesonItem.Enabled := True;
+ EdtvBCSTItem.Enabled := True;
+ EdtvICMSSTItem.Enabled := True;
+ EdtpICMS.Enabled := True;
+ EdtCSTICMS.Enabled := True;
+ SBCSTICMS.Enabled := True;
+ EdtCSTIPI.Enabled := True;
+ SBCSTIPI.Enabled := True;
+ EdtEnqIPI.Enabled := True;
+ SBEnqIPI.Enabled := True;
+ EdtpIPI.Enabled := True;
+ EdtvBCPISItem.Enabled := True;
+ EdtCSTPIS.Enabled := True;
+ SBCSTPIS.Enabled := True;
+ SBCSTCOFINS.Enabled := True;
+ EdtCSTCOFINS.Enabled := True;
+ EdtvBCCOFINSItem.Enabled := True;
+ EdtpCOFINS.Enabled := True;
+ EdtvCOFINSItem.Enabled := True;
+ EdtDtEntrada.Enabled := True;
+ EdtvFCP.Enabled := True;
+ EdtvFCPST.Enabled := True;
+ EdtvFCPSTRet.Enabled := True;
+ EdtvBCUFDest.Enabled := True;
+ EdtvBCFCPUFDest.Enabled := True;
+ EdtvpFCPUFDest.Enabled := True;
+ EdtpICMSUFDest.Enabled := True;
+ EdtvICMSUFDest.Enabled := True;
+end;
+
+procedure TEntradaNFForm.btnDesistirClick(Sender: TObject);
+begin
+ btnIncluir.Visible := True;
+ btnIncluirXML.Visible := True;
+ btnAlterar.Visible := True;
+ btnConsultar.Visible := True;
+ btnExcluir.Visible := True;
+
+ btnGravarAlterar.Visible := False;
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+
+ EdtnNF.Enabled := False;
+ EdtSerie.Enabled := False;
+ EdtMod.Enabled := False;
+ EdtCodigoEntidade.Enabled := False;
+ EdtNomeEntidade.Enabled := False;
+ SBEntidade.Enabled := False;
+ EdtCodigoNatureza.Enabled := False;
+ EdtDescricaoNatureza.Enabled := False;
+ SBNatureza.Enabled := False;
+ EdtCodigoDeposito.Enabled := False;
+ EdtDescricaoDeposito.Enabled := False;
+ SBDeposito.Enabled := False;
+ EdtvProd.Enabled := False;
+ EdtvFrete.Enabled := False;
+ EdtvDesc.Enabled := False;
+ EdtvSeg.Enabled := False;
+ EdtvOutro.Enabled := False;
+ EdtvBC.Enabled := False;
+ EdtvICMS.Enabled := False;
+ EdtvICMSDeson.Enabled := False;
+ EdtvBcIPI.Enabled := False;
+ EdtvIPI.Enabled := False;
+ EdtvIPIDevol.Enabled := False;
+ EdtvBcPIS.Enabled := False;
+ EdtvPIS.Enabled := False;
+ EdtvBcCOFINS.Enabled := False;
+ EdtvCOFINS.Enabled := False;
+ EdtvBCST.Enabled := False;
+ EdtvST.Enabled := False;
+ EdtvNF.Enabled := False;
+ EdtCodigoMoeda.Enabled := False;
+ EdtDescricaoMoeda.Enabled := False;
+ SBMoeda.Enabled := False;
+ EdtParcela1.Enabled := False;
+ EdtParcela2.Enabled := False;
+ EdtParcela4.Enabled := False;
+ EdtParcela3.Enabled := False;
+ EdtParcela7.Enabled := False;
+ EdtParcela8.Enabled := False;
+ EdtParcela5.Enabled := False;
+ EdtParcela6.Enabled := False;
+ DUPLGrid.Enabled := False;
+ btnGerarDuplicata.Enabled := False;
+ ItensGrid.Enabled := False;
+ EdtpPIS.Enabled := False;
+ EdtvPISItem.Enabled := False;
+ EdtvBCIPIItem.Enabled := False;
+ EdtvIPIItem.Enabled := False;
+ EdtvIPIDevolItem.Enabled := False;
+ EdtvBCItem.Enabled := False;
+ EdtvICMSItem.Enabled := False;
+ EdtvICMSDesonItem.Enabled := False;
+ EdtvBCSTItem.Enabled := False;
+ EdtvICMSSTItem.Enabled := False;
+ EdtpICMS.Enabled := False;
+ EdtCSTICMS.Enabled := False;
+ SBCSTICMS.Enabled := False;
+ EdtCSTIPI.Enabled := False;
+ SBCSTIPI.Enabled := False;
+ EdtEnqIPI.Enabled := False;
+ SBEnqIPI.Enabled := False;
+ EdtpIPI.Enabled := False;
+ EdtvBCPISItem.Enabled := False;
+ EdtCSTPIS.Enabled := False;
+ SBCSTPIS.Enabled := False;
+ SBCSTCOFINS.Enabled := False;
+ EdtCSTCOFINS.Enabled := False;
+ EdtvBCCOFINSItem.Enabled := False;
+ EdtpCOFINS.Enabled := False;
+ EdtvCOFINSItem.Enabled := False;
+ EdtDtEmissao.Enabled := False;
+ EdtDtEntrada.Enabled := False;
+ EdtChaveNFE.Enabled := False;
+ EdtvFCP.Enabled := False;
+ EdtvFCPST.Enabled := False;
+ EdtvFCPSTRet.Enabled := False;
+ EdtValorPago.Enabled := False;
+ EdtvBCUFDest.Enabled := False;
+ EdtvBCFCPUFDest.Enabled := False;
+ EdtvpFCPUFDest.Enabled := False;
+ EdtpICMSUFDest.Enabled := False;
+ EdtvICMSUFDest.Enabled := False;
+ btnChaveNFE.Enabled := False;
+
+ EdtnNF.Clear;
+ EdtSerie.Clear;
+ EdtMod.Clear;
+ EdtCodigoEntidade.Clear;
+ EdtNomeEntidade.Clear;
+ EdtCodigoNatureza.Clear;
+ EdtDescricaoNatureza.Clear;
+ EdtCodigoDeposito.Clear;
+ EdtDescricaoDeposito.Clear;
+ EdtvProd.Clear;
+ EdtvFrete.Clear;
+ EdtvDesc.Clear;
+ EdtvSeg.Clear;
+ EdtvOutro.Clear;
+ EdtvBC.Clear;
+ EdtvICMS.Clear;
+ EdtvICMSDeson.Clear;
+ EdtvBcIPI.Clear;
+ EdtvIPI.Clear;
+ EdtvIPIDevol.Clear;
+ EdtvBcPIS.Clear;
+ EdtvPIS.Clear;
+ EdtvBcCOFINS.Clear;
+ EdtvCOFINS.Clear;
+ EdtvBCST.Clear;
+ EdtvST.Clear;
+ EdtvNF.Clear;
+ EdtCodigoMoeda.Clear;
+ EdtDescricaoMoeda.Clear;
+ EdtParcela1.Clear;
+ EdtParcela2.Clear;
+ EdtParcela4.Clear;
+ EdtParcela3.Clear;
+ EdtParcela7.Clear;
+ EdtParcela8.Clear;
+ EdtParcela5.Clear;
+ EdtParcela6.Clear;
+ EdtpPIS.Clear;
+ EdtvPISItem.Clear;
+ EdtvBCIPIItem.Clear;
+ EdtvIPIItem.Clear;
+ EdtvIPIDevolItem.Clear;
+ EdtvBCItem.Clear;
+ EdtvICMSItem.Clear;
+ EdtvICMSDesonItem.Clear;
+ EdtvBCSTItem.Clear;
+ EdtvICMSSTItem.Clear;
+ EdtpICMS.Clear;
+ EdtCSTICMS.Clear;
+ EdtCSTIPI.Clear;
+ EdtEnqIPI.Clear;
+ EdtpIPI.Clear;
+ EdtvBCPISItem.Clear;
+ EdtCSTPIS.Clear;
+ EdtCSTCOFINS.Clear;
+ EdtvBCCOFINSItem.Clear;
+ EdtpCOFINS.Clear;
+ EdtvCOFINSItem.Clear;
+ EdtChaveNFE.Clear;
+ EdtvFCP.Clear;
+ EdtvFCPST.Clear;
+ EdtvFCPSTRet.Clear;
+ EdtValorPago.Clear;
+ EdtvBCUFDest.Clear;
+ EdtvBCFCPUFDest.Clear;
+ EdtvpFCPUFDest.Clear;
+ EdtpICMSUFDest.Clear;
+ EdtvICMSUFDest.Clear;
+end;
+
+procedure TEntradaNFForm.btnIncluirXMLClick(Sender: TObject);
+var
+  XMLDoc: IXMLDocument;
+  XML, NFe, InfNFe, Ide, emit, det,
+  prod, cProd, qCom, vUnCom, vProd, imposto,
+  ICMS, ICMS00, CSTICMS, vBCICMS, pICMS, vICMS, pFCP, vFCP,
+  ICMS10, vBCFCP, pMVAST, pRedBCST, vBCST, pICMSST, vICMSST, pBCFCPST, pFCPST, vFCPST,
+  ICMS20, pRedBC, vICMSDeson,
+  ICMS30, vBCFCPST,
+  ICMS40,
+  ICMS51, pDif, vICMSOp, vICMSDif,
+  ICMS60, vBCSTRet, pST, vICMSSubstituto, vICMSSTRet, vBCFCPSTRet, pFCPSTRet, vFCPSTRet, pRedBCEfet, vBCEfet, pICMSEfet, vICMSEfet,
+  ICMS70,
+  ICMS90,
+  ICMSSN101, CSOSN, pCredSN, vCredICMSSN,
+  ICMSSN102,
+  ICMSSN201,
+  ICMSSN202,
+  ICMSSN500,
+  ICMSSN900,
+  ICMSUFDest, vBCUFDest, vBCFCPUFDest, pFCPUFDest, pICMSUFDest, pICMSInter, pICMSInterPart, vFCPUFDest, vICMSUFDest, vICMSUFRemet,
+  IPI, cEnq, IPITrib, vBCIPI, pIPI, vIPI, vIPIDevol, IPINT, CSTIPI,
+  PIS, PISAliq, CSTPIS, vBCPIS, pPIS, vPIS, PISNT, PISOutr,
+  COFINS, COFINSAliq, CSTCOFINS, vBCCOFINS, pCOFINS, vCOFINS,
+  total, ICMSTot, vBCTot, vICMSTot, vICMSDesonTot,
+  vICMSUFDestTot, vFCPTot, vFCPSTTot, vFCPSTRetTot,
+  vBCSTTot, vSTTot, vProdTot, vFreteTot, vSegTot, vDescTot,
+  vIPITot, vIPIDevolTot,
+  vPISTot, vCOFINSTot,
+  vOutroTot, vNFTot, protNFe, infProt, chNFE: IXMLNode;
+  i, row: integer;
+begin
+  with TOpenDialog.Create(nil) do
+  try
+    Filter := 'Arquivos XML|*.xml';
+    DefaultExt := 'xml';
+    Options := [ofFileMustExist, ofEnableSizing];
+
+    if Execute then
+    begin
+     btnIncluir.Visible := False;
+     btnIncluirXML.Visible := False;
+     btnExcluir.Visible := False;
+     btnConsultar.Visible := False;
+     btnAlterar.Visible := False;
+
+     btnGravarIncluir.Visible := True;
+     btnDesistir.Visible := True;
+
+     EdtCodigoNatureza.Enabled := True;
+     SBNatureza.Enabled := True;
+     EdtCodigoDeposito.Enabled := True;
+     SBDeposito.Enabled := True;
+     EdtvProd.Enabled := True;
+     EdtvFrete.Enabled := True;
+     EdtvDesc.Enabled := True;
+     EdtvSeg.Enabled := True;
+     EdtvOutro.Enabled := True;
+     EdtvBC.Enabled := True;
+     EdtvICMS.Enabled := True;
+     EdtvICMSDeson.Enabled := True;
+     EdtvBcIPI.Enabled := True;
+     EdtvIPI.Enabled := True;
+     EdtvIPIDevol.Enabled := True;
+     EdtvBcPIS.Enabled := True;
+     EdtvPIS.Enabled := True;
+     EdtvBcCOFINS.Enabled := True;
+     EdtvCOFINS.Enabled := True;
+     EdtvBCST.Enabled := True;
+     EdtvST.Enabled := True;
+     EdtvNF.Enabled := True;
+     EdtCodigoMoeda.Enabled := True;
+     SBMoeda.Enabled := True;
+     EdtParcela1.Enabled := True;
+     EdtParcela2.Enabled := True;
+     EdtParcela4.Enabled := True;
+     EdtParcela3.Enabled := True;
+     EdtParcela7.Enabled := True;
+     EdtParcela8.Enabled := True;
+     EdtParcela5.Enabled := True;
+     EdtParcela6.Enabled := True;
+     DUPLGrid.Enabled := True;
+     btnGerarDuplicata.Enabled := True;
+     ItensGrid.Enabled := True;
+     EdtpPIS.Enabled := True;
+     EdtvPISItem.Enabled := True;
+     EdtvBCIPIItem.Enabled := True;
+     EdtvIPIItem.Enabled := True;
+     EdtvIPIDevolItem.Enabled := True;
+     EdtvBCItem.Enabled := True;
+     EdtvICMSItem.Enabled := True;
+     EdtvICMSDesonItem.Enabled := True;
+     EdtvBCSTItem.Enabled := True;
+     EdtvICMSSTItem.Enabled := True;
+     EdtpICMS.Enabled := True;
+     EdtCSTICMS.Enabled := True;
+     SBCSTICMS.Enabled := True;
+     EdtCSTIPI.Enabled := True;
+     SBCSTIPI.Enabled := True;
+     EdtEnqIPI.Enabled := True;
+     SBEnqIPI.Enabled := True;
+     EdtpIPI.Enabled := True;
+     EdtvBCPISItem.Enabled := True;
+     EdtCSTPIS.Enabled := True;
+     SBCSTPIS.Enabled := True;
+     SBCSTCOFINS.Enabled := True;
+     EdtCSTCOFINS.Enabled := True;
+     EdtvBCCOFINSItem.Enabled := True;
+     EdtpCOFINS.Enabled := True;
+     EdtvCOFINSItem.Enabled := True;
+     EdtDtEntrada.Enabled := True;
+     EdtvFCP.Enabled := True;
+     EdtvFCPST.Enabled := True;
+     EdtvFCPSTRet.Enabled := True;
+     EdtValorPago.Enabled := True;
+     EdtvBCUFDest.Enabled := True;
+     EdtvBCFCPUFDest.Enabled := True;
+     EdtvpFCPUFDest.Enabled := True;
+     EdtpICMSUFDest.Enabled := True;
+     EdtvICMSUFDest.Enabled := True;
+
+      XMLDoc := TXMLDocument.Create(nil);
+      XMLDoc.LoadFromFile(FileName);
+      XMLDoc.Active := True;
+
+      XML := XMLDoc.DocumentElement;
+      if not Assigned(XML) then Abort;
+
+      NFe := XML.ChildNodes.FindNode('NFe');
+      InfNFe := NFe.ChildNodes.FindNode('infNFe');
+      Ide := InfNFe.ChildNodes.FindNode('ide');
+      emit := InfNFe.ChildNodes.FindNode('emit');
+      det := InfNFe.ChildNodes.FindNode('det');
+
+      // TOTAIS
+
+      total := infNFe.ChildNodes.FindNode('total');
+      ICMSTot := total.ChildNodes.FindNode('ICMSTot');
+      vBCTot := ICMSTot.ChildNodes.FindNode('vBC');
+      vICMSTot := ICMSTot.ChildNodes.FindNode('vICMS');
+      vICMSDesonTot := ICMSTot.ChildNodes.FindNode('vICMSDeson');
+      vICMSUFDestTot := ICMSTot.ChildNodes.FindNode('vICMSUFDest');
+      vFCPTot := ICMSTot.ChildNodes.FindNode('vFCP');
+      vBCSTTot := ICMSTot.ChildNodes.FindNode('vBCST');
+      vSTTot := ICMSTot.ChildNodes.FindNode('vST');
+      vFCPSTTot := ICMSTot.ChildNodes.FindNode('vFCPST');
+      vFCPSTRetTot := ICMSTot.ChildNodes.FindNode('vST');
+      vProdTot := ICMSTot.ChildNodes.FindNode('vProd');
+      vFreteTot := ICMSTot.ChildNodes.FindNode('vFrete');
+      vSegTot := ICMSTot.ChildNodes.FindNode('vSeg');
+      vDescTot := ICMSTot.ChildNodes.FindNode('vDesc');
+      vIPITot := ICMSTot.ChildNodes.FindNode('vIPI');
+      vIPIDevolTot := ICMSTot.ChildNodes.FindNode('vIPIDevol');
+      vPISTot := ICMSTot.ChildNodes.FindNode('vPIS');
+      vCOFINSTot := ICMSTot.ChildNodes.FindNode('vCOFINS');
+      vOutroTot := ICMSTot.ChildNodes.FindNode('vOutro');
+      vNFTot := ICMSTot.ChildNodes.FindNode('vNF');
+      protNFe := XML.ChildNodes.FindNode('protNFe');
+      infProt := protNFe.ChildNodes.FindNode('infProt');
+      chNFe := infProt.ChildNodes.FindNode('chNFe');
+
+      // POPULAR CAMPOS
+
+      EdtNNF.Text := Ide.ChildNodes['nNF'].Text;
+      EdtMod.Text := Ide.ChildNodes['mod'].Text;
+      EdtSerie.Text := Ide.ChildNodes['serie'].Text;
+
+      with CadEntidadeDM.qrySelect do
+      begin
+       SQL.Clear;
+       SQL.Add('select * from cadentidade where cpf = :CNPJ');
+       Parambyname('CNPJ').AsString := Emit.ChildNodes['CNPJ'].Text;
+       Open;
+
+       if IsEmpty then begin
+        ShowMessage('Emitente da NF-e não cadastrado no sistema!');
+        Abort;
+       end;
+
+       EdtCodigoEntidade.Text := Fieldbyname('codigo').AsString;
+      end;
+
+      EdtChaveNFE.Text := infProt.ChildNodes['chNFe'].Text;
+      EdtDtEmissao.Date := ISO8601ToDate(Ide.ChildNodes['dhEmi'].Text);
+      EdtdtEntrada.Date := Now;
+
+      for i := 0 to NFe.ChildNodes['infNFe'].ChildNodes.Count - 1 do
+      begin
+       det := NFe.ChildNodes['infNFe'].ChildNodes[i];
+       if Det.NodeName = 'det' then begin
+
+        prod := det.ChildNodes.FindNode('prod');
+        cProd := prod.ChildNodes.FindNode('cProd');
+        qCom := prod.ChildNodes.FindNode('qCom');
+        vUnCom := prod.ChildNodes.FindNode('vUnCom');
+        vProd := prod.ChildNodes.FindNode('vProd');
+        imposto := det.ChildNodes.FindNode('imposto');
+
+        // ICMS
+
+        ICMS := imposto.ChildNodes.FindNode('ICMS');
+
+        ICMS00 := ICMS.ChildNodes.FindNode('ICMS00');
+         if Assigned(ICMS00) then begin
+          CSTICMS := ICMS00.ChildNodes.FindNode('CST');
+          vBCICMS := ICMS00.ChildNodes.FindNode('vBC');
+          pICMS := ICMS00.ChildNodes.FindNode('pICMS');
+          vICMS := ICMS00.ChildNodes.FindNode('vICMS');
+          pFCP := ICMS00.ChildNodes.FindNode('pFCP');
+          vFCP := ICMS00.ChildNodes.FindNode('vFCP');
+         end;
+
+        ICMS10 := ICMS.ChildNodes.FindNode('ICMS10');
+         if Assigned(ICMS10) then begin
+          CSTICMS := ICMS10.ChildNodes.FindNode('CST');
+          vBCICMS := ICMS10.ChildNodes.FindNode('vBC');
+          pICMS := ICMS10.ChildNodes.FindNode('pICMS');
+          vICMS := ICMS10.ChildNodes.FindNode('vICMS');
+          vBCFCP := ICMS10.ChildNodes.FindNode('vBCFCP');
+          pFCP := ICMS10.ChildNodes.FindNode('pFCP');
+          vFCP := ICMS10.ChildNodes.FindNode('vFCP');
+          pMVAST := ICMS10.ChildNodes.FindNode('pMVAST');
+          pRedBCST := ICMS10.ChildNodes.FindNode('pRedBCST');
+          vBCST := ICMS10.ChildNodes.FindNode('vBCST');
+          pICMSST := ICMS10.ChildNodes.FindNode('pICMSST');
+          vICMSST := ICMS10.ChildNodes.FindNode('vICMSST');
+          vBCFCPST := ICMS10.ChildNodes.FindNode('vBCFCPST');
+          pFCPST := ICMS10.ChildNodes.FindNode('pFCPST');
+          vFCPST := ICMS10.ChildNodes.FindNode('vFCPST');
+         end;
+
+        ICMS20 := ICMS.ChildNodes.FindNode('ICMS20');
+         if Assigned(ICMS20) then begin
+          CSTICMS := ICMS20.ChildNodes.FindNode('CST');
+          pRedBC := ICMS20.ChildNodes.FindNode('pRedBC');
+          vBCICMS := ICMS20.ChildNodes.FindNode('vBC');
+          pICMS := ICMS20.ChildNodes.FindNode('pICMS');
+          vICMS := ICMS20.ChildNodes.FindNode('vICMS');
+          vBCFCP := ICMS20.ChildNodes.FindNode('vBCFCP');
+          pFCP := ICMS20.ChildNodes.FindNode('pFCP');
+          vFCP := ICMS20.ChildNodes.FindNode('vFCP');
+          vICMSDeson := ICMS20.ChildNodes.FindNode('vICMSDeson');
+         end;
+
+        ICMS30 := ICMS.ChildNodes.FindNode('ICMS30');
+         if Assigned(ICMS30) then begin
+          CSTICMS := ICMS30.ChildNodes.FindNode('CST');
+          pMVAST := ICMS30.ChildNodes.FindNode('pMVAST');
+          pRedBCST := ICMS30.ChildNodes.FindNode('pRedBCST');
+          vBCST := ICMS30.ChildNodes.FindNode('vBCST');
+          pICMSST := ICMS30.ChildNodes.FindNode('pICMSST');
+          vICMSST := ICMS30.ChildNodes.FindNode('vICMSST');
+          vBCFCPST := ICMS30.ChildNodes.FindNode('vBCFCPST');
+          pFCPST := ICMS30.ChildNodes.FindNode('pFCPST');
+          vFCPST := ICMS30.ChildNodes.FindNode('vFCPST');
+          vICMSDeson := ICMS30.ChildNodes.FindNode('vICMSDeson');
+         end;
+
+        ICMS40 := ICMS.ChildNodes.FindNode('ICMS40');
+         if Assigned(ICMS40) then begin
+          CSTICMS := ICMS40.ChildNodes.FindNode('CST');
+          vICMSDeson := ICMS40.ChildNodes.FindNode('vICMSDeson');
+         end;
+
+        ICMS51 := ICMS.ChildNodes.FindNode('ICMS51');
+         if Assigned(ICMS51) then begin
+          CSTICMS := ICMS51.ChildNodes.FindNode('CST');
+          vICMSDeson := ICMS51.ChildNodes.FindNode('vICMSDeson');
+          pRedBC := ICMS51.ChildNodes.FindNode('pRedBC');
+          vBCICMS := ICMS51.ChildNodes.FindNode('vBC');
+          pICMS := ICMS51.ChildNodes.FindNode('pICMS');
+          vICMSOp := ICMS51.ChildNodes.FindNode('vICMSOp');
+          pDif := ICMS51.ChildNodes.FindNode('pDif');
+          vICMSDif := ICMS51.ChildNodes.FindNode('vICMSDif');
+          vICMS := ICMS51.ChildNodes.FindNode('vICMS');
+          vBCFCP := ICMS51.ChildNodes.FindNode('vBCFCP');
+          pFCP := ICMS51.ChildNodes.FindNode('pFCP');
+          vFCP := ICMS51.ChildNodes.FindNode('vFCP');
+         end;
+
+        ICMS60 := ICMS.ChildNodes.FindNode('ICMS60');
+         if Assigned(ICMS60) then begin
+          CSTICMS := ICMS60.ChildNodes.FindNode('CST');
+          vBCSTRet := ICMS60.ChildNodes.FindNode('vBCSTRet');
+          pST := ICMS60.ChildNodes.FindNode('pST');
+          vICMSSubstituto := ICMS60.ChildNodes.FindNode('vICMSSubstituto');
+          vICMSSTRet := ICMS60.ChildNodes.FindNode('vICMSSTRet');
+          vBCFCPSTRet := ICMS60.ChildNodes.FindNode('vBCFCPSTRet');
+          pFCPSTRet := ICMS60.ChildNodes.FindNode('pFCPSTRet');
+          vFCPSTRet := ICMS60.ChildNodes.FindNode('vFCPSTRet');
+          pRedBCEfet := ICMS60.ChildNodes.FindNode('pRedBCEfet');
+          vBCEfet := ICMS60.ChildNodes.FindNode('vBCEfet');
+          pICMSEfet := ICMS60.ChildNodes.FindNode('pICMSEfet');
+          vICMSEfet := ICMS60.ChildNodes.FindNode('vICMSEfet');
+         end;
+
+        ICMS70 := ICMS.ChildNodes.FindNode('ICMS70');
+         if Assigned(ICMS70) then begin
+          CSTICMS := ICMS70.ChildNodes.FindNode('CST');
+          pRedBC  := ICMS70.ChildNodes.FindNode('pRedBC ');
+          vBCICMS := ICMS70.ChildNodes.FindNode('vBC');
+          pICMS := ICMS70.ChildNodes.FindNode('pICMS');
+          vICMS := ICMS70.ChildNodes.FindNode('vICMS');
+          vBCFCP := ICMS70.ChildNodes.FindNode('vBCFCP');
+          pFCP := ICMS70.ChildNodes.FindNode('pFCP');
+          vFCP := ICMS70.ChildNodes.FindNode('vFCP');
+          pMVAST := ICMS70.ChildNodes.FindNode('pMVAST');
+          pRedBCST := ICMS70.ChildNodes.FindNode('pRedBCST');
+          vBCST := ICMS70.ChildNodes.FindNode('vBCST');
+          pICMSST := ICMS70.ChildNodes.FindNode('pICMSST');
+          vICMSST := ICMS70.ChildNodes.FindNode('vICMSST');
+          vBCFCPST := ICMS70.ChildNodes.FindNode('vBCFCPST');
+          pFCPST := ICMS70.ChildNodes.FindNode('pFCPST');
+          vFCPST := ICMS70.ChildNodes.FindNode('vFCPST');
+          vICMSDeson := ICMS70.ChildNodes.FindNode('vICMSDeson');
+         end;
+
+        ICMS90 := ICMS.ChildNodes.FindNode('ICMS90');
+         if Assigned(ICMS90) then begin
+          CSTICMS := ICMS90.ChildNodes.FindNode('CST');
+          vBCICMS := ICMS90.ChildNodes.FindNode('vBC');
+          pRedBC  := ICMS90.ChildNodes.FindNode('pRedBC ');
+          pICMS := ICMS90.ChildNodes.FindNode('pICMS');
+          vICMS := ICMS90.ChildNodes.FindNode('vICMS');
+          vBCFCP := ICMS90.ChildNodes.FindNode('vBCFCP');
+          pFCP := ICMS90.ChildNodes.FindNode('pFCP');
+          vFCP := ICMS90.ChildNodes.FindNode('vFCP');
+          pMVAST := ICMS90.ChildNodes.FindNode('pMVAST');
+          pRedBCST := ICMS90.ChildNodes.FindNode('pRedBCST');
+          vBCST := ICMS90.ChildNodes.FindNode('vBCST');
+          pICMSST := ICMS90.ChildNodes.FindNode('pICMSST');
+          vICMSST := ICMS90.ChildNodes.FindNode('vICMSST');
+          vBCFCPST := ICMS90.ChildNodes.FindNode('vBCFCPST');
+          pFCPST := ICMS90.ChildNodes.FindNode('pFCPST');
+          vFCPST := ICMS90.ChildNodes.FindNode('vFCPST');
+          vICMSDeson := ICMS90.ChildNodes.FindNode('vICMSDeson');
+         end;
+
+        // IPI
+
+        IPI := imposto.ChildNodes.FindNode('IPI');
+        cEnq := IPI.ChildNodes.FindNode('cEnq');
+        IPINT := IPI.ChildNodes.FindNode('IPINT');
+
+        CSTIPI := IPINT.ChildNodes.FindNode('CST');
+
+        // PIS
+
+        PIS := imposto.ChildNodes.FindNode('PIS');
+        PISAliq := PIS.ChildNodes.FindNode('PISAliq');
+        CSTPIS := PISAliq.ChildNodes.FindNode('CST');
+        vBCPIS := PISAliq.ChildNodes.FindNode('vBC');
+        pPIS := PISAliq.ChildNodes.FindNode('pPIS');
+        vPIS := PISAliq.ChildNodes.FindNode('vPIS');
+
+        // COFINS
+
+        COFINS := imposto.ChildNodes.FindNode('COFINS');
+        COFINSAliq := COFINS.ChildNodes.FindNode('COFINSAliq');
+        CSTCOFINS := COFINSAliq.ChildNodes.FindNode('CST');
+        vBCCOFINS := COFINSAliq.ChildNodes.FindNode('vBC');
+        pCOFINS := COFINSAliq.ChildNodes.FindNode('pCOFINS');
+        vCOFINS := COFINSAliq.ChildNodes.FindNode('vCOFINS');
+
+        // DIFAL
+
+        ICMSUFDest := imposto.ChildNodes.FindNode('ICMSUFDest');
+        vBCUFDest := ICMSUFDest.ChildNodes.FindNode('vBCUFDest');
+        vBCFCPUFDest := ICMSUFDest.ChildNodes.FindNode('vBCFCPUFDest');
+        pFCPUFDest := ICMSUFDest.ChildNodes.FindNode('pFCPUFDest');
+        pICMSUFDest := ICMSUFDest.ChildNodes.FindNode('pICMSUFDest');
+        pICMSInter := ICMSUFDest.ChildNodes.FindNode('pICMSInter');
+        pICMSInterPart := ICMSUFDest.ChildNodes.FindNode('pICMSInterPart');
+        vFCPUFDest := ICMSUFDest.ChildNodes.FindNode('vFCPUFDest');
+        vICMSUFDest := ICMSUFDest.ChildNodes.FindNode('vICMSUFDest');
+        vICMSUFRemet := ICMSUFDest.ChildNodes.FindNode('vICMSUFRemet');
+
+        // ITENS
+
+        ItensGrid.RowCount := ItensGrid.RowCount + 1;
+        row := ItensGrid.RowCount - 1;
+        ItensGrid.Cells[0,row] := prod.ChildNodes['cProd'].Text;
+        ItensGrid.Cells[5,row] := prod.ChildNodes['qCom'].Text;
+        ItensGrid.Cells[6,row] := prod.ChildNodes['vUnCom'].Text;
+        ItensGrid.Cells[7,row] := prod.ChildNodes['vProd'].Text;
+
+        if Assigned(ICMS00) then begin
+         ItensGrid.Cells[9,row] := ICMS00.ChildNodes['CST'].Text;
+         ItensGrid.Cells[11,row] := ICMS00.ChildNodes['pICMS'].Text;
+         ItensGrid.Cells[12,row] := ICMS00.ChildNodes['vBC'].Text;
+         ItensGrid.Cells[13,row] := ICMS00.ChildNodes['vICMS'].Text;
+         ItensGrid.Cells[31,row] := ICMS00.ChildNodes['pFCP'].Text;
+         ItensGrid.Cells[32,row] := ICMS00.ChildNodes['vFCP'].Text;
+        end;
+
+        if Assigned(ICMS10) then begin
+         ItensGrid.Cells[9,row] := ICMS10.ChildNodes['CST'].Text;
+         ItensGrid.Cells[12,row] := ICMS10.ChildNodes['vBC'].Text;
+         ItensGrid.Cells[11,row] := ICMS10.ChildNodes['pICMS'].Text;
+         ItensGrid.Cells[13,row] := ICMS10.ChildNodes['vICMS'].Text;
+         ItensGrid.Cells[33,row] := ICMS10.ChildNodes['vBCFCP'].Text;
+         ItensGrid.Cells[31,row] := ICMS10.ChildNodes['pFCP'].Text;
+         ItensGrid.Cells[32,row] := ICMS10.ChildNodes['vFCP'].Text;
+         ItensGrid.Cells[37,row] := ICMS10.ChildNodes['pMVAST'].Text;
+         ItensGrid.Cells[38,row] := ICMS10.ChildNodes['pRedBCST'].Text;
+         ItensGrid.Cells[15,row] := ICMS10.ChildNodes['vBCST'].Text;
+         ItensGrid.Cells[39,row] := ICMS10.ChildNodes['pICMSST'].Text;
+         ItensGrid.Cells[16,row] := ICMS10.ChildNodes['vICMSST'].Text;
+         ItensGrid.Cells[34,row] := ICMS10.ChildNodes['vBCFCPST'].Text;
+         ItensGrid.Cells[36,row] := ICMS10.ChildNodes['pFCPST'].Text;
+         ItensGrid.Cells[35,row] := ICMS10.ChildNodes['vFCPST'].Text;
+        end;
+
+        if Assigned(ICMS20) then begin
+         ItensGrid.Cells[9,row] := ICMS20.ChildNodes['CST'].Text;
+         ItensGrid.Cells[40,row] := ICMS20.ChildNodes['pRedBC'].Text;
+         ItensGrid.Cells[12,row] := ICMS20.ChildNodes['vBC'].Text;
+         ItensGrid.Cells[11,row] := ICMS20.ChildNodes['pICMS'].Text;
+         ItensGrid.Cells[13,row] := ICMS20.ChildNodes['vICMS'].Text;
+         ItensGrid.Cells[33,row] := ICMS20.ChildNodes['vBCFCP'].Text;
+         ItensGrid.Cells[31,row] := ICMS20.ChildNodes['pFCP'].Text;
+         ItensGrid.Cells[32,row] := ICMS20.ChildNodes['vFCP'].Text;
+         ItensGrid.Cells[14,row] := ICMS20.ChildNodes['vICMSDeson'].Text;
+        end;
+
+        if Assigned(ICMS30) then begin
+         ItensGrid.Cells[9,row] := ICMS30.ChildNodes['CST'].Text;
+         ItensGrid.Cells[37,row] := ICMS30.ChildNodes['pMVAST'].Text;
+         ItensGrid.Cells[38,row] := ICMS30.ChildNodes['pRedBCST'].Text;
+         ItensGrid.Cells[15,row] := ICMS30.ChildNodes['vBCST'].Text;
+         ItensGrid.Cells[39,row] := ICMS30.ChildNodes['pICMSST'].Text;
+         ItensGrid.Cells[16,row] := ICMS30.ChildNodes['vICMSST'].Text;
+         ItensGrid.Cells[34,row] := ICMS30.ChildNodes['vBCFCPST'].Text;
+         ItensGrid.Cells[36,row] := ICMS30.ChildNodes['pFCPST'].Text;
+         ItensGrid.Cells[35,row] := ICMS30.ChildNodes['vFCPST'].Text;
+         ItensGrid.Cells[14,row] := ICMS30.ChildNodes['vICMSDeson'].Text;
+        end;
+
+        if Assigned(ICMS40) then begin
+         ItensGrid.Cells[9,row] := ICMS40.ChildNodes['CST'].Text;
+         ItensGrid.Cells[14,row] := ICMS40.ChildNodes['vICMSDeson'].Text;
+        end;
+
+        if Assigned(ICMS51) then begin
+         ItensGrid.Cells[9,row] := ICMS51.ChildNodes['CST'].Text;
+         ItensGrid.Cells[40,row] := ICMS51.ChildNodes['pRedBC'].Text;
+         ItensGrid.Cells[12,row] := ICMS51.ChildNodes['vBC'].Text;
+         ItensGrid.Cells[11,row] := ICMS51.ChildNodes['pICMS'].Text;
+         ItensGrid.Cells[43,row] := ICMS51.ChildNodes['vICMSOp'].Text;
+         ItensGrid.Cells[42,row] := ICMS51.ChildNodes['pDif'].Text;
+         ItensGrid.Cells[44,row] := ICMS51.ChildNodes['vICMSDif'].Text;
+         ItensGrid.Cells[13,row] := ICMS51.ChildNodes['vICMS'].Text;
+         ItensGrid.Cells[33,row] := ICMS51.ChildNodes['vBCFCP'].Text;
+         ItensGrid.Cells[31,row] := ICMS51.ChildNodes['pFCP'].Text;
+         ItensGrid.Cells[32,row] := ICMS51.ChildNodes['vFCP'].Text;
+        end;
+
+        if Assigned(ICMS60) then begin
+         ItensGrid.Cells[9,row] := ICMS60.ChildNodes['CST'].Text;
+         ItensGrid.Cells[45,row] := ICMS60.ChildNodes['vBCSTRet'].Text;
+         ItensGrid.Cells[46,row] := ICMS60.ChildNodes['pST'].Text;
+         ItensGrid.Cells[47,row] := ICMS60.ChildNodes['vICMSSubstituto'].Text;
+         ItensGrid.Cells[48,row] := ICMS60.ChildNodes['vICMSSTRet'].Text;
+         ItensGrid.Cells[49,row] := ICMS60.ChildNodes['vBCFCPSTRet'].Text;
+         ItensGrid.Cells[50,row] := ICMS60.ChildNodes['pFCPSTRet'].Text;
+         ItensGrid.Cells[51,row] := ICMS60.ChildNodes['vFCPSTRet'].Text;
+         ItensGrid.Cells[52,row] := ICMS60.ChildNodes['pRedBCEfet'].Text;
+         ItensGrid.Cells[53,row] := ICMS60.ChildNodes['vBCEfet'].Text;
+         ItensGrid.Cells[54,row] := ICMS60.ChildNodes['pICMSEfet'].Text;
+         ItensGrid.Cells[55,row] := ICMS60.ChildNodes['vICMSEfet'].Text;
+        end;
+
+        if Assigned(ICMS70) then begin
+         ItensGrid.Cells[9,row] := ICMS70.ChildNodes['CST'].Text;
+         ItensGrid.Cells[40,row] := ICMS70.ChildNodes['pRedBC'].Text;
+         ItensGrid.Cells[12,row] := ICMS70.ChildNodes['vBC'].Text;
+         ItensGrid.Cells[11,row] := ICMS70.ChildNodes['pICMS'].Text;
+         ItensGrid.Cells[13,row] := ICMS70.ChildNodes['vICMS'].Text;
+         ItensGrid.Cells[33,row] := ICMS70.ChildNodes['vBCFCP'].Text;
+         ItensGrid.Cells[31,row] := ICMS70.ChildNodes['pFCP'].Text;
+         ItensGrid.Cells[32,row] := ICMS70.ChildNodes['vFCP'].Text;
+         ItensGrid.Cells[37,row] := ICMS70.ChildNodes['pMVAST'].Text;
+         ItensGrid.Cells[38,row] := ICMS70.ChildNodes['pRedBCST'].Text;
+         ItensGrid.Cells[15,row] := ICMS70.ChildNodes['vBCST'].Text;
+         ItensGrid.Cells[39,row] := ICMS70.ChildNodes['pICMSST'].Text;
+         ItensGrid.Cells[16,row] := ICMS70.ChildNodes['vICMSST'].Text;
+         ItensGrid.Cells[34,row] := ICMS70.ChildNodes['vBCFCPST'].Text;
+         ItensGrid.Cells[36,row] := ICMS70.ChildNodes['pFCPST'].Text;
+         ItensGrid.Cells[35,row] := ICMS70.ChildNodes['vFCPST'].Text;
+         ItensGrid.Cells[14,row] := ICMS70.ChildNodes['vICMSDeson'].Text;
+        end;
+
+        if Assigned(ICMS90) then begin
+         ItensGrid.Cells[9,row] := ICMS90.ChildNodes['CST'].Text;
+         ItensGrid.Cells[12,row] := ICMS90.ChildNodes['vBC'].Text;
+         ItensGrid.Cells[40,row] := ICMS90.ChildNodes['pRedBC'].Text;
+         ItensGrid.Cells[11,row] := ICMS90.ChildNodes['pICMS'].Text;
+         ItensGrid.Cells[13,row] := ICMS90.ChildNodes['vICMS'].Text;
+         ItensGrid.Cells[33,row] := ICMS90.ChildNodes['vBCFCP'].Text;
+         ItensGrid.Cells[31,row] := ICMS90.ChildNodes['pFCP'].Text;
+         ItensGrid.Cells[32,row] := ICMS90.ChildNodes['vFCP'].Text;
+         ItensGrid.Cells[37,row] := ICMS90.ChildNodes['pMVAST'].Text;
+         ItensGrid.Cells[38,row] := ICMS90.ChildNodes['pRedBCST'].Text;
+         ItensGrid.Cells[15,row] := ICMS90.ChildNodes['vBCST'].Text;
+         ItensGrid.Cells[39,row] := ICMS90.ChildNodes['pICMSST'].Text;
+         ItensGrid.Cells[16,row] := ICMS90.ChildNodes['vICMSST'].Text;
+         ItensGrid.Cells[34,row] := ICMS90.ChildNodes['vBCFCPST'].Text;
+         ItensGrid.Cells[36,row] := ICMS90.ChildNodes['pFCPST'].Text;
+         ItensGrid.Cells[35,row] := ICMS90.ChildNodes['vFCPST'].Text;
+         ItensGrid.Cells[14,row] := ICMS90.ChildNodes['vICMSDeson'].Text;
+        end;
+
+        ItensGrid.Cells[56,row] := ICMSUFDest.ChildNodes['vBCUFDest'].Text;
+        ItensGrid.Cells[57,row] := ICMSUFDest.ChildNodes['vICMSUFDest'].Text;
+
+        // IPI
+
+        if Assigned(IPINT) then begin
+         ItensGrid.Cells[17,row] := IPINT.ChildNodes['CST'].Text;
+         ItensGrid.Cells[18,row] := IPI.ChildNodes['cEnq'].Text;
+         ItensGrid.Cells[19,row] := '0';
+         ItensGrid.Cells[20,row] := '0';
+         ItensGrid.Cells[21,row] := '0';
+         ItensGrid.Cells[59,row] := '0';
+        end;
+
+        // PIS
+
+        if Assigned(PISAliq) then begin
+         ItensGrid.Cells[22,row] := PISAliq.ChildNodes['CST'].Text;
+         ItensGrid.Cells[23,row] := PISAliq.ChildNodes['pPIS'].Text;
+         ItensGrid.Cells[24,row] := PISAliq.ChildNodes['vBC'].Text;
+         ItensGrid.Cells[25,row] := PISAliq.ChildNodes['vPIS'].Text;
+        end;
+
+        // COFINS
+
+        if Assigned(COFINSAliq) then begin
+         ItensGrid.Cells[26,row] := COFINSAliq.ChildNodes['CST'].Text;
+         ItensGrid.Cells[27,row] := COFINSAliq.ChildNodes['pCOFINS'].Text;
+         ItensGrid.Cells[28,row] := COFINSAliq.ChildNodes['vCOFINS'].Text;
+         ItensGrid.Cells[29,row] := COFINSAliq.ChildNodes['vBC'].Text;
+        end;
+       end;
+      end;
+
+      EdtvBC.Text := ICMSTot.ChildNodes['vBC'].Text;
+      EdtvICMS.Text := ICMSTot.ChildNodes['vICMS'].Text;
+      EdtvICMSDeson.Text := ICMSTot.ChildNodes['vICMSDeson'].Text;
+      EdtvICMSUFDest.Text := ICMSTot.ChildNodes['vICMSUFDest'].Text;
+      EdtvFCP.Text := ICMSTot.ChildNodes['vFCP'].Text;
+      EdtvBCST.Text := ICMSTot.ChildNodes['vBCST'].Text;
+      EdtvST.Text := ICMSTot.ChildNodes['vST'].Text;
+      EdtvFCPST.Text := ICMSTot.ChildNodes['vFCPST'].Text;
+      EdtvFCPSTRet.Text := ICMSTot.ChildNodes['vFCPSTRet'].Text;
+      EdtvProd.Text := ICMSTot.ChildNodes['vProd'].Text;
+      EdtvFrete.Text := ICMSTot.ChildNodes['vFrete'].Text;
+      EdtvSeg.Text := ICMSTot.ChildNodes['vSeg'].Text;
+      EdtvDesc.Text := ICMSTot.ChildNodes['vDesc'].Text;
+      EdtvIPI.Text := ICMSTot.ChildNodes['vIPI'].Text;
+      EdtvIPIDevol.Text := ICMSTot.ChildNodes['vIPIDevol'].Text;
+      EdtvPIS.Text := ICMSTot.ChildNodes['vPIS'].Text;
+      EdtvCOFINS.Text := ICMSTot.ChildNodes['vCOFINS'].Text;
+      EdtvOutro.Text := ICMSTot.ChildNodes['vOutro'].Text;
+      EdtvNF.Text := ICMSTot.ChildNodes['vNF'].Text;
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure TEntradaNFForm.EdtCodigoDepositoChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtCodigoDeposito.Text;
+ with CadDepositoDM.qryConsultarDeposito do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from caddeposito where codigo = :codigo');
+  Parambyname('codigo').AsString := codigo;
+  Open;
+
+  EdtDescricaoDeposito.Text := FieldByName('descricao').AsString;
+ end;
+end;
+
+procedure TEntradaNFForm.EdtCodigoEntidadeChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtCodigoEntidade.Text;
+
+ with CadEntidadeDM.qryConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where codigo = :codigo');
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  EdtNomeEntidade.Text := FieldByName('nome').AsString;
+ end;
+end;
+
+procedure TEntradaNFForm.EdtCodigoNaturezaChange(Sender: TObject);
+var natureza: string;
+begin
+ natureza := EdtCodigoNatureza.Text;
+
+ with CadNaturezaDM.qryConsultarNatureza do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadnatureza where natureza = :natureza');
+  ParamByName('natureza').AsString := natureza;
+  Open;
+
+  EdtDescricaoNatureza.Text := FieldbyName('descricao').AsString;
+ end;
+end;
+
+procedure TEntradaNFForm.SBDepositoClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+ with CadDepositoDM.qryConsultarDeposito do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from caddeposito where ativo = :ativo');
+  Parambyname('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
+ codigo := ConsultarDeposito.SelecionarDeposito;
+ if codigo <> '' then begin
+  EdtCodigoDeposito.Text := codigo;
+  descricao := ConsultarDeposito.descricao;
+  EdtDescricaoDeposito.Text := Descricao;
+ end;
+end;
+
+procedure TEntradaNFForm.SBEntidadeClick(Sender: TObject);
+var codigo, nome: string;
+begin
+ with CadEntidadeDM.qryConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where ativo = :ativo');
+  Parambyname('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarEntidade, ConsultarEntidade);
+ codigo := ConsultarEntidade.SelecionarEntidade;
+ if codigo <> '' then begin
+  EdtCodigoEntidade.Text := codigo;
+  nome := ConsultarEntidade.Nome;
+  EdtNomeEntidade.Text := Nome;
+ end;
+end;
+
+procedure TEntradaNFForm.SBNaturezaClick(Sender: TObject);
+var natureza, descricao: string;
+begin
+ with CadNaturezaDM.qryConsultarNatureza do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadnatureza where ativo = :ativo');
+  Parambyname('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarNatureza, ConsultarNatureza);
+ natureza := ConsultarNatureza.SelecionarNatureza;
+ if natureza <> '' then begin
+  EdtCodigoNatureza.Text := natureza;
+  descricao := ConsultarNatureza.descricao;
+  EdtDescricaoNatureza.Text := Descricao;
+ end;
+end;
+
+procedure TEntradaNFForm.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+
+end.

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2025/08/24 13:43:35.000.594,=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas</Transaction>
+    <Transaction>2025/08/24 13:44:24.000.881,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Receber.pas=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas</Transaction>
+    <Transaction>2025/08/24 13:44:24.000.881,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Receber.dfm=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.dfm</Transaction>
+    <Transaction>2025/08/24 22:15:39.000.839,=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas</Transaction>
+    <Transaction>2025/08/24 22:15:53.000.807,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\ReceberDM.pas</Transaction>
+    <Transaction>2025/08/24 22:15:53.000.807,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.dfm=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\ReceberDM.dfm</Transaction>
+    <Transaction>2025/08/26 18:58:06.000.354,=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas</Transaction>
+    <Transaction>2025/08/26 18:58:45.000.604,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Moeda.pas</Transaction>
+    <Transaction>2025/08/26 18:58:45.000.604,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.dfm=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Moeda.dfm</Transaction>
+    <Transaction>2025/08/26 18:59:17.000.824,=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas</Transaction>
+    <Transaction>2025/08/26 19:00:19.000.105,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\CadMoedaDM.pas</Transaction>
+    <Transaction>2025/08/26 19:00:19.000.105,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.dfm=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\CadMoedaDM.dfm</Transaction>
+    <Transaction>2025/08/26 19:00:42.000.498,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\CadMoedaDM.dfm=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\MoedaDM.dfm</Transaction>
+    <Transaction>2025/08/26 19:00:42.000.498,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\CadMoedaDM.pas=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\MoedaDM.pas</Transaction>
+    <Transaction>2025/08/26 19:33:16.000.418,=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas</Transaction>
+    <Transaction>2025/08/26 19:33:44.000.237,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.pas=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\ConsultarMoedaForm.pas</Transaction>
+    <Transaction>2025/08/26 19:33:44.000.237,C:\Users\enzof\Desktop\Projetos\Controle de Estoque\Unit1.dfm=C:\Users\enzof\Desktop\Projetos\Controle de Estoque\ConsultarMoedaForm.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

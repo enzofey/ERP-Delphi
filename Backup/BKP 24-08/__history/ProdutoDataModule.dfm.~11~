@@ -1,0 +1,58 @@
+﻿object CadProdutoModule: TCadProdutoModule
+  Height = 534
+  Width = 871
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Server=127.0.0.1'
+      'User_Name=root'
+      'Database=estoque'
+      'DriverID=MySQL')
+    Connected = True
+    LoginPrompt = False
+    Left = 24
+    Top = 24
+  end
+  object SelectQuery: TFDQuery
+    Connection = Conexão
+    Left = 120
+    Top = 24
+  end
+  object GridQuery: TFDQuery
+    Active = True
+    Connection = Conexão
+    SQL.Strings = (
+      'SELECT * FROM CADPRODUTO')
+    Left = 120
+    Top = 256
+  end
+  object dsCadProduto: TDataSource
+    DataSet = GridQuery
+    Left = 200
+    Top = 256
+  end
+  object UpdateQuery: TFDQuery
+    Connection = Conexão
+    Left = 120
+    Top = 80
+  end
+  object InsertQuery: TFDQuery
+    Connection = Conexão
+    Left = 120
+    Top = 144
+  end
+  object DeleteQuery: TFDQuery
+    Connection = Conexão
+    Left = 120
+    Top = 200
+  end
+  object DeleteProdMovQuery: TFDQuery
+    Connection = Conexão
+    Left = 224
+    Top = 200
+  end
+  object DeleteEstoqueQuery: TFDQuery
+    Connection = Conexão
+    Left = 352
+    Top = 200
+  end
+end

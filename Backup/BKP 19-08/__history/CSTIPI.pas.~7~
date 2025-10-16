@@ -1,0 +1,332 @@
+unit CSTIPI;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.ComCtrls,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids,
+  CSTIPIDataModule,
+  Log, LogDataModule,
+  GlobalUnit;
+
+type
+  TCadCSTIPI = class(TForm)
+    Panel1: TPanel;
+    lblCST: TLabel;
+    lblDescricao: TLabel;
+    btnAlterar: TButton;
+    btnDesistir: TButton;
+    BtnExcluir: TButton;
+    btnFechar: TButton;
+    btnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnIncluir: TButton;
+    EdtCST: TEdit;
+    EdtDescricao: TEdit;
+    Grid: TDBGrid;
+    RGModo: TRadioGroup;
+    RBBase: TRadioButton;
+    RBIsento: TRadioButton;
+    RBOutros: TRadioButton;
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure BtnExcluirClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadCSTIPI: TCadCSTIPI;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadCSTIPI.btnIncluirClick(Sender: TObject);
+begin
+ CadCSTIPIDataModule.GridQuery.Close;
+ CadCSTIPIDataModule.GridQuery.Open;
+
+ EdtCST.Clear;
+ EdtDescricao.Clear;
+
+ EdtCST.Enabled := True;
+ EdtDescricao.Enabled := True;
+
+ RBBase.Checked := False;
+ RBIsento.Checked := False;
+ RBOutros.Checked := False;
+
+ RBBase.Enabled := True;
+ RBIsento.Enabled := True;
+ RBOutros.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnFechar.Visible := False;
+ Grid.Enabled := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+end;
+
+procedure TCadCSTIPI.btnGravarIncluirClick(Sender: TObject);
+var CST, Descricao, Modo, tela: string;
+    data: tdatetime;
+begin
+  CST := EdtCST.Text;
+  Descricao := EdtDescricao.Text;
+  if RBBase.Checked then Modo := 'B'
+  else if RBIsento.Checked then modo := 'I'
+  else if RBOutros.Checked then modo := 'O';
+  tela := 'CadCSTIPI';
+  data := Now;
+
+  CadCSTIPIDataModule.SelectQuery.Close;
+  CadCSTIPIDataModule.SelectQuery.SQL.Clear;
+  CadCSTIPIDataModule.SelectQuery.SQL.Text :=
+  'select * from cadCSTICMS where CST = :CST';
+  CadCSTIPIDataModule.SelectQuery.ParamByName('CST').AsString := CST;
+  CadCSTIPIDataModule.SelectQuery.Open;
+
+  if not CadCSTIPIDataModule.SelectQuery.IsEmpty then begin
+  ShowMessage('CST IPI já cadastrado!');
+  end
+  else begin
+
+  CadCSTIPIDataModule.InsertQuery.SQL.CLear;
+  CadCSTIPIDataModule.InsertQuery.SQL.Text :=
+  'insert into cadCSTIPI (CST, Descricao, Modo) values (:CST, :Descricao, :Modo)';
+  CadCSTIPIDataModule.InsertQuery.ParamByName('CST').AsString := CST;
+  CadCSTIPIDataModule.InsertQuery.ParamByName('Descricao').AsString := Descricao;
+  CadCSTIPIDataModule.InsertQuery.ParamByName('Modo').AsString := Modo;
+
+  LogModule.InserirLog.SQL.Clear;
+  LogModule.InserirLog.SQL.Text :=
+  'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+  LogModule.InserirLog.ParamByName('Descricao').AsString :=
+  'Inseriu o CST ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+  LogModule.InserirLog.ParamByName('data').AsDateTime := data;
+  LogModule.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogModule.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogModule.InserirLog.ParamByName('tela').AsString := tela;
+  try
+  LogModule.InserirLog.ExecSQL;
+  CadCSTIPIDataModule.InsertQuery.ExecSQL;
+  ShowMessage('Gravado com sucesso!');
+
+  CadCSTIPIDataModule.GridQuery.Close;
+  CadCSTIPIDataModule.GridQuery.Open;
+
+  EdtCST.Enabled := False;
+  EdtDescricao.Enabled := False;
+
+  RBBase.Enabled := False;
+  RBIsento.Enabled := False;
+  RBOutros.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnFechar.Visible := True;
+  Grid.Enabled := True;
+
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+  except
+  ShowMessage('Erro na inclusão!');
+  end;
+  end;
+end;
+
+procedure TCadCSTIPI.btnAlterarClick(Sender: TObject);
+begin
+ if EdtCST.Text = '' then begin
+ ShowMessage('Nenhum CST ICMS selecionado!');
+ end
+ else begin
+
+ CadCSTIPIDataModule.GridQuery.Close;
+ CadCSTIPIDataModule.GridQuery.Open;
+
+ EdtDescricao.Enabled := True;
+
+ RBBase.Enabled := True;
+ RBIsento.Enabled := True;
+ RBOutros.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnFechar.Visible := False;
+ Grid.Enabled := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+end;
+end;
+
+procedure TCadCSTIPI.btnGravarAlterarClick(Sender: TObject);
+var CST, Descricao, Modo, tela: string;
+    data: tdatetime;
+begin
+  CST := EdtCST.Text;
+  Descricao := EdtDescricao.Text;
+  if RBBase.Checked then Modo := 'B'
+  else if RBIsento.Checked then modo := 'I'
+  else if RBOutros.Checked then modo := 'O';
+  tela := 'CadCSTIPI';
+  data := Now;
+
+  CadCSTIPIDataModule.UpdateQuery.SQL.CLear;
+  CadCSTIPIDataModule.UpdateQuery.SQL.Text :=
+  'update cadCST set descricao = :descricao, modo = :modo where CST = :CST';
+  CadCSTIPIDataModule.UpdateQuery.ParamByName('CST').AsString := CST;
+  CadCSTIPIDataModule.UpdateQuery.ParamByName('Descricao').AsString := Descricao;
+  CadCSTIPIDataModule.UpdateQuery.ParamByName('Modo').AsString := Modo;
+
+  LogModule.InserirLog.SQL.Clear;
+  LogModule.InserirLog.SQL.Text :=
+  'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+  LogModule.InserirLog.ParamByName('Descricao').AsString :=
+  'Alterou o CST ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+  LogModule.InserirLog.ParamByName('data').AsDateTime := data;
+  LogModule.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogModule.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogModule.InserirLog.ParamByName('tela').AsString := tela;
+  try
+  LogModule.InserirLog.ExecSQL;
+  CadCSTIPIDataModule.UpdateQuery.ExecSQL;
+  ShowMessage('Gravado com sucesso!');
+
+  CadCSTIPIDataModule.GridQuery.Close;
+  CadCSTIPIDataModule.GridQuery.Open;
+
+  EdtDescricao.Enabled := False;
+
+  RBBase.Enabled := False;
+  RBIsento.Enabled := False;
+  RBOutros.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnFechar.Visible := True;
+  Grid.Enabled := True;
+
+  btnGravarAlterar.Visible := False;
+  btnDesistir.Visible := False;
+  except
+  ShowMessage('Erro na alteração!');
+  end;
+end;
+
+procedure TCadCSTIPI.btnDesistirClick(Sender: TObject);
+begin
+ CadCSTIPIDataModule.GridQuery.Close;
+ CadCSTIPIDataModule.GridQuery.Open;
+
+ EdtCST.Clear;
+ EdtDescricao.Clear;
+
+ EdtCST.Enabled := False;
+ EdtDescricao.Enabled := False;
+
+ RBBase.Checked := False;
+ RBIsento.Checked := False;
+ RBOutros.Checked := False;
+
+ RBBase.Enabled := False;
+ RBIsento.Enabled := False;
+ RBOutros.Enabled := False;
+
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+ btnFechar.Visible := True;
+ Grid.Enabled := True;
+
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+end;
+
+procedure TCadCSTIPI.BtnExcluirClick(Sender: TObject);
+var CST, Descricao, Modo, tela: string;
+    data: tdatetime;
+begin
+  CST := EdtCST.Text;
+  Descricao := EdtDescricao.Text;
+  if RBBase.Checked then Modo := 'B'
+  else if RBIsento.Checked then modo := 'I'
+  else if RBOutros.Checked then modo := 'O';
+  tela := 'CadCSTIPI';
+  data := Now;
+
+  if EdtCST.Text = '' then begin
+  ShowMessage('Nenhum CST selecionado!');
+  end
+  else begin
+
+  CadCSTIPIDataModule.UpdateQuery.SQL.CLear;
+  CadCSTIPIDataModule.UpdateQuery.SQL.Text :=
+  'delete from cadCST where CST = :CST';
+  CadCSTIPIDataModule.UpdateQuery.ParamByName('CST').AsString := CST;
+
+  LogModule.InserirLog.SQL.Clear;
+  LogModule.InserirLog.SQL.Text :=
+  'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+  LogModule.InserirLog.ParamByName('Descricao').AsString :=
+  'Deletou o CST ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+  LogModule.InserirLog.ParamByName('data').AsDateTime := data;
+  LogModule.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogModule.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogModule.InserirLog.ParamByName('tela').AsString := tela;
+  try
+  LogModule.InserirLog.ExecSQL;
+  CadCSTIPIDataModule.UpdateQuery.ExecSQL;
+  ShowMessage('Gravado com sucesso!');
+
+  CadCSTIPIDataModule.GridQuery.Close;
+  CadCSTIPIDataModule.GridQuery.Open;
+
+  EdtCST.Clear;
+  EdtDescricao.Clear;
+
+  RBBase.Checked := False;
+  RBIsento.Checked := False;
+  RBOutros.Checked := False;
+  except
+  ShowMessage('Erro na alteração!');
+  end;
+end;
+end;
+
+procedure TCadCSTIPI.GridCellClick(Column: TColumn);
+var CST, Descricao, Modo: String;
+begin
+ EdtCST.Text := CadCSTIPIDataModule.GridQuery.FieldByName('CST').AsString;
+ EdtDescricao.Text := CadCSTIPIDataModule.GridQuery.FieldByName('Descricao').AsString;
+ Modo := CadCSTIPIDataModule.GridQuery.FieldByName('Modo').AsString;
+ if Modo = 'B' then
+ RBBase.Checked := True
+ else if Modo = 'I' then
+ RBIsento.Checked := True
+ else if Modo = 'O' then
+ RBOutros.Checked := True
+end;
+
+procedure TCadCSTIPI.btnFecharClick(Sender: TObject);
+begin
+ (Parent as TTabSheet).PageControl := nil;
+  Parent.Free;
+end;
+end.
+

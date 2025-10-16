@@ -1,0 +1,67 @@
+unit ConsultaProdutoForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Grids,
+  Vcl.DBGrids, Vcl.ExtCtrls, ProdutoDataModule;
+
+type
+  TConsultarProduto = class(TForm)
+    Panel1: TPanel;
+    GridConsultaCodigo: TDBGrid;
+    BtnSelecionarProduto: TButton;
+    procedure BtnSelecionarProdutoClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    PCodigo: string;
+    PDescricao: string;
+    PAtivo: string;
+  public
+    function SelecionarProduto: string;
+    function Descricao: string;
+    function Ativo: string;
+  end;
+
+var
+  ConsultarProduto: TConsultarProduto;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarProduto.SelecionarProduto: string;
+begin
+  PCodigo := '';
+  ShowModal;
+  Result := PCodigo;
+end;
+
+function TConsultarProduto.Descricao: string;
+begin
+  Result := PDescricao;
+end;
+
+function TConsultarProduto.Ativo: string;
+begin
+  Result := PAtivo;
+end;
+
+procedure TConsultarProduto.FormShow(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to GridConsultaCodigo.Columns.Count - 1 do
+    GridConsultaCodigo.Columns[i].Width := GridConsultaCodigo.Canvas.TextWidth(GridConsultaCodigo.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TConsultarProduto.BtnSelecionarProdutoClick(Sender: TObject);
+begin
+  PCodigo := CadProdutoModule.FDQuery.FieldByName('codigo').AsString;
+  PDescricao := CadProdutoModule.FDQuery.FieldByName('descricao').AsString;
+  PAtivo := CadProdutoModule.FDQuery.FieldByName('ativo').AsString;
+  Close;
+end;
+end.
+

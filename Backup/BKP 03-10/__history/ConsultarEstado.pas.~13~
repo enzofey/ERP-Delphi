@@ -1,0 +1,48 @@
+unit ConsultarEstado;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Data.DB, Vcl.StdCtrls, EstadoDataModule,
+  Vcl.Grids, Vcl.DBGrids;
+
+type
+  TConsultarEstadoForm = class(TForm)
+    Panel1: TPanel;
+    GridEstado: TDBGrid;
+    btnSelecionarEstado: TButton;
+    procedure btnSelecionarEstadoClick(Sender: TObject);
+  private
+   EsEstado: string;
+  public
+   function SelecionarEstado: string;
+   function Estado: string;
+  end;
+
+var
+  ConsultarEstadoForm: TConsultarEstadoForm;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarEstadoForm.SelecionarEstado: string;
+begin
+  EsEstado := '';
+  ShowModal;
+    Result := EsEstado
+end;
+
+procedure TConsultarEstadoForm.btnSelecionarEstadoClick(Sender: TObject);
+begin
+  EsEstado := CadEstadoModule.FDQuery1.FieldByName('estado').AsString;
+  Close;
+end;
+
+function TConsultarEstadoForm.Estado: string;
+begin
+  Result := EsEstado;
+end;
+
+end.

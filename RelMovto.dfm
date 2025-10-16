@@ -1,0 +1,226 @@
+object RelMovtoForm: TRelMovtoForm
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'RelMovtoForm'
+  ClientHeight = 956
+  ClientWidth = 1862
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1862
+    Height = 956
+    Align = alClient
+    TabOrder = 0
+    ExplicitLeft = 8
+    ExplicitTop = 232
+    object lblCodigo: TLabel
+      Left = 24
+      Top = 24
+      Width = 46
+      Height = 15
+      Caption = 'Produto:'
+    end
+    object lblCor: TLabel
+      Left = 24
+      Top = 64
+      Width = 22
+      Height = 15
+      Caption = 'Cor:'
+    end
+    object lblDeposito: TLabel
+      Left = 24
+      Top = 104
+      Width = 50
+      Height = 15
+      Caption = 'Dep'#243'sito:'
+    end
+    object lblTamanho: TLabel
+      Left = 24
+      Top = 144
+      Width = 52
+      Height = 15
+      Caption = 'Tamanho:'
+    end
+    object SBProduto: TSpeedButton
+      Left = 431
+      Top = 21
+      Width = 23
+      Height = 23
+      OnClick = SBProdutoClick
+    end
+    object SBCor: TSpeedButton
+      Left = 431
+      Top = 61
+      Width = 23
+      Height = 23
+      OnClick = SBCorClick
+    end
+    object SBDeposito: TSpeedButton
+      Left = 431
+      Top = 101
+      Width = 23
+      Height = 30
+      OnClick = SBDepositoClick
+    end
+    object SBTamanho: TSpeedButton
+      Left = 431
+      Top = 141
+      Width = 23
+      Height = 23
+      OnClick = SBTamanhoClick
+    end
+    object lblEstornarMovimento: TLabel
+      Left = 24
+      Top = 879
+      Width = 114
+      Height = 15
+      Caption = 'Estornar Movimento'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Segoe UI'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lblMovimento: TLabel
+      Left = 24
+      Top = 912
+      Width = 96
+      Height = 15
+      Caption = 'ID do Movimento:'
+    end
+    object Grid: TDBGrid
+      Left = 24
+      Top = 184
+      Width = 1809
+      Height = 710
+      DataSource = RelMovtoDM.dsProdMov
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -12
+      TitleFont.Name = 'Segoe UI'
+      TitleFont.Style = []
+    end
+    object EdtCodigoProduto: TEdit
+      Left = 88
+      Top = 21
+      Width = 122
+      Height = 23
+      TabOrder = 1
+      OnChange = EdtCodigoProdutoChange
+    end
+    object EdtCodigoCor: TEdit
+      Left = 88
+      Top = 61
+      Width = 122
+      Height = 23
+      TabOrder = 2
+      OnChange = EdtCodigoCorChange
+    end
+    object EdtCodigoDeposito: TEdit
+      Left = 88
+      Top = 101
+      Width = 122
+      Height = 23
+      TabOrder = 3
+      OnChange = EdtCodigoDepositoChange
+    end
+    object EdtCodigoTamanho: TEdit
+      Left = 88
+      Top = 141
+      Width = 122
+      Height = 23
+      TabOrder = 4
+      OnChange = EdtCodigoTamanhoChange
+    end
+    object btnConsultar: TButton
+      Left = 672
+      Top = 24
+      Width = 145
+      Height = 45
+      Caption = 'Consultar'
+      TabOrder = 5
+      OnClick = btnConsultarClick
+    end
+    object btnFechar: TButton
+      Left = 672
+      Top = 93
+      Width = 145
+      Height = 46
+      Caption = 'Fechar'
+      TabOrder = 6
+      OnClick = btnFecharClick
+    end
+    object edtID: TEdit
+      Left = 126
+      Top = 909
+      Width = 121
+      Height = 23
+      TabOrder = 7
+    end
+    object btnEstornar: TButton
+      Left = 264
+      Top = 908
+      Width = 81
+      Height = 25
+      Caption = 'Estornar'
+      TabOrder = 8
+      OnClick = btnEstornarClick
+    end
+    object RGTipo: TRadioGroup
+      Left = 512
+      Top = 21
+      Width = 137
+      Height = 143
+      Caption = 'Tipo:'
+      Items.Strings = (
+        'Entrada'
+        'Sa'#237'da'
+        'Ambos')
+      TabOrder = 9
+    end
+    object EdtDescricaoProduto: TEdit
+      Left = 216
+      Top = 21
+      Width = 209
+      Height = 23
+      Enabled = False
+      TabOrder = 10
+    end
+    object EdtDescricaoCor: TEdit
+      Left = 216
+      Top = 61
+      Width = 209
+      Height = 23
+      Enabled = False
+      TabOrder = 11
+    end
+    object EdtDescricaoDeposito: TEdit
+      Left = 216
+      Top = 101
+      Width = 209
+      Height = 23
+      Enabled = False
+      TabOrder = 12
+    end
+    object EdtDescricaoTamanho: TEdit
+      Left = 216
+      Top = 141
+      Width = 209
+      Height = 23
+      Enabled = False
+      TabOrder = 13
+    end
+  end
+end

@@ -1,0 +1,129 @@
+program Estoque;
+
+uses
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Controls,
+  Cidade in 'Cidade.pas' {CadCidade},
+  ConsultarCorForm in 'ConsultarCorForm.pas' {ConsultarCor},
+  ConsultarDepositoForm in 'ConsultarDepositoForm.pas' {ConsultarDeposito},
+  ConsultarProdutoForm in 'ConsultarProdutoForm.pas' {ConsultarProduto},
+  ConsultarEntidadeForm in 'ConsultarEntidadeForm.pas' {ConsultarEntidade},
+  ConsultarEstadoForm in 'ConsultarEstadoForm.pas' {ConsultarEstado},
+  ConsultarTamanhoForm in 'ConsultarTamanhoForm.pas' {ConsultarTamanho},
+  Cor in 'Cor.pas' {CadCor},
+  CorDataModule in 'CorDataModule.pas' {CadCorModule: TDataModule},
+  Deposito in 'Deposito.pas' {CadDeposito},
+  DepositoDataModule in 'DepositoDataModule.pas' {CadDepositoDataModule: TDataModule},
+  Entidade in 'Entidade.pas' {CadEntidade},
+  EntidadeDataModule in 'EntidadeDataModule.pas' {CadEntidadeDataModule: TDataModule},
+  Entrada in 'Entrada.pas' {MovEntrada},
+  EntradaDataModule in 'EntradaDataModule.pas' {MovEntradaDataModule: TDataModule},
+  Estado in 'Estado.pas' {CadEstado},
+  EstadoDataModule in 'EstadoDataModule.pas' {CadEstadoModule: TDataModule},
+  MenuPrincipal in 'MenuPrincipal.pas' {Welcome},
+  Produto in 'Produto.pas' {CadProduto},
+  ProdutoDataModule in 'ProdutoDataModule.pas' {CadProdutoModule: TDataModule},
+  Saida in 'Saida.pas' {MovSaida},
+  SaidaDataModule in 'SaidaDataModule.pas' {MovSaidaDataModule: TDataModule},
+  Tamanho in 'Tamanho.pas' {CadTamanho},
+  TamanhoDataModule in 'TamanhoDataModule.pas' {CadTamanhoDataModule: TDataModule},
+  Pais in 'Pais.pas' {CadPaisForm},
+  CidadeDataModule in 'CidadeDataModule.pas' {CadCidadeDataModule: TDataModule},
+  ConsultarCidadeForm in 'ConsultarCidadeForm.pas' {ConsultarCidade},
+  PaisDataModule in 'PaisDataModule.pas' {CadPaisDataModule: TDataModule},
+  ConsultarPaisForm in 'ConsultarPaisForm.pas' {ConsultarPais},
+  CEP in 'CEP.pas' {CadCEP},
+  CEPDataModule in 'CEPDataModule.pas' {CadCepDataModule: TDataModule},
+  ConsultarCEPForm in 'ConsultarCEPForm.pas' {ConsultarCEP},
+  RelEstoque in 'RelEstoque.pas' {RelEstoqueForm},
+  RelEstoqueDataModule in 'RelEstoqueDataModule.pas' {EstoqueDataModule: TDataModule},
+  RelMovto in 'RelMovto.pas' {RelMovtoForm},
+  RelMovtoDataModule in 'RelMovtoDataModule.pas' {RelMovtoModule: TDataModule},
+  EditorSQL in 'EditorSQL.pas' {EditorSQLForm},
+  EditorSQLDataModule in 'EditorSQLDataModule.pas' {EditorSQLModule: TDataModule},
+  Log in 'Log.pas' {LogsForm},
+  LogDataModule in 'LogDataModule.pas' {LogModule: TDataModule},
+  FaixaTamanho in 'FaixaTamanho.pas' {CadFaixaTamanho},
+  FaixaTamanhoDataModule in 'FaixaTamanhoDataModule.pas' {CadFaixaTamanhoDataModule: TDataModule},
+  Usuario in 'Usuario.pas' {CadUsuario},
+  UsuarioDataModule in 'UsuarioDataModule.pas' {CadUsuarioDataModule: TDataModule},
+  LoginSistema in 'LoginSistema.pas' {Login},
+  AlterarSenha in 'AlterarSenha.pas' {AlterarSenhaForm},
+  ConsultarUsuarioForm in 'ConsultarUsuarioForm.pas' {ConsultarUsuario},
+  ConsultarFaixaForm in 'ConsultarFaixaForm.pas' {ConsultarFaixa},
+  GlobalUnit in 'GlobalUnit.pas',
+  Empresa in 'Empresa.pas' {CadEmpresa},
+  EmpresaDataModule in 'EmpresaDataModule.pas' {CadEmpresaDataModule: TDataModule},
+  Natureza in 'Natureza.pas' {CadNatureza},
+  NaturezaDataModule in 'NaturezaDataModule.pas' {CadNaturezaDataModule: TDataModule},
+  ConsultarNaturezaForm in 'ConsultarNaturezaForm.pas' {ConsultarNatureza},
+  CSTICMS in 'CSTICMS.pas' {CadCSTICMS},
+  CSOSN in 'CSOSN.pas' {CadCSOSN},
+  CSTIPI in 'CSTIPI.pas' {CadCSTIPI},
+  ENQIPI in 'ENQIPI.pas' {CadENQIPI},
+  CSTPIS in 'CSTPIS.pas' {CadCSTPIS},
+  CSTCOFINS in 'CSTCOFINS.pas' {CadCSTCOFINS},
+  CSOSNDataModule in 'CSOSNDataModule.pas' {CadCSOSNDataModule: TDataModule},
+  CSTCOFINSDataModule in 'CSTCOFINSDataModule.pas' {CadCSTCOFINSDataModule: TDataModule},
+  CSTICMSDataModule in 'CSTICMSDataModule.pas' {CadCSTICMSDataModule: TDataModule},
+  CSTIPIDataModule in 'CSTIPIDataModule.pas' {CadCSTIPIDataModule: TDataModule},
+  CSTPISDataModule in 'CSTPISDataModule.pas' {CadCSTPISDataModule: TDataModule},
+  ENQIPIDataModule in 'ENQIPIDataModule.pas' {CadEnqIPIDataModule: TDataModule},
+  ConsultarCSOSNForm in 'ConsultarCSOSNForm.pas' {ConsultarCSOSN},
+  ConsultarCSTICMSForm in 'ConsultarCSTICMSForm.pas' {ConsultarCSTICMS},
+  ConsultarCSTIPIForm in 'ConsultarCSTIPIForm.pas' {ConsultarCSTIPI},
+  ConsultarENQIPIForm in 'ConsultarENQIPIForm.pas' {ConsultarENQIPI},
+  ConsultarCSTPISForm in 'ConsultarCSTPISForm.pas' {ConsultarCSTPIS},
+  ConsultarCSTCOFINSForm in 'ConsultarCSTCOFINSForm.pas' {ConsultarCSTCOFINS},
+  FatGeral in 'FatGeral.pas' {FatGeralForm},
+  ImpressaoNFE in 'ImpressaoNFE.pas' {ImpressaoNFEForm},
+  GeralDataModule in 'GeralDataModule.pas' {FatGeralDataModule: TDataModule},
+  ImpressaoNFEDataModule in 'ImpressaoNFEDataModule.pas' {ImpressaoNFEFormDataModule: TDataModule},
+  ConsultarFaturaForm in 'ConsultarFaturaForm.pas' {ConsultarFatura},
+  NCM in 'NCM.pas' {CadNCM};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TCadCorModule, CadCorModule);
+  Application.CreateForm(TCadDepositoDataModule, CadDepositoDataModule);
+  Application.CreateForm(TCadEntidadeDataModule, CadEntidadeDataModule);
+  Application.CreateForm(TMovEntradaDataModule, MovEntradaDataModule);
+  Application.CreateForm(TCadEstadoModule, CadEstadoModule);
+  Application.CreateForm(TCadProdutoModule, CadProdutoModule);
+  Application.CreateForm(TMovSaidaDataModule, MovSaidaDataModule);
+  Application.CreateForm(TCadTamanhoDataModule, CadTamanhoDataModule);
+  Application.CreateForm(TCadCidadeDataModule, CadCidadeDataModule);
+  Application.CreateForm(TCadPaisDataModule, CadPaisDataModule);
+  Application.CreateForm(TCadCepDataModule, CadCepDataModule);
+  Application.CreateForm(TEstoqueDataModule, EstoqueDataModule);
+  Application.CreateForm(TRelMovtoModule, RelMovtoModule);
+  Application.CreateForm(TEditorSQLModule, EditorSQLModule);
+  Application.CreateForm(TLogModule, LogModule);
+  Application.CreateForm(TCadFaixaTamanhoDataModule, CadFaixaTamanhoDataModule);
+  Application.CreateForm(TCadUsuarioDataModule, CadUsuarioDataModule);
+  Application.CreateForm(TCadEmpresaDataModule, CadEmpresaDataModule);
+  Application.CreateForm(TCadNaturezaDataModule, CadNaturezaDataModule);
+  Application.CreateForm(TCadCSOSNDataModule, CadCSOSNDataModule);
+  Application.CreateForm(TCadCSTCOFINSDataModule, CadCSTCOFINSDataModule);
+  Application.CreateForm(TCadCSTICMSDataModule, CadCSTICMSDataModule);
+  Application.CreateForm(TCadCSTIPIDataModule, CadCSTIPIDataModule);
+  Application.CreateForm(TCadCSTPISDataModule, CadCSTPISDataModule);
+  Application.CreateForm(TCadEnqIPIDataModule, CadEnqIPIDataModule);
+  Application.CreateForm(TFatGeralDataModule, FatGeralDataModule);
+  Application.CreateForm(TImpressaoNFEFormDataModule, ImpressaoNFEFormDataModule);
+  try
+  if TLogin.Create(nil).ShowModal = mrOK then
+  begin
+  Application.CreateForm(TWelcome, Welcome);
+  Application.Run;
+  end
+  else
+  Application.Terminate;
+  finally
+  TLogin.Create(nil).Free;
+ end;
+end.

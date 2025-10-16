@@ -1,0 +1,946 @@
+unit ImpressaoNFE;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.StdCtrls,
+  Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons, XML.XMLDoc, XMLIntf,
+  GlobalUnit,
+  ImpressaoNFEFormDM, ConsultarFaturaForm,
+  EntidadeDM, ConsultarEntidadeForm,
+  NaturezaDM, ConsultarNaturezaForm,
+  frxSmartMemo, frxClass, frxDBSet, frCoreClasses, frxExportBaseDialog, frxExportPDF, frxBarcode;
+
+type
+  TImpressaoNFEForm = class(TForm)
+    Panel1: TPanel;
+    lblDTInicio: TLabel;
+    lbldtFim: TLabel;
+    EdtInicio: TDateTimePicker;
+    EdtFim: TDateTimePicker;
+    lblFatura: TLabel;
+    EdtFatura: TEdit;
+    lblEMP_ID: TLabel;
+    EdtEMP_ID: TEdit;
+    lblSerie: TLabel;
+    EdtSerie: TEdit;
+    lblEntidade: TLabel;
+    EdtEntidade: TEdit;
+    lblNatureza: TLabel;
+    EdtNatureza: TEdit;
+    GridNotas: TDBGrid;
+    btnTransmitir: TButton;
+    btnConsultar: TButton;
+    btnCancelar: TButton;
+    btnConsultarFiltros: TButton;
+    GridNotaIten: TDBGrid;
+    SBEntidade: TSpeedButton;
+    SBFatura: TSpeedButton;
+    SBNatureza: TSpeedButton;
+    RBTodas: TRadioButton;
+    RGImpressa: TRadioGroup;
+    RBImpresso: TRadioButton;
+    RBNaoImpressas: TRadioButton;
+    RBCanceladas: TRadioButton;
+    btnFechar: TButton;
+    lblChave_NFE: TLabel;
+    EdtChave_NFE: TEdit;
+    lblProtocolo_NFE: TLabel;
+    EdtProtocolo_NFE: TEdit;
+    lblEmissao_NFE: TLabel;
+    lblModo: TLabel;
+    CBModo: TComboBox;
+    lblAmbiente: TLabel;
+    CBAmbiente: TComboBox;
+    lblFinalidade: TLabel;
+    CBFinalidade: TComboBox;
+    btnImprimir: TButton;
+    DANFE: TfrxReport;
+    dsNota: TfrxDBDataset;
+    ExportarPDF: TfrxPDFExport;
+    dsNatureza: TfrxDBDataset;
+    dsEmpresa: TfrxDBDataset;
+    dsNotaIten: TfrxDBDataset;
+    dsEntidade: TfrxDBDataset;
+    DTPEmissao_NFE: TDateTimePicker;
+    dsProduto: TfrxDBDataset;
+    procedure btnConsultarFiltrosClick(Sender: TObject);
+    procedure SBEntidadeClick(Sender: TObject);
+    procedure SBNaturezaClick(Sender: TObject);
+    procedure SBFaturaClick(Sender: TObject);
+    procedure GridNotasCellClick(Column: TColumn);
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnTransmitirClick(Sender: TObject);
+    procedure btnImprimirClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ImpressaoNFEForm: TImpressaoNFEForm;
+
+implementation
+
+{$R *.dfm}
+
+function FormataValorNFe(Value: Double): string;
+begin
+  Result := FormatFloat('0.00', Value).Replace(',', '.');
+end;
+
+procedure TImpressaoNFEForm.btnConsultarFiltrosClick(Sender: TObject);
+var dtinicio, dtfim: tDate;
+    emp_id, fatura, faturaselecionada, serie, natureza, entidade, impresso: String;
+begin
+ dtinicio:= Edtinicio.date;
+ dtfim:= Edtfim.date;
+ fatura:= EdtFatura.Text;
+ EMP_ID:= EdtEmp_ID.Text;
+ serie:= EdtSerie.Text;
+ natureza:= Edtnatureza.Text;
+ entidade:= EdtEntidade.Text;
+ if RBImpresso.Checked then
+ impresso:= 'S'
+ else if RBNaoImpressas.Checked then
+ impresso:= 'N'
+ else if RBCanceladas.Checked then
+ impresso:= 'C';
+
+ ImpressaoNFEDM.qryGridNota.SQL.Clear;
+ ImpressaoNFEDM.qryGridNota.Close;
+ ImpressaoNFEDM.qryGridNota.SQL.Text:=
+ 'select n.* from nota n ' +
+ 'inner join notaiten ni on (ni.fatura = n.fatura) and (n.id = ni.id_nota) ' +
+ 'where cast(n.dtemissao as date) between :datainicio and :datafim ';
+ ImpressaoNFEDM.qryGridNota.Parambyname('datainicio').AsDate:= dtInicio;
+ ImpressaoNFEDM.qryGridNota.Parambyname('datafim').AsDate:= dtfim;
+
+ if EdtFatura.Text <> '' then begin
+  ImpressaoNFEDM.qryGridNota.SQL.Add(' and n.fatura = :fatura');
+  ImpressaoNFEDM.qryGridNota.ParamByName('fatura').AsString:= fatura;
+ end;
+
+ if EdtEMP_ID.Text <> '' then begin
+  ImpressaoNFEDM.qryGridNota.SQL.ADD(' and n.emp_id = :emp_id');
+  ImpressaoNFEDM.qryGridNota.ParamByName('emp_id').AsString:= emp_id;
+ end
+ else begin
+  ImpressaoNFEDM.qryGridNota.SQL.ADD(' and n.emp_id = :empresalogada');
+  ImpressaoNFEDM.qryGridNota.ParamByName('empresalogada').AsString := Empresalogada;
+ end;
+
+ if EdtSerie.Text <> '' then begin
+  ImpressaoNFEDM.qryGridNota.SQL.Add(' and n.serie = :serie');
+  ImpressaoNFEDM.qryGridNota.ParamByName('serie').AsString:= serie;
+ end;
+
+ if Edtnatureza.Text <> '' then begin
+  ImpressaoNFEDM.qryGridNota.SQL.Add(' and n.natureza = :natureza');
+  ImpressaoNFEDM.qryGridNota.ParamByName('natureza').AsString:= natureza;
+ end;
+
+ if EdtEntidade.Text <> '' then begin
+  ImpressaoNFEDM.qryGridNota.SQL.Add(' and n.codcli = :entidade');
+  ImpressaoNFEDM.qryGridNota.ParamByName('entidade').AsString:= entidade;
+ end;
+
+ if Impresso <> '' then begin
+  ImpressaoNFEDM.qryGridNota.SQL.Add(' and n.impresso = :impresso');
+  ImpressaoNFEDM.qryGridNota.ParamByName('impresso').AsString := Impresso;
+ end;
+ ImpressaoNFEDM.qryGridNota.Open;
+end;
+
+procedure TImpressaoNFEForm.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+
+procedure TImpressaoNFEForm.btnImprimirClick(Sender: TObject);
+begin
+ with ImpressaoNFEDM.qryNota do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from nota where fatura = :fatura');
+  Parambyname('fatura').AsString := ImpressaoNFEDM.qryGridNota.FieldByName('fatura').AsString;
+  Open;
+ end;
+
+ with ImpressaoNFEDM.qryNotaIten do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from notaiten where fatura = :fatura');
+  Parambyname('fatura').AsString := ImpressaoNFEDM.qryGridNota.FieldByName('fatura').AsString;
+  Open;
+ end;
+
+ with ImpressaoNFEDM.qryNatureza do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadnatureza where natureza = :natureza');
+  Parambyname('natureza').AsString := ImpressaoNFEDM.qryGridNota.FieldByName('natureza').AsString;
+ end;
+
+ with ImpressaoNFEDM.qryEmpresa do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from empresa where emp_id = :emp_id');
+  Parambyname('emp_id').AsString := ImpressaoNFEDM.qryGridNota.FieldByName('emp_id').AsString;
+ end;
+
+ with ImpressaoNFEDM.qryEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where codigo = :codcli');
+  Parambyname('codcli').AsString := ImpressaoNFEDM.qryGridNota.FieldByName('codcli').AsString;
+ end;
+
+ with ImpressaoNFEDM.qryProduto do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadproduto where codigo = :codigo');
+  Parambyname('codigo').AsString := ImpressaoNFEDM.qryGridNotaIten.FieldByName('codigo').AsString;
+ end;
+
+ if FileExists('C:\Projetos\Controle de Estoque\FR3\DANFE.fr3') then begin
+  DANFE.LoadFromFile('C:\Projetos\Controle de Estoque\FR3\DANFE.fr3');
+  DANFE.ShowReport;
+ end
+ else begin
+  ShowMessage('Arquivo DANFE.fr3 não encontrado!');
+ end;
+end;
+
+procedure TImpressaoNFEForm.btnTransmitirClick(Sender: TObject);
+var
+  XMLDoc: IXMLDocument;
+
+  nfeProcNode, NFeNode, infNFeNode, ideNode, emitnode, enderEmitNode, destnode, enderdestnode, detnode, prodnode, gCrednode, impostonode,
+  ICMSNode, ICMS00Node, ICMS10Node, ICMS20Node, ICMS30Node, ICMS40Node, ICMS51Node, ICMS60Node, ICMS70Node, ICMS90Node, ICMSSN101Node,
+  ICMSSN102Node, ICMSSN201Node, ICMSSN202Node, ICMSSN500Node, ICMSSN900Node, ICMSUFDestNode, IPINode,
+  IPINTNode, PISNode, PISAliqNode, COFINSNode, COFINSAliqNode, TotalNode, ICMSTotNode, transpnode, pagnode, detpagnode, volnode,
+  infadicnode, infRespTecnode, SignatureNode, SignedInfoNode, ReferenceNode, TransformsNode, KeyInfoNode, X509DataNode, protNFeNode,
+  infProtNode, CanonicalizationMethodNode, SignatureMethodNode, TransformNode1, TransformNode2, DigestMethodNode: IXMLNode;
+
+  nitem, randomnumber, soma, peso, i, digito, resto, cDV: integer;
+  Aliq_Cred_Pres, vNF: double;
+  cUF, AAMM, CNPJEmi, serie, cNF, chave_nfe, chave43, fatura, natureza, codcli, codigo: string;
+begin
+  fatura := GridNotas.DataSource.DataSet.FieldByName('fatura').AsString;
+  natureza := GridNotas.DataSource.DataSet.FieldByName('natureza').AsString;
+  codcli := GridNotas.DataSource.DataSet.FieldByName('codcli').AsString;
+  codigo := GridNotaIten.DataSource.DataSet.FieldByName('codigo').AsString;
+
+    ImpressaoNFEDM.qryNota.SQL.Clear;
+    ImpressaoNFEDM.qryNota.SQL.Text :=
+     'select fatura, ' +
+     'Serie, ' +
+     'Codcli, ' +
+     'dtEmissao, ' +
+     'dtSaida, ' +
+     'Natureza, ' +
+     'valor_produtos, ' +
+     'valor_total, ' +
+     'valor_icms, ' +
+     'valor_base_icms, ' +
+     'valor_ipi, ' +
+     'valor_base_ipi, ' +
+     'valor_base_pis_cofins, ' +
+     'valor_cofins, ' +
+     'valor_pis, ' +
+     'valor_desconto, ' +
+     'valor_frete, ' +
+     'quantidade, ' +
+     'dados_adicionais, ' +
+     'especie, ' +
+     'volumes, ' +
+     'pesob, ' +
+     'pesol, ' +
+     'presenca, ' +
+     'modfrete ' +
+     'from nota ' +
+     'where fatura = :fatura';
+    ImpressaoNFEDM.qryNota.ParamByName('fatura').AsString := Fatura;
+    ImpressaoNFEDM.qryNota.Open;
+
+    ImpressaoNFEDM.qryNotaIten.SQL.Clear;
+    ImpressaoNFEDM.qryNotaIten.SQL.Text :=
+     'select val_desconto, ' +
+     'val_frete, ' +
+     'Codigo, ' +
+     'Tam, ' +
+     'Cor, ' +
+     'CST_ICMS, ' +
+     'CSOSN, ' +
+     'val_icms, ' +
+     'val_base_icms, ' +
+     'aliq_icms, ' +
+     'CST_IPI, ' +
+     'ENQ_IPI, ' +
+     'aliq_ipi, ' +
+     'val_ipi, ' +
+     'val_base_ipi, ' +
+     'val_base_pis_cofins, ' +
+     'CST_PIS, ' +
+     'ALIQ_PIS, ' +
+     'val_pis, ' +
+     'CST_COFINS, ' +
+     'aliq_cofins, ' +
+     'val_cofins, ' +
+     'natureza, ' +
+     'preco_uni, ' +
+     'qtde, ' +
+     'valor, ' +
+     'cBenef, ' +
+     'cCredPres ' +
+     'from notaiten ' +
+     'where fatura = :fatura';
+    ImpressaoNFEDM.qryNotaIten.ParamByName('fatura').AsString := Fatura;
+    ImpressaoNFEDM.qryNotaIten.Open;
+
+    ImpressaoNFEDM.qryNatureza.SQL.Clear;
+    ImpressaoNFEDM.qryNatureza.SQL.Text :=
+     'select descricao, ' +
+     'tipo, ' +
+     'natureza, ' +
+     'Aliq_Cred_Pres, ' +
+     'Realiza_Calc_CredPres ' +
+     'from cadnatureza ' +
+     'where natureza = :natureza';
+    ImpressaoNFEDM.qryNatureza.ParamByName('natureza').AsString := natureza;
+    ImpressaoNFEDM.qryNatureza.Open;
+
+    ImpressaoNFEDM.qryEntidade.SQL.Clear;
+    ImpressaoNFEDM.qryEntidade.SQL.Text :=
+     'select consumidor_final, ' +
+     'ent.CPF, ' +
+     'ent.Nome, ' +
+     'ent.rua, ' +
+     'ent.numero, ' +
+     'ent.complemento, ' +
+     'ent.Bairro, ' +
+     'ent.Estado, ' +
+     'ent.CEP, ' +
+     'ent.telefone, ' +
+     'ent.cidade, ' +
+     'ent.IE, ' +
+     'ent.IndIE, ' +
+     'pais.codigo_ibge as pais_ibge, ' +
+     'pais.pais as pais_nome, ' +
+     'cid.codigo_ibge as cidade_ibge, ' +
+     'estado.codigo as estado_ibge ' +
+     'from cadentidade ent ' +
+     'inner join cadpais pais on (pais.sigla = ent.pais) ' +
+     'inner join cadcidade cid on (cid.cidade = ent.cidade) ' +
+     'inner join cadestado estado on (estado.sigla = ent.estado) ' +
+     'where ent.codigo = :codcli';
+    ImpressaoNFEDM.qryEntidade.ParamByName('codcli').AsString := codcli;
+    ImpressaoNFEDM.qryEntidade.Open;
+
+    ImpressaoNFEDM.qryEmpresa.SQL.Clear;
+    ImpressaoNFEDM.qryEmpresa.SQL.Text :=
+     'select pais.codigo_ibge as pais_ibge, ' +
+     'pais.pais as pais_nome, ' +
+     'cid.codigo_ibge as cidade_ibge, ' +
+     'estado.codigo as estado_ibge, ' +
+     'emp.CNPJ, ' +
+     'emp.Nome, ' +
+     'emp.Rua, ' +
+     'emp.numero, ' +
+     'emp.bairro, ' +
+     'emp.cidade, ' +
+     'emp.estado, ' +
+     'emp.CEP, ' +
+     'emp.IE, ' +
+     'emp.CRT, ' +
+     'emp.Fantasia, ' +
+     'emp.telefone ' +
+     'from empresa emp ' +
+     'inner join cadpais pais on (pais.sigla = emp.pais) ' +
+     'inner join cadcidade cid on (cid.cidade = emp.cidade) ' +
+     'inner join cadestado estado on (estado.sigla = emp.estado) ' +
+     'where emp.emp_id = :emp_id';
+    ImpressaoNFEDM.qryEmpresa.ParamByName('emp_id').AsString := EmpresaLogada;
+    ImpressaoNFEDM.qryEmpresa.Open;
+
+    ImpressaoNFEDM.qryProduto.SQL.Clear;
+    ImpressaoNFEDM.qryProduto.SQL.Text :=
+     'select ncm, ' +
+     'descricao, ' +
+     'UniVenda, ' +
+     'origem, ' +
+     'brinde ' +
+     'from cadproduto ' +
+     'where codigo = :codigo';
+    ImpressaoNFEDM.qryProduto.ParamByName('codigo').AsString := codigo;
+    ImpressaoNFEDM.qryProduto.Open;
+
+    ImpressaoNFEDM.qryReceber.SQL.Clear;
+    ImpressaoNFEDM.qryReceber.SQL.Text :=
+     'select valor_parcela, ' +
+     'moeda, ' +
+     'condpagto, ' +
+     'from receber ' +
+     'where fatura = :fatura';
+    ImpressaoNFEDM.qryReceber.ParamByName('fatura').AsString := Fatura;
+    ImpressaoNFEDM.qryReceber.Open;
+
+    Aliq_Cred_pres := ImpressaoNFEDM.qryNatureza.FieldByName('Aliq_Cred_Pres').AsFloat;
+    vNF := ImpressaoNFEDM.qryNota.FieldByName('valor_total').AsFloat;
+
+    // CHAVE_NFE
+
+    cUF := ImpressaoNFEDM.qryEmpresa.FieldByName('estado_ibge').AsString;
+    AAMM := FormatDateTime('yyMM', Now);
+    CNPJEmi := ImpressaoNFEDM.qryEmpresa.FieldByName('CNPJ').AsString;
+    serie := FormatFloat('000', ImpressaoNFEDM.qryNota.FieldByName('serie').AsInteger);
+    fatura := FormatFloat('000000000', ImpressaoNFEDM.qryNota.ParamByName('fatura').AsInteger);
+
+    Randomize;
+    randomnumber := Random(10000000);
+    cNF := FormatFloat('00000000', randomnumber);
+
+    // cDV
+
+    chave43 := cUF + AAMM + CNPJEmi + '55' + serie + fatura + '0' + cNF;
+    soma := 0;
+    peso := 2;
+
+    for i := Length(chave43) downto 1 do
+    begin
+      digito := StrToInt(chave43[i]);
+      soma := soma + (digito * peso);
+      Inc(peso);
+      if peso > 9 then
+        peso := 2;
+    end;
+
+    resto := soma mod 11;
+    if (resto = 0) or (resto = 1) then
+      cDV := 0
+    else
+      cDV := 11 - resto;
+
+    chave_nfe := chave43 + IntToStr(cDV);
+
+  try
+    XMLDoc := NewXMLDocument;
+    XMLDoc.Encoding := 'UTF-8';
+    XMLDoc.Options := [doNodeAutoIndent];
+
+    nfeProcNode := XMLDoc.AddChild('nfeProc');
+    nfeProcNode.Attributes['xmlns'] := 'http://www.portalfiscal.inf.br/nfe';
+    nfeProcNode.Attributes['versao'] := '4.00';
+
+    NFeNode := nfeProcNode.AddChild('NFe');
+    NFeNode.Attributes['xmlns'] := 'http://www.portalfiscal.inf.br/nfe';
+
+    infNFeNode := NFeNode.AddChild('infNFe', 'http://www.portalfiscal.inf.br/nfe');
+    infNFeNode.Attributes['Id'] := 'NFe' + chave_nfe;
+    infNFeNode.Attributes['versao'] := '4.00';
+
+    ideNode := infNFeNode.AddChild('ide');
+
+    idenode.AddChild('cUF').Text := cUF;
+
+    idenode.AddChild('cNF').Text := cNF;
+
+    idenode.AddChild('natOp').Text := ImpressaoNFEDM.qryNatureza.FieldByName('descricao').AsString;
+
+    idenode.AddChild('mod').Text := '55';
+
+    idenode.AddChild('serie').Text := ImpressaoNFEDM.qryNota.FieldByName('serie').AsString;
+
+    idenode.AddChild('nNF').Text := IntToStr(StrToInt(ImpressaoNFEDM.qryNota.FieldByName('fatura').AsString));
+
+    idenode.AddChild('dhEmi').Text := FormatDateTime('yyyy"-"mm"-"dd"T"hh":"nn":"ss"-03:00"', ImpressaoNFEDM.qryNota.FieldByName('dtemissao').AsDateTime);
+
+    idenode.AddChild('dhSaiEnt').Text := FormatDateTime('yyyy"-"mm"-"dd"T"hh":"nn":"ss"-03:00"', ImpressaoNFEDM.qryNota.FieldByName('dtsaida').AsDateTime);
+
+    if ImpressaoNFEDM.qryNatureza.FieldByName('tipo').AsString = 'S' then idenode.AddChild('tpNF').Text := '1'
+    else idenode.AddChild('tpNF').Text := '0';
+
+    case ImpressaoNFEDM.qryNota.FieldByName('natureza').AsString [1] of
+    '1', '5': idenode.AddChild('idDest').Text := '1';
+    '2', '6': idenode.AddChild('idDest').Text := '2';
+    '3', '7': idenode.AddChild('idDest').Text := '3';
+    end;
+
+    idenode.AddChild('cMunFG').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('cidade_ibge').AsString;
+
+    idenode.AddChild('tpImp').Text := '0';
+
+    if CBModo.Text = 'Emissão normal' then
+    idenode.AddChild('tpEmis').Text := '1'
+    else if CBModo.Text = 'Contingência FS-IA' then
+    idenode.AddChild('tpEmis').Text := '2'
+    else if CBModo.Text = 'Contingência SCAN' then
+    idenode.AddChild('tpEmis').Text := '3'
+    else if CBModo.Text = 'Contingência EPEC' then
+    idenode.AddChild('tpEmis').Text := '4'
+    else if CBModo.Text = 'Contingência FS-DA' then
+    idenode.AddChild('tpEmis').Text := '5'
+    else if CBModo.Text = 'Contingência SVC-AN' then
+    idenode.AddChild('tpEmis').Text := '6'
+    else if CBModo.Text = 'Contingência SVC-RS' then
+    idenode.AddChild('tpEmis').Text := '7';
+
+    idenode.AddChild('cDV').Text := IntToStr(cDV);
+
+    if CBAmbiente.Text = 'Homologação' then idenode.AddChild('tpAmb').Text := '2'
+    else if CBAmbiente.Text = 'Produção' then idenode.AddChild('tpAmb').Text := '1';
+
+    if CBFinalidade.Text = 'Normal' then idenode.AddChild('finNFe').Text := '1'
+    else if CBFinalidade.Text = 'Complementar' then idenode.AddChild('finNFe').Text := '2'
+    else if CBFinalidade.Text = 'Ajuste' then idenode.AddChild('finNFe').Text := '3'
+    else if CBFinalidade.Text = 'Devolução' then idenode.AddChild('finNFe').Text := '4';
+
+    case ImpressaoNFEDM.qryEntidade.FieldByName('consumidor_final').AsString [1] of
+    'N': idenode.AddChild('indFinal').Text := '0';
+    'S': idenode.AddChild('indFinal').Text := '1';
+    end;
+
+    idenode.AddChild('indPres').Text := ImpressaoNFEDM.qryNota.FieldByName('presenca').AsString;
+    idenode.AddChild('indIntermed').Text := '0';
+
+    idenode.AddChild('procEmi').Text := '0';
+
+    idenode.AddChild('verProc').Text := 'SisFey v1';
+
+    emitnode := infNFeNode.AddChild('emit');
+    emitnode.AddChild('CNPJ').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('CNPJ').AsString;
+    emitnode.AddChild('xNome').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('Nome').AsString;
+    emitnode.AddChild('xFant').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('Fantasia').AsString;
+
+    enderEmitNode := EmitNode.AddChild('enderEmit');
+    EnderEmitNode.AddChild('xLgr').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('Rua').AsString;
+    EnderEmitNode.AddChild('nro').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('Numero').AsString;
+    EnderEmitNode.AddChild('xBairro').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('Bairro').AsString;
+    EnderEmitNode.AddChild('cMun').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('cidade_ibge').AsString;
+    EnderEmitNode.AddChild('xMun').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('cidade').AsString;
+    EnderEmitNode.AddChild('UF').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('estado').AsString;
+    EnderEmitNode.AddChild('CEP').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('CEP').AsString;
+    EnderEmitNode.AddChild('cPais').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('pais_ibge').AsString;
+    EnderEmitNode.AddChild('xPais').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('pais_nome').AsString;
+    EnderEmitNode.AddChild('fone').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('telefone').AsString;
+
+    EmitNode.AddChild('IE').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('IE').AsString;
+    EmitNode.AddChild('CRT').Text := ImpressaoNFEDM.qryEmpresa.FieldByName('CRT').AsString;
+
+    destnode := infnfenode.AddChild('dest');
+    if Length(ImpressaoNFEDM.qryEntidade.FieldByName('CPF').AsString) = 14 then begin
+    destnode.AddChild('CNPJ').Text := ImpressaoNFEDM.qryEntidade.FieldByName('CPF').AsString;
+    end;
+    if Length(ImpressaoNFEDM.qryEntidade.FieldByName('CPF').AsString) = 11 then begin
+    destnode.AddChild('CPF').Text := ImpressaoNFEDM.qryEntidade.FieldByName('CPF').AsString;
+    end;
+
+    destnode.AddChild('xNome').Text := ImpressaoNFEDM.qryEntidade.FieldByName('Nome').AsString;
+
+    enderdestnode := destnode.AddChild('enderDest');
+    enderdestnode.AddChild('xLgr').Text := ImpressaoNFEDM.qryEntidade.FieldByName('Rua').AsString;
+    enderdestnode.AddChild('nro').Text := ImpressaoNFEDM.qryEntidade.FieldByName('Numero').AsString;
+    enderdestnode.AddChild('xBairro').Text := ImpressaoNFEDM.qryEntidade.FieldByName('Bairro').AsString;
+    enderdestnode.AddChild('cMun').Text := ImpressaoNFEDM.qryEntidade.FieldByName('cidade_ibge').AsString;
+    enderdestnode.AddChild('xMun').Text := ImpressaoNFEDM.qryEntidade.FieldByName('cidade').AsString;
+    enderdestnode.AddChild('UF').Text := ImpressaoNFEDM.qryEntidade.FieldByName('estado').AsString;
+    enderdestnode.AddChild('CEP').Text := ImpressaoNFEDM.qryEntidade.FieldByName('CEP').AsString;
+    enderdestnode.AddChild('cPais').Text := ImpressaoNFEDM.qryEntidade.FieldByName('pais_ibge').AsString;
+    enderdestnode.AddChild('xPais').Text := ImpressaoNFEDM.qryEntidade.FieldByName('pais_nome').AsString;
+    enderdestnode.AddChild('fone').Text := ImpressaoNFEDM.qryEntidade.FieldByName('telefone').AsString;
+
+    destnode.AddChild('indIEDest').Text := ImpressaoNFEDM.qryEntidade.FieldByName('IndIE').AsString;
+
+    if (ImpressaoNFEDM.qryEntidade.FieldByName('IE').AsString) <> '' then
+    destnode.AddChild('IE').Text := ImpressaoNFEDM.qryEntidade.FieldByName('IE').AsString;
+
+    detnode := infnfenode.AddChild('det');
+    nItem := detnode.ChildNodes.Count + 1;
+    detnode.Attributes['nItem'] := IntToStr(nItem);
+
+    prodnode := detnode.AddChild('prod');
+    prodnode.AddChild('cProd').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('codigo').AsString;
+    prodnode.AddChild('cEAN').Text := 'SEM GTIN';
+    prodnode.AddChild('xProd').Text := ImpressaoNFEDM.qryProduto.FieldByName('descricao').AsString;
+    prodnode.AddChild('NCM').Text := ImpressaoNFEDM.qryProduto.FieldByName('ncm').AsString;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cBenef').AsString <> '' then
+    prodnode.AddChild('cBenef').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cBenef').AsString;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cCredPres').AsString <> '' then
+    gCredNode := prodnode.AddChild('gCred');
+    gCredNode.AddChild('cCredPresumido').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cCredPres').AsString;
+
+    if ImpressaoNFEDM.qryNatureza.FieldByName('Realiza_Calc_CredPres').AsString = 'S' then begin
+    gCredNode.AddChild('pCredPresumido').Text :=  FormataValorNFe((Aliq_Cred_Pres));
+    gCredNode.AddChild('vCredPresumido').Text := FormataValorNFe((((Aliq_Cred_Pres)/100) * vNF));
+    end;
+
+    if ImpressaoNFEDM.qryNatureza.FieldByName('Realiza_Calc_CredPres').AsString = 'N' then begin
+    gCredNode.AddChild('pCredPresumido').Text := '0';
+    gCredNode.AddChild('vCredPresumido').Text := '0';
+    end;
+
+    prodnode.AddChild('CFOP').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('natureza').AsString;
+    prodnode.AddChild('uCom').Text := ImpressaoNFEDM.qryProduto.FieldByName('univenda').AsString;
+    prodnode.AddChild('qCom').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('qtde').AsFloat);
+    prodnode.AddChild('vUnCom').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('preco_uni').AsFloat);
+    prodnode.AddChild('vProd').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('valor').AsFloat);
+    prodnode.AddChild('cEANTrib').Text := 'SEM GTIN';
+    prodnode.AddChild('uTrib').Text := ImpressaoNFEDM.qryProduto.FieldByName('univenda').AsString;
+    prodnode.AddChild('qTrib').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('qtde').AsFloat);
+    prodnode.AddChild('vUnTrib').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('preco_uni').AsFloat);
+    if ImpressaoNFEDM.qryProduto.FieldByName('brinde').AsString = 'S' then prodnode.AddChild('indTot').Text := '0'
+    else prodnode.AddChild('indTot').Text := '1';
+
+    impostonode := detnode.AddChild('imposto');
+
+    ICMSNode := impostonode.AddChild('ICMS');
+
+   if ImpressaoNFEDM.qryEmpresa.FieldByName('CRT').AsString = '3' then begin
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '00' then begin
+    ICMS00Node := ICMSNode.AddChild('ICMS00');
+    ICMS00Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS00Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    ICMS00Node.AddChild('modBC').Text := '3';
+    ICMS00Node.AddChild('vBC').Text := FormataValorNFE(ImpressaoNFEDM.qryNotaIten.FieldByName('val_base_icms').AsFloat);
+    ICMS00Node.AddChild('pICMS').Text := FormataValorNFE(ImpressaoNFEDM.qryNotaIten.FieldByName('aliq_icms').AsFloat);
+    ICMS00Node.AddChild('vICMS').Text := FormataValorNFE(ImpressaoNFEDM.qryNotaIten.FieldByName('val_icms').AsFloat);
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '10' then begin
+    ICMS10Node := ICMSNode.AddChild('ICMS10');
+    ICMS10Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS10Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '20' then begin
+    ICMS20Node := ICMSNode.AddChild('ICMS20');
+    ICMS20Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS20Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '30' then begin
+    ICMS30Node := ICMSNode.AddChild('ICMS30');
+    ICMS30Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS30Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+
+    if (ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '40') or
+       (ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '41') or
+       (ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '50') then begin
+    ICMS40Node := ICMSNode.AddChild('ICMS40');
+    ICMS40Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS40Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '51' then begin
+    ICMS51Node := ICMSNode.AddChild('ICMS51');
+    ICMS51Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS51Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '60' then begin
+    ICMS60Node := ICMSNode.AddChild('ICMS60');
+    ICMS60Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS60Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '70' then begin
+    ICMS70Node := ICMSNode.AddChild('ICMS70');
+    ICMS70Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS70Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString = '90' then begin
+    ICMS90Node := ICMSNode.AddChild('ICMS90');
+    ICMS90Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMS90Node.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('cst_icms').AsString;
+    end;
+   end;
+
+   if ImpressaoNFEDM.qryEmpresa.FieldByName('CRT').AsString = '1' then begin
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '101' then begin
+    ICMSSN101Node := ICMSNode.AddChild('ICMSSN101');
+    ICMSSN101Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMSSN101Node.AddChild('CSOSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('csosn').AsString;
+    ICMSSN101Node.AddChild('pCredSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('aliq_icms').AsString;
+    ICMSSN101Node.AddChild('vCredICMSSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('val_icms').AsString;
+    end;
+
+    if (ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '102') or
+       (ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '103') or
+       (ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '300') or
+       (ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '400') then begin
+    ICMSSN102Node := ICMSNode.AddChild('ICMSSN102');
+    ICMSSN102Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMSSN102Node.AddChild('CSOSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('csosn').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '201' then begin
+    ICMSSN201Node := ICMSNode.AddChild('ICMSSN201');
+    ICMSSN201Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMSSN201Node.AddChild('CSOSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('csosn').AsString;
+    ICMSSN201Node.AddChild('pCredSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('aliq_icms').AsString;
+    ICMSSN201Node.AddChild('vCredICMSSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('val_icms').AsString;
+    end;
+
+    if (ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '202') or
+    (ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '203') then begin
+    ICMSSN201Node := ICMSNode.AddChild('ICMSSN202');
+    ICMSSN201Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMSSN201Node.AddChild('CSOSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('csosn').AsString;
+    ICMSSN201Node.AddChild('pCredSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('aliq_icms').AsString;
+    ICMSSN201Node.AddChild('vCredICMSSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('val_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '500' then begin
+    ICMSSN500Node := ICMSNode.AddChild('ICMSSN500');
+    ICMSSN500Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMSSN500Node.AddChild('CSOSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('csosn').AsString;
+    ICMSSN500Node.AddChild('pCredSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('aliq_icms').AsString;
+    ICMSSN500Node.AddChild('vCredICMSSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('val_icms').AsString;
+    end;
+
+    if ImpressaoNFEDM.qryNotaIten.FieldByName('CSOSN').AsString = '900' then begin
+    ICMSSN900Node := ICMSNode.AddChild('ICMSSN900');
+    ICMSSN900Node.AddChild('orig').Text := ImpressaoNFEDM.qryProduto.FieldByName('origem').AsString;
+    ICMSSN900Node.AddChild('CSOSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('csosn').AsString;
+    ICMSSN900Node.AddChild('pCredSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('aliq_icms').AsString;
+    ICMSSN900Node.AddChild('vCredICMSSN').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('val_icms').AsString;
+    end;
+   end;
+
+   // ICMS UF DEST
+
+    IPINode := Impostonode.AddChild('IPI');
+    IPINode.AddChild('cEnq').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('ENQ_IPI').AsString;
+
+    IPINTNode := IPINode.AddChild('IPINT');
+    IPINTNode.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('CST_IPI').AsString;
+
+    PISNode := impostonode.AddChild('PIS');
+    PISAliqNode := PISNode.AddChild('PISAliq');
+    PisALiqNode.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('CST_PIS').AsString;
+    PisALiqNode.AddChild('vBC').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('val_base_pis_cofins').AsFloat);
+    PisALiqNode.AddChild('pPIS').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('Aliq_PIS').AsFloat);
+    PisALiqNode.AddChild('vPIS').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('val_pis').AsFloat);
+
+    COFINSNode := impostonode.AddChild('COFINS');
+    COFINSAliqNode := COFINSNode.AddChild('COFINSAliq');
+    COFINSALiqNode.AddChild('CST').Text := ImpressaoNFEDM.qryNotaIten.FieldByName('CST_COFINS').AsString;
+    COFINSALiqNode.AddChild('vBC').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('val_base_pis_cofins').AsFloat);
+    COFINSALiqNode.AddChild('pCOFINS').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('Aliq_COFINS').AsFloat);
+    COFINSALiqNode.AddChild('vCOFINS').Text := FormataValorNFe(ImpressaoNFEDM.qryNotaIten.FieldByName('val_COFINS').AsFloat);
+
+    TotalNode := InfNFENode.AddChild('total');
+    ICMSTotNode := TotalNode.AddChild('ICMSTot');
+    ICMSTotNode.AddChild('vBC').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_base_icms').AsFloat);
+    ICMSTotNode.AddChild('vICMS').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_icms').AsFloat);
+    ICMSTotNode.AddChild('vICMSDeson').Text := '0.00';
+    ICMSTotNode.AddChild('vFCP').Text := '0.00';
+    ICMSTotNode.AddChild('vBCST').Text :=  '0.00';
+    ICMSTotNode.AddChild('vST').Text := '0.00';
+    ICMSTotNode.AddChild('vFCPST').Text :=  '0.00';
+    ICMSTotNode.AddChild('vFCPSTRet').Text :=  '0.00';
+    ICMSTotNode.AddChild('vProd').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_produtos').AsFloat);
+    ICMSTotNode.AddChild('vFrete').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_frete').AsFloat);
+    ICMSTotNode.AddChild('vSeg').Text := '0.00';
+    ICMSTotNode.AddChild('vDesc').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_desconto').AsFloat);
+    ICMSTotNode.AddChild('vII').Text :=  '0.00';
+    ICMSTotNode.AddChild('vIPI').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_ipi').AsFloat);
+    ICMSTotNode.AddChild('vIPIDevol').Text :=  '0.00';
+    ICMSTotNode.AddChild('vPIS').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_pis').AsFloat);
+    ICMSTotNode.AddChild('vCOFINS').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_cofins').AsFloat);
+    ICMSTotNode.AddChild('vOutro').Text := '0.00';
+    ICMSTotNode.AddChild('vNF').Text := FormataValorNFe(ImpressaoNFEDM.qryNota.FieldByName('valor_total').AsFloat);
+
+    transpnode := infnfenode.AddChild('transp');
+    transpnode.AddChild('modFrete').Text := ImpressaoNFEDM.qryNota.FieldByName('modfrete').AsString;
+
+    volnode := transpnode.AddChild('vol');
+    volnode.AddChild('qVol').Text := ImpressaoNFEDM.qryNota.FieldByName('volumes').AsString;
+    volnode.AddChild('esp').Text := ImpressaoNFEDM.qryNota.FieldByName('especie').AsString;
+    volnode.AddChild('pesoL').Text := ImpressaoNFEDM.qryNota.FieldByName('pesol').AsString;
+    volnode.AddChild('pesoB').Text := ImpressaoNFEDM.qryNota.FieldByName('pesob').AsString;
+
+    if (ImpressaoNFEDM.qryReceber.FieldByName('condpagto').AsString = '03') or
+    (ImpressaoNFEDM.qryReceber.FieldByName('condpagto').AsString = '04') or
+    (ImpressaoNFEDM.qryReceber.FieldByName('condpagto').AsString = '15') or
+    (ImpressaoNFEDM.qryReceber.FieldByName('condpagto').AsString = '17') then begin
+    pagnode := infnfenode.AddChild('pag');
+    detpagnode := pagnode.AddChild('detPag');
+    detpagnode.AddChild('tPag').Text := ImpressaoNFEDM.qryReceber.FieldByName('condpagto').AsString;
+    detpagnode.AddChild('vPag').Text := FormataValorNFe(ImpressaoNFEDM.qryReceber.FieldByName('valor_parcela').AsFloat);
+    end
+    else begin
+    pagnode := infnfenode.AddChild('pag');
+    detpagnode := pagnode.AddChild('detPag');
+    detpagnode.AddChild('tPag').Text := '90';
+    detpagnode.AddChild('vPag').Text := '0.00';
+    end;
+
+    if ImpressaoNFEDM.qryNota.FieldByName('dados_adicionais').AsString <> '' then begin
+    infAdicnode := infnfenode.AddChild('infAdic');
+    infadicnode.AddChild('infCpl').Text := ImpressaoNFEDM.qryNota.FieldByName('dados_adicionais').AsString;
+    end;
+
+    infRespTecnode := infNFeNode.AddChild('infRespTec');
+
+    infRespTecnode.AddChild('CNPJ').Text := '00012034977920';
+    infRespTecnode.AddChild('xContato').Text := 'Enzo Vinicius Fey';
+    infRespTecNode.AddChild('email').Text := 'enzofey047@gmail.com';
+    infRespTecNode.AddChild('fone').Text := '047992906510';
+
+    SignatureNode := XMLDoc.CreateElement('Signature', 'http://www.w3.org/2000/09/xmldsig#');
+    NFeNode.ChildNodes.Add(SignatureNode);
+
+    SignedInfoNode := SignatureNode.AddChild('SignedInfo');
+
+    CanonicalizationMethodNode := SignedInfoNode.AddChild('CanonicalizationMethod');
+    CanonicalizationMethodNode.Attributes['Algorithm'] := 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315';
+
+    SignatureMethodNode := SignedInfoNode.AddChild('SignatureMethod');
+    SignatureMethodNode.Attributes['Algorithm']:= 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+
+    ReferenceNode := SignedInfoNode.AddChild('Reference');
+    ReferenceNode.Attributes['URI'] := '#NFe42250711726756000139550010001388111301355478';
+
+    TransformsNode := ReferenceNode.AddChild('Transforms');
+
+    TransformNode1 := TransformsNode.AddChild('Transform');
+    TransformNode1.Attributes['Algorithm'] := 'http://www.w3.org/2000/09/xmldsig#enveloped-signature';
+
+    TransformNode2 := TransformsNode.AddChild('Transform');
+    TransformNode2.Attributes['Algorithm'] := 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315';
+
+    DigestMethodNode := ReferenceNode.AddChild('DigestMethod');
+    DigestMethodNode.Attributes['Algorithm'] := 'http://www.w3.org/2000/09/xmldsig#sha1';
+
+    ReferenceNode.AddChild('DigestValue').Text := 'CHPmn9OQGWW7Xzh8uDw9M94uY5U=';
+
+    SignatureNode.AddChild('SignatureValue').Text := 'Dx/kbiF1Kn5eMu+UwE0tQIQlMswfx6xWm2Hcl0kNzg2SzxiyrVH0K3bbYQnLIEntr1NWh/ubcWI0cKEWNSpSqlP0jrbTdxy05D19Dl2WA/U636vESfqpIVLKFG8A49imtNOJTXjfwRmFubDoFemv1zyKBE5kXHdaIaPk4UmcDm+ybRcKd+9g0/cgZk/akDZMHev+QJg8XeTB+GvcCZ6CTr6TzTxinHzYj2HM0fVyayc92JsMs+cm5be9NYe2sgXtdA6vj9R6L1txJVjbdQj9+pXDVl7HBOmssHCFqZ1FIf54vbGRjkbvV4LvAI1IN9Bz9kyAJdMZ7DVpldwShJlfMw==';
+
+    KeyInfoNode := SignatureNode.AddChild('KeyInfo');
+
+    X509DataNode := KeyInfoNode.AddChild('X509Data');
+    X509DataNode.AddChild('X509Certificate').text :=
+    'MIIHuDCCBaCgAwIBAgIIdk2YdqxCvjMwDQYJKoZIhvcNAQELBQAwdzELMAkGA1UEBhMCQlIxEzARBgNVBAoTCklDUC1CcmFzaWwxNjA0BgNVBAsTLVNlY3JldGFyaWEgZGEgUmVjZWl0YSBGZWRlcmFsIGRvIEJyYXNpbCAtIFJGQjEbMBkGA1UEAxMSQUMgRE9DQ0xPVUQgUkZCIHYyMB4XDTI0MTExMTEzMzUwN1oXDTI1MTExMTEzMzUwN1owggEMMQswCQYDVQQGEwJCUjETMBEGA1UEChMKSUNQLUJyYXNpbDELMAkGA1UECBMCU0MxDzANBgNVBAcTBkdBU1BBUjE2MDQGA1UECxMtU2VjcmV0YXJpYSBkYSBSZWNlaXRhIEZlZGVyYWwgZG8gQnJhc2lsIC0gUkZCMRYwFAYDVQQLE' +
+    'w1SRkIgZS1DTlBKIEExMRcwFQYDVQQLEw4xOTkwNzc4NzAwMDEwNjEZMBcGA1UECxMQdmlkZW9jb25mZXJlbmNpYTFGMEQGA1UEAxM9RERYIFRFWFRJTCBJTkRVU1RSSUEgRSBDT01FUkNJTyBERSBNQUxIQVMgTFREQToxMTcyNjc1NjAwMDEzOTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAPnr4+TQV/GVKKlw1KaC0BodFYgBZY7rsr4I4a/do8u3V42o+9do2jROHdSq3Lko8205bErQE8cmInM5It2ci0qs0is1L5fERlTitCXDb7q3lcoNtEyDoiLPTIY0F5FUPslfVKds+k6ALozsGFwmFnQJtcRKmMK5XHON7N3QaveztwJ8poAu1U17kYf29J2DMNrvhb8pAhwkLKXDEjar' +
+    'v0n5WegzVgMlQhzBX55AYi/c+/5Bo+1QQ0B/2GR08ISUl7ZoSiqHn1mq19WNZTt7UMiEhXYfQhIFzWiKta4Uz4sfdGRj4To/jHvkKHSHuxn+NERJwHTUsnCPRtKHAfkIr9kCAwEAAaOCAq8wggKrMB8GA1UdIwQYMBaAFJ7MTbgwg/Rmw2KqNo/HDB8QaSWcMA4GA1UdDwEB/wQEAwIF4DBsBgNVHSAEZTBjMGEGBmBMAQIBOjBXMFUGCCsGAQUFBwIBFklodHRwOi8vcmVwb3NpdG9yaW8uYWNkb2NjbG91ZC5jb20uYnIvYWMtZG9jY2xvdWRyZmIvZHBjLWFjZG9jY2xvdWRyZmIucGRmMIG0BgNVHR8EgawwgakwUqBQoE6GTGh0dHA6Ly9yZXBvc2l0b3Jpby5hY2RvY2Nsb3VkLmNvbS5ici9h' +
+    'Yy1kb2NjbG91ZHJmYi9sY3ItYWMtZG9jY2xvdWRyZmJ2NS5jcmwwU6BRoE+GTWh0dHA6Ly9yZXBvc2l0b3JpbzIuYWNkb2NjbG91ZC5jb20uYnIvYWMtZG9jY2xvdWRyZmIvbGNyLWFjLWRvY2Nsb3VkcmZidjUuY3JsMGQGCCsGAQUFBwEBBFgwVjBUBggrBgEFBQcwAoZIaHR0cDovL3JlcG9zaXRvcmlvLmFjZG9jY2xvdWQuY29tLmJyL2FjLWRvY2Nsb3VkcmZiL2FjLWRvY2Nsb3VkcmZidjUucDdiMIHCBgNVHREEgbowgbeBHUxVQ0FTLlBPTEVaQUBERFhURVhUSUwuQ09NLkJSoCgGBWBMAQMCoB8THUxVQ0FTIEVEVUFSRE8gREUgU09VWkEgUE9MRVpBoBkGBWBMAQMDoBATDjExNzI2NzU' +
+    '2MDAwMTM5oDgGBWBMAQMEoC8TLTA0MDgxOTk4MDA3MzUwMTU5MDIwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMKAXBgVgTAEDB6AOEwwwMDAwMDAwMDAwMDAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMAkGA1UdEwQCMAAwDQYJKoZIhvcNAQELBQADggIBAD6imA0B3BGYtUwmFI/zj0LXwXiA90VLANgs+gMZesbc/o73T8+uG5dg4ThEDv0BFSZvgr0brNzoozdk4UPTTuXXdSaGhKQnoV/rxj+PLQR7ItRWZxLjtl8RVVjdJhMiroX9548AtVEYkRvPCCWGM3WrpRl/OUx8hEqzbXppve0oilAfJ6bqAblKtPftrMWllYlhmzzAnXk9QFx2/3FqKl490+g6g2R7cIYdeUaWXs0lezzGNe' +
+    'tIde+yWnmisxfhEg8ky96UNByCH170rX6NWj/4tXLImnkZ/jZ94QfzQ9pv6cNq+XkWA028rrCLz9s7buQyhuDEkjEFgbB5AV3RltHT65Z5uTzUJkPXW+0M9NwgoAkyqF6aOOX/0CqjE12SUIw+Dwf7Cnk0aVrd6fCsu9UME/XoyfKlrNuekH5ctZpUoBdmt66DxOln5kwKLcwWgge6PwimABBTZ7TDt2Sq4VVfAoY+XH5LlQww9aXvEenCmpXQ5nA4UyXGzq6o+e+vwDuNQwTuObizz0VJk1IFPl1Lw5FXIwEv+90j78h5M09JPef3ehANYVktllTwCG8931zQUVSjX6BTErAj4yg4UrKryd83QhQboYnCLvgAxdWA8k+ueboF6nREOmmlT2Y8h6ctslKPOw/q97q0aofUpcxDayb2HjLPdji/5d9XEHFB';
+
+     protNFeNode := XMLDoc.CreateNode('protNFe', ntElement, 'http://www.portalfiscal.inf.br/nfe');
+     nfeProcNode.ChildNodes.Add(protNFeNode);
+     protNFeNode.Attributes['versao'] := '4.00';
+
+     infProtNode := protNFeNode.AddChild('infProt');
+
+     if CBAmbiente.Text = 'Homologação' then
+     infProtNode.AddChild('tpAmb').Text := '2'
+     else if CBAmbiente.Text = 'Produção' then
+     infProtNode.AddChild('tpAmb').Text := '1';
+
+     infProtNode.AddChild('verAplic').text := 'SVRS2507041437DR';
+     infProtNode.AddChild('chNFe').text := chave_nfe;
+     infProtNode.AddChild('dhRecbto').text := FormatDateTime('yyyy"-"mm"-"dd"T"hh":"nn":"ss"-03:00"', Now);
+     infProtNode.AddChild('nProt').text := '242250262909678';
+     infProtNode.AddChild('digVal').text := 'CHPmn9OQGWW7Xzh8uDw9M94uY5U=';
+     infProtNode.AddChild('cStat').text := '100';
+     infProtNode.AddChild('xMotivo').text := 'Autorizado o uso da NF-e';
+
+    ImpressaoNFEDM.qryNota.Next;
+    ForceDirectories('C:\XML');
+    XMLDoc.SaveToFile('C:\XML\notas.xml');
+    ShowMessage('XML gerado com sucesso em C:\XML\notas.xml');
+    EdtChave_NFE.Text := chave_nfe;
+    EdtProtocolo_NFE.Text := '242250262909678';
+    DTPEmissao_NFE.Datetime := Now;
+    except
+    on E: Exception do
+    ShowMessage('Erro ao gerar XML! ' + E.Message);
+  end;
+end;
+
+procedure TImpressaoNFEForm.GridNotasCellClick(Column: TColumn);
+var fatura, serie, emp_id: string;
+begin
+  fatura := GridNotas.DataSource.DataSet.FieldByName('fatura').AsString;
+  serie := GridNotas.DataSource.DataSet.FieldByName('serie').AsString;
+  emp_id := GridNotas.DataSource.DataSet.FieldByName('emp_id').AsString;
+
+  ImpressaoNFEDM.qryGridNotaIten.SQL.Clear;
+  ImpressaoNFEDM.qryGridNotaIten.Close;
+
+  ImpressaoNFEDM.qryGridNotaIten.SQL.Text :=
+  'SELECT ni.* FROM notaiten ni ' +
+  'INNER JOIN nota n ON (ni.fatura = n.fatura) AND (n.id = ni.id_nota) ' +
+  'WHERE n.fatura = :fatura ' +
+  'AND n.serie = :serie ' +
+  'AND n.emp_id = :emp_id';
+
+  ImpressaoNFEDM.qryGridNotaIten.ParamByName('fatura').AsString := fatura;
+  ImpressaoNFEDM.qryGridNotaIten.ParamByName('serie').AsString := serie;
+  ImpressaoNFEDM.qryGridNotaIten.ParamByName('emp_id').AsString := emp_id;
+  ImpressaoNFEDM.qryGridNotaIten.Open;
+end;
+
+procedure TImpressaoNFEForm.SBEntidadeClick(Sender: TObject);
+var entidade, codigo: string;
+begin
+ with CadEntidadeDM.qryConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where ativo = :ativo');
+  ParamByName('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarEntidade, ConsultarEntidade);
+ codigo := ConsultarEntidade.SelecionarEntidade;
+
+ if codigo <> '' then begin
+  Entidade := ConsultarEntidade.nome;
+  EdtEntidade.Text := entidade;
+ end;
+end;
+
+procedure TImpressaoNFEForm.SBFaturaClick(Sender: TObject);
+var fatura: string;
+begin
+  ImpressaoNFEDM.ConsultarFatura.SQL.Clear;
+  ImpressaoNFEDM.ConsultarFatura.SQL.Text :=
+  'select * from nota';
+  ImpressaoNFEDM.ConsultarFatura.Open;
+  Application.CreateForm(TConsultarFatura, ConsultarFatura);
+
+  fatura := ConsultarFatura.SelecionarFatura;
+  EdtFatura.Text := fatura;
+end;
+
+procedure TImpressaoNFEForm.SBNaturezaClick(Sender: TObject);
+var natureza: string;
+begin
+ with CadNaturezaDM.qryConsultarNatureza do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadnatureza where ativo = :ativo');
+  ParamByName('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarNatureza, ConsultarNatureza);
+ natureza := ConsultarNatureza.SelecionarNatureza;
+
+ if natureza <> '' then begin
+  EdtNatureza.Text := natureza;
+ end;
+end;
+end.
