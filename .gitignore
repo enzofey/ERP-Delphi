@@ -1,0 +1,27 @@
+# Delphi/BDS temporários
+*.dcu
+*.~pas
+*.~dfm
+*.local
+*.dsk
+*.identcache
+
+# Compilação
+*.exe
+*.dll
+*.bpl
+*.dproj.local
+
+# Pastas de build
+\bin\
+\release\
+\debug\
+
+# Pacotes intermediários
+*.dcp
+*.res
+*.map
+
+# Logs e caches
+*.log
+*.cache
