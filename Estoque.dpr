@@ -4,6 +4,7 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.Controls,
+  SysUtils,
   Cidade in 'Cidade.pas' {CadCidade},
   ConsultarCorForm in 'ConsultarCorForm.pas' {ConsultarCor},
   ConsultarDepositoForm in 'ConsultarDepositoForm.pas' {ConsultarDeposito},
@@ -94,13 +95,20 @@ uses
   ConsultarMoedaForm in 'ConsultarMoedaForm.pas' {ConsultarMoeda},
   EntradaNF in 'EntradaNF.pas' {EntradaNFForm},
   EntradaNFDM in 'EntradaNFDM.pas' {EntradaNFeDM: TDataModule},
-  EditorRelatorioForm in 'EditorRelatorioForm.pas' {EditorRelatorioFM};
+  EditorRelatorioForm in 'EditorRelatorioForm.pas' {EditorRelatorioFM},
+  FireDAC.Phys.PG, FireDAC.Phys.PGDef, FireDAC.Stan.Intf;
 
 {$R *.res}
+
+var PgDriverLink: TFDPhysPgDriverLink;
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+
+  PgDriverLink := TFDPhysPgDriverLink.Create(nil);
+  PgDriverLink.VendorLib := ExtractFilePath(ParamStr(0)) + 'libpq.dll';
+
   Application.CreateForm(TCadCorDM, CadCorDM);
   Application.CreateForm(TCadDepositoDM, CadDepositoDM);
   Application.CreateForm(TCadEntidadeDM, CadEntidadeDM);
@@ -138,6 +146,8 @@ begin
   begin
   Application.CreateForm(TWelcome, Welcome);
   Application.Run;
+
+  PgDriverLink.Free;
   end
   else
   Application.Terminate;

@@ -1,0 +1,4 @@
+object LogModule: TLogModule
+  Height = 480
+  Width = 640
+end

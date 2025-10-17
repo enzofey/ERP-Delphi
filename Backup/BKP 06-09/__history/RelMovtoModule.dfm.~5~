@@ -1,0 +1,35 @@
+﻿object RelMovtoDataModule: TRelMovtoDataModule
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Database=estoque'
+      'User_Name=root'
+      'Server=127.0.0.1'
+      'DriverID=MySQL')
+    Connected = True
+    LoginPrompt = False
+    Left = 40
+    Top = 32
+  end
+  object dsProdMov: TDataSource
+    DataSet = QueryProdMov
+    Left = 112
+    Top = 40
+  end
+  object tbProdMov: TFDTable
+    Active = True
+    IndexFieldNames = 'ID'
+    MasterSource = dsProdMov
+    Connection = Conexão
+    ResourceOptions.AssignedValues = [rvEscapeExpand]
+    TableName = 'estoque.prodmov'
+    Left = 32
+    Top = 128
+  end
+  object QueryProdMov: TFDQuery
+    Connection = Conexão
+    Left = 112
+    Top = 128
+  end
+end

@@ -1,0 +1,173 @@
+object CadUsuario: TCadUsuario
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'CadUsuario'
+  ClientHeight = 955
+  ClientWidth = 1862
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  TextHeight = 15
+  object Pages: TPageControl
+    Left = 0
+    Top = 0
+    Width = 1862
+    Height = 955
+    ActivePage = CadastroPage
+    Align = alClient
+    TabOrder = 0
+    ExplicitLeft = 1
+    ExplicitTop = 1
+    ExplicitWidth = 1861
+    ExplicitHeight = 954
+    object CadastroPage: TTabSheet
+      Caption = 'Cadastro'
+      object lblAtivo: TLabel
+        Left = 784
+        Top = 32
+        Width = 31
+        Height = 15
+        Caption = 'Ativo:'
+      end
+      object lblCodigo: TLabel
+        Left = 32
+        Top = 32
+        Width = 42
+        Height = 15
+        Caption = 'C'#243'digo:'
+      end
+      object lblUsuario: TLabel
+        Left = 32
+        Top = 72
+        Width = 43
+        Height = 15
+        Caption = 'Usu'#225'rio:'
+      end
+      object SBEntidade: TSpeedButton
+        Left = 207
+        Top = 30
+        Width = 23
+        Height = 22
+        Enabled = False
+        OnClick = SBEntidadeClick
+      end
+      object btnAlterar: TButton
+        Left = 183
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Alterar'
+        TabOrder = 0
+        OnClick = btnAlterarClick
+      end
+      object btnConsultar: TButton
+        Left = 334
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Consultar'
+        TabOrder = 1
+        OnClick = btnConsultarClick
+      end
+      object btnDesistir: TButton
+        Left = 183
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Desistir'
+        TabOrder = 2
+        Visible = False
+        OnClick = btnDesistirClick
+      end
+      object btnExcluir: TButton
+        Left = 485
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Excluir'
+        TabOrder = 3
+        OnClick = btnExcluirClick
+      end
+      object btnFechar: TButton
+        Left = 1680
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Fechar'
+        TabOrder = 4
+        OnClick = btnFecharClick
+      end
+      object btnGravarAlterar: TButton
+        Left = 32
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Gravar'
+        TabOrder = 5
+        Visible = False
+        OnClick = btnGravarAlterarClick
+      end
+      object btnGravarIncluir: TButton
+        Left = 32
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Gravar'
+        TabOrder = 6
+        Visible = False
+        OnClick = btnGravarIncluirClick
+      end
+      object btnIncluir: TButton
+        Left = 32
+        Top = 837
+        Width = 145
+        Height = 57
+        Caption = 'Incluir'
+        TabOrder = 7
+        OnClick = btnIncluirClick
+      end
+      object CBAtivo: TCheckBox
+        Left = 821
+        Top = 32
+        Width = 20
+        Height = 17
+        Enabled = False
+        TabOrder = 8
+      end
+      object DBGrid1: TDBGrid
+        Left = 32
+        Top = 176
+        Width = 1793
+        Height = 633
+        TabOrder = 9
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -12
+        TitleFont.Name = 'Segoe UI'
+        TitleFont.Style = []
+      end
+      object edtCodigo: TEdit
+        Left = 80
+        Top = 29
+        Width = 121
+        Height = 23
+        Enabled = False
+        TabOrder = 10
+      end
+      object EdtUsuario: TEdit
+        Left = 81
+        Top = 69
+        Width = 121
+        Height = 23
+        Enabled = False
+        TabOrder = 11
+      end
+    end
+  end
+end

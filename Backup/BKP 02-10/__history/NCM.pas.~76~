@@ -1,0 +1,356 @@
+unit NCM;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Data.DB, Vcl.StdCtrls,
+  Vcl.Grids, Vcl.DBGrids,
+  GlobalUnit,
+  NCMDM,
+  Log, LogDM, Vcl.ComCtrls, Vcl.Buttons;
+
+type
+  TCadNCM = class(TForm)
+    Panel1: TPanel;
+    Pages: TPageControl;
+    AcessoPage: TTabSheet;
+    CadastroPage: TTabSheet;
+    CBAtivo: TCheckBox;
+    EdtCodigo: TEdit;
+    EdtDescricao: TEdit;
+    EdtNCM: TEdit;
+    Grid: TDBGrid;
+    lblAtivo: TLabel;
+    lblCodigo: TLabel;
+    lblDescricao: TLabel;
+    lblNCM: TLabel;
+    BtnExcluir: TButton;
+    BtnGravarAlterar: TButton;
+    btnAlterar: TButton;
+    btnIncluir: TButton;
+    BtnDesistir: TButton;
+    BtnGravarIncluir: TButton;
+    btnFechar: TButton;
+    RGAcessoAtivo: TRadioGroup;
+    lblAcessoNCM: TLabel;
+    EdtAcessoNCM: TEdit;
+    EdtAcessoDescricao: TEdit;
+    SBConsNCM: TSpeedButton;
+    btnAcessoFechar: TButton;
+    btnAcessoConsultar: TButton;
+    AcessoGrid: TDBGrid;
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure GridCellClick(Column: TColumn);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadNCM: TCadNCM;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadNCM.FormShow(Sender: TObject);
+var I: integer;
+begin
+ CadNCMDM.ConsultarNCM.SQL.Clear;
+ CadNCMDM.ConsultarNCM.SQL.Text :=
+ 'select * from cadncm';
+ CadNCMDM.ConsultarNCM.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadNCM.btnIncluirClick(Sender: TObject);
+var I: integer;
+begin
+ CadNCMDM.ConsultarNCM.SQL.Clear;
+ CadNCMDM.ConsultarNCM.SQL.Text :=
+ 'select * from cadncm';
+ CadNCMDM.ConsultarNCM.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+ btnIncluir.Visible := False;
+ btnExcluir.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+
+ EdtCodigo.Enabled := True;
+ EdtNCM.Enabled := True;
+ EdtDescricao.Enabled := True;
+ CBAtivo.Enabled := True;
+
+ EdtCodigo.Clear;
+ EdtNCM.Clear;
+ EdtDescricao.Clear;
+end;
+
+procedure TCadNCM.GridCellClick(Column: TColumn);
+var codigo, NCM, Ativo, Descricao: String;
+begin
+ EdtCodigo.Text := CadNCMDM.ConsultarNCM.FieldByName('codigo').AsString;
+ EdtNCM.Text := CadNCMDM.ConsultarNCM.FieldByName('NCM').AsString;
+ EdtDescricao.Text := CadNCMDM.ConsultarNCM.FieldByName('Descricao').AsString;
+ if CadNCMDM.ConsultarNCM.FieldByName('Ativo').AsString = 'S' then CBAtivo.Checked;
+end;
+
+procedure TCadNCM.btnGravarIncluirClick(Sender: TObject);
+var codigo, descricao, ativo, NCM: String;
+    I: integer;
+begin
+ descricao := EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+ NCM := EdtNCM.Text;
+ codigo := EdtCodigo.Text;
+
+ if codigo = '' then begin
+  ShowMessage('Código não pode ser vazio!');
+  Exit;
+ end;
+
+ if descricao = '' then begin
+  ShowMessage('Descrição não pode ser vazio!');
+  Exit;
+ end;
+
+ if NCM = '' then begin
+  ShowMessage('NCM não pode ser vazio!');
+  Exit;
+ end;
+
+ try
+  CadNCMDM.SelectQuery.SQL.Clear;
+  CadNCMDM.SelectQuery.SQL.Text :=
+  'select * from cadNCM where NCM = :NCM';
+  CadNCMDM.SelectQuery.ParamByName('NCM').AsString := NCM;
+  CadNCMDM.SelectQuery.Open;
+
+  if not CadNCMDM.SelectQuery.IsEmpty then begin
+   ShowMessage('NCM já cadastrado!');
+   Exit;
+  end;
+
+  CadNCMDM.InsertQuery.SQL.Clear;
+  CadNCMDM.InsertQuery.SQL.Text :=
+  'insert into cadncm (codigo, NCM, descricao, ativo) values (:codigo, :NCM, :descricao, :ativo)';
+  CadNCMDM.InsertQuery.ParamByName('NCM').AsString := NCM;
+  CadNCMDM.InsertQuery.ParamByName('descricao').AsString := descricao;
+  CadNCMDM.InsertQuery.ParamByName('ativo').AsString := ativo;
+  CadNCMDM.InsertQuery.ParamByName('codigo').AsString := codigo;
+  CadNCMDM.InsertQuery.ExecSQL;
+
+  LogsDM.InserirLog.SQL.Clear;
+  LogsDM.InserirLog.SQL.Text :=
+  'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
+  LogsDM.InserirLog.ParamByName('descricao').AsString :=
+  'Inseriu o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
+  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadNCM';
+  LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogsDM.InserirLog.ExecSQL;
+
+  ShowMessage('Incluído com sucesso!');
+  btnIncluir.Visible := True;
+  btnExcluir.Visible := True;
+  btnAlterar.Visible := True;
+
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  EdtCodigo.Enabled := False;
+  EdtNCM.Enabled := False;
+  EdtDescricao.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  CadNCMDM.ConsultarNCM.SQL.Clear;
+  CadNCMDM.ConsultarNCM.SQL.Text :=
+  'select * from cadncm';
+  CadNCMDM.ConsultarNCM.Open;
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+  except
+  ShowMessage('Erro na inclusão!');
+ end;
+end;
+
+procedure TCadNCM.btnAlterarClick(Sender: TObject);
+var I: integer;
+begin
+ if EdtCodigo.Text = '' then begin
+  ShowMessage('NCM não selecionado!');
+  Exit;
+ end;
+
+ CadNCMDM.ConsultarNCM.SQL.Clear;
+ CadNCMDM.ConsultarNCM.SQL.Text :=
+ 'select * from cadncm';
+ CadNCMDM.ConsultarNCM.Open;
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+ btnIncluir.Visible := False;
+ btnExcluir.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+
+ EdtNCM.Enabled := True;
+ EdtDescricao.Enabled := True;
+ CBAtivo.Enabled := True;
+end;
+
+procedure TCadNCM.btnGravarAlterarClick(Sender: TObject);
+var codigo, descricao, ativo, NCM: String;
+    I: integer;
+begin
+ descricao := EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+ NCM := EdtNCM.Text;
+ codigo := EdtCodigo.Text;
+
+ if descricao = '' then begin
+ ShowMessage('Descrição não pode ser vazio!');
+ Exit;
+ end;
+
+ if NCM = '' then begin
+ ShowMessage('NCM não pode ser vazio!');
+ Exit;
+ end;
+
+ try
+ CadNCMDM.UpdateQuery.SQL.Clear;
+ CadNCMDM.UpdateQuery.SQL.Text :=
+ 'update cadncm set Descricao = :descricao, ativo = :ativo, NCM = :NCM where codigo = :codigo';
+ CadNCMDM.UpdateQuery.ParamByName('codigo').AsString := codigo;
+ CadNCMDM.UpdateQuery.ParamByName('descricao').AsString := descricao;
+ CadNCMDM.UpdateQuery.ParambyName('ativo').AsString := ativo;
+ CadNCMDM.UpdateQuery.Parambyname('NCM').AsString := NCM;
+ CadNCMDM.UpdateQuery.ExecSQL;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Alterou o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadNCM';
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ExecSQL;
+
+ ShowMessage('Alterado com sucesso!');
+
+ CadNCMDM.ConsultarNCM.SQL.Clear;
+ CadNCMDM.ConsultarNCM.SQL.Text :=
+ 'select * from cadncm';
+ CadNCMDM.ConsultarNCM.Open;
+
+ btnIncluir.Visible := True;
+ btnExcluir.Visible := True;
+ btnAlterar.Visible := True;
+
+ btnGravarAlterar.Visible := False;
+ btnDesistir.Visible := False;
+
+ EdtNCM.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+ except
+ ShowMessage('Erro na alteração');
+ end;
+end;
+
+procedure TCadNCM.btnDesistirClick(Sender: TObject);
+begin
+ CadNCMDM.ConsultarNCM.SQL.Clear;
+ CadNCMDM.ConsultarNCM.SQL.Text :=
+ 'select * from cadncm';
+ CadNCMDM.ConsultarNCM.Open;
+
+ btnIncluir.Visible := True;
+ btnExcluir.Visible := True;
+ btnAlterar.Visible := True;
+
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+
+ EdtCodigo.Enabled := False;
+ EdtNCM.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+
+ EdtCodigo.Clear;
+ EdtNCM.Clear;
+ EdtDescricao.Clear;
+end;
+
+procedure TCadNCM.btnExcluirClick(Sender: TObject);
+var codigo, descricao, ativo, NCM: String;
+begin
+ descricao := EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+ NCM := EdtNCM.Text;
+ codigo := EdtCodigo.Text;
+
+ if codigo = '' then begin
+ ShowMessage('NCM não selecionado!');
+ Exit;
+ end;
+
+ try
+ CadNCMDM.DeleteQuery.SQL.Clear;
+ CadNCMDM.DeleteQuery.SQL.Text :=
+ 'delete from cadncm where codigo = :codigo';
+ CadNCMDM.DeleteQuery.Parambyname('codigo').AsString := codigo;
+ CadNCMDM.DeleteQuery.ExecSQL;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Excluiu o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadNCM';;
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ LogsDM.InserirLog.ExecSQL;
+
+ ShowMessage('Excluído com sucesso!');
+
+ CadNCMDM.ConsultarNCM.SQL.Clear;
+ CadNCMDM.ConsultarNCM.SQL.Text :=
+ 'select * from cadncm';
+ CadNCMDM.ConsultarNCM.Open;
+
+ EdtCodigo.Clear;
+ EdtNCM.Clear;
+ EdtDescricao.Clear;
+ except
+ ShowMessage('Erro na alteração');
+ end;
+end;
+
+procedure TCadNCM.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+end.

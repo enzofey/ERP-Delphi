@@ -1,0 +1,27 @@
+unit GlobalUnit;
+
+interface
+
+var UsuarioLogado: String;
+var EmpresaLogada: String;
+procedure FecharTela(Sender: TObject);
+
+implementation
+
+Uses Vcl.ComCtrls, Vcl.Controls;
+
+procedure FecharTela(Sender: TObject);
+begin
+  if Sender is TWinControl then
+  begin
+    with Sender as TWinControl do
+    begin
+      if Parent is TTabSheet then
+      begin
+        (Parent as TTabSheet).PageControl := nil;
+        Parent.Free;
+      end;
+    end;
+  end;
+end;
+end.

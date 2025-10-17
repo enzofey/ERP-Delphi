@@ -1,0 +1,49 @@
+unit ConsultarPaisForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids, PaisDataModule,
+  Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+  TConsultarPaisForma = class(TForm)
+    Panel1: TPanel;
+    btnSelecionarPais: TButton;
+    GridPais: TDBGrid;
+    procedure btnSelecionarPaisClick(Sender: TObject);
+  private
+    PaSigla: String;
+    PaPais: String;
+    PaAtivo: String;
+  public
+   function SelecionarPais: string;
+   function Sigla: string;
+  end;
+
+var
+  ConsultarPaisForma: TConsultarPaisForma;
+
+implementation
+
+{$R *.dfm}
+
+procedure TConsultarPaisForma.btnSelecionarPaisClick(Sender: TObject);
+begin
+  PaSigla := CadPaisDataModule.FDQuery1.FieldByName('sigla').AsString;
+  Close;
+end;
+
+function TConsultarPaisForma.SelecionarPais: string;
+begin
+  PaSigla := '';
+  ShowModal;
+  Result := PaSigla;
+end;
+
+function TConsultarPaisForma.Sigla: string;
+begin
+  Result := PaSigla;
+end;
+end.

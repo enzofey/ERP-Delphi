@@ -1,0 +1,18 @@
+unit GlobalUnit;
+
+interface
+
+var UsuarioLogado: String;
+var EmpresaLogada: String;
+procedure FecharTela(Sender: TObject);
+
+implementation
+
+Uses System.SysUtils, Vcl.ComCtrls, Vcl.Controls, Vcl.Forms;
+
+procedure FecharTela(Sender: TObject);
+begin
+  if (Sender is TForm) and (TForm(Sender).Parent is TTabSheet) then
+    TTabSheet(TForm(Sender).Parent).Free;
+end;
+end.

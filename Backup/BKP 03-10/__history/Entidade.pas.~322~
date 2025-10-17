@@ -1,0 +1,1617 @@
+unit Entidade;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Buttons, Vcl.ComCtrls,
+  EntidadeDM, ConsultarEntidadeForm,
+  ConsultarEstadoForm, Estado, EstadoDM,
+  ConsultarCidadeForm, CidadeDM,
+  ConsultarPaisForm, PaisDM,
+  ConsultarCEPForm, CEPDM,
+  Log, LogDM,
+  GlobalUnit, Data.DB, Vcl.Grids, Vcl.DBGrids, System.Net.HttpClient, System.Net.HttpClientComponent, System.JSON;
+
+type
+  TCadEntidade = class(TForm)
+    Pages: TPageControl;
+    AcessoPage: TTabSheet;
+    CadastroPage: TTabSheet;
+    btnAlterar: TButton;
+    BtnConsultar: TButton;
+    BtnDesistir: TButton;
+    BtnExcluir: TButton;
+    btnFechar: TButton;
+    BtnGravarAlterar: TButton;
+    BtnGravarIncluir: TButton;
+    btnIncluir: TButton;
+    CaptionEndereco: TLabel;
+    CBAtivo: TCheckBox;
+    CBConsumidorFinal: TCheckBox;
+    CBIndIE: TComboBox;
+    EdtBairro: TEdit;
+    EdtCEP: TEdit;
+    EdtCidade: TEdit;
+    EdtCodigo: TEdit;
+    EdtComplemento: TEdit;
+    EdtCPF: TEdit;
+    EdtDDD: TEdit;
+    EdtEmail: TEdit;
+    EdtEstado: TEdit;
+    EdtIE: TEdit;
+    EdtNome: TEdit;
+    EdtNumero: TEdit;
+    EdtPais: TEdit;
+    EdtRua: TEdit;
+    EdtTelefone: TEdit;
+    LblAtivo: TLabel;
+    lblBairro: TLabel;
+    LblCEP: TLabel;
+    LblCidade: TLabel;
+    lblCodigo: TLabel;
+    LblComplemento: TLabel;
+    lblConsumidorFinal: TLabel;
+    lblCPF: TLabel;
+    LblDDD: TLabel;
+    lblEmail: TLabel;
+    LblEstado: TLabel;
+    lblIE: TLabel;
+    lblIndicadorIE: TLabel;
+    lblNome: TLabel;
+    lblNumero: TLabel;
+    LblPais: TLabel;
+    lblRua: TLabel;
+    LblTelefone: TLabel;
+    SBCEP: TSpeedButton;
+    lblAcessoCodigo: TLabel;
+    SBConsEntidade: TSpeedButton;
+    RGAcessoAtivo: TRadioGroup;
+    EdtAcessoCodigo: TEdit;
+    EdtAcessoNome: TEdit;
+    btnAcessoFechar: TButton;
+    btnAcessoConsultar: TButton;
+    AcessoGrid: TDBGrid;
+    lblAcessoIndIE: TLabel;
+    CBAcessoIndIE: TComboBox;
+    lblAcessoEstado: TLabel;
+    EdtAcessoSiglaEstado: TEdit;
+    EdtAcessoEstado: TEdit;
+    SBConsEstado: TSpeedButton;
+    lblAcessoPais: TLabel;
+    EdtAcessoSiglaPais: TEdit;
+    EdtAcessoPais: TEdit;
+    SBConsPais: TSpeedButton;
+    lblAcessoCEP: TLabel;
+    EdtAcessoCodigoCEP: TEdit;
+    EdtAcessoCEP: TEdit;
+    SBConsCEP: TSpeedButton;
+    lblAcessoCidade: TLabel;
+    EdtAcessoCodigoCidade: TEdit;
+    EdtAcessoCidade: TEdit;
+    SBConsCidade: TSpeedButton;
+    RGAcessoConsumidor_Final: TRadioGroup;
+    lblCNPJ: TLabel;
+    EdtCNPJ: TEdit;
+    CBTipo: TComboBox;
+    lblTipo: TLabel;
+    SBAcessoClearIndIE: TSpeedButton;
+    btnWWW: TButton;
+    lblFantasia: TLabel;
+    EdtFantasia: TEdit;
+    procedure btnIncluirClick(Sender: TObject);
+    procedure BtnDesistirClick(Sender: TObject);
+    procedure BtnGravarIncluirClick(Sender: TObject);
+    procedure BtnGravarAlterarClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure BtnExcluirClick(Sender: TObject);
+    procedure BtnConsultarClick(Sender: TObject);
+    procedure SBCEPClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure SBConsCEPClick(Sender: TObject);
+    procedure SBConsPaisClick(Sender: TObject);
+    procedure SBConsCidadeClick(Sender: TObject);
+    procedure SBConsEstadoClick(Sender: TObject);
+    procedure SBConsEntidadeClick(Sender: TObject);
+    procedure EdtAcessoSiglaEstadoChange(Sender: TObject);
+    procedure EdtAcessoCodigoChange(Sender: TObject);
+    procedure EdtAcessoCodigoCidadeChange(Sender: TObject);
+    procedure EdtAcessoSiglaPaisChange(Sender: TObject);
+    procedure EdtAcessoCodigoCEPChange(Sender: TObject);
+    procedure btnAcessoConsultarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure CBTipoChange(Sender: TObject);
+    procedure EdtCEPChange(Sender: TObject);
+    procedure SBAcessoClearIndIEClick(Sender: TObject);
+    procedure CBAcessoIndIEDropDown(Sender: TObject);
+    procedure EdtCNPJExit(Sender: TObject);
+    procedure EdtCPFExit(Sender: TObject);
+    procedure btnWWWClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadEntidade: TCadEntidade;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadEntidade.btnWWWClick(Sender: TObject);
+var HttpCNPJ, HttpCEP: TNetHTTPClient;
+    ResponseCNPJ, ResponseCEP: IHTTPResponse;
+    vJSONCNPJ, vJSONCEP: TJSONObject;
+    Nome, Fantasia, CEP, Email, Telefone, DDD, CNPJ, Mensagem, Status,
+    Rua, Complemento, Bairro, Cidade, CodigoIBGECidade, CodigoCidade, UF, Pais, CodigoCEP: string;
+begin
+ CNPJ := EdtCNPJ.Text;
+ HttpCNPJ := TNetHttpClient.Create(nil);
+ HttpCEP := TNetHttpClient.Create(nil);
+
+ try
+  ResponseCNPJ := HttpCNPJ.Get('https://www.receitaws.com.br/v1/cnpj/' + CNPJ);
+  vJSONCNPJ := TJSONObject.ParseJSONValue(ResponseCNPJ.ContentAsString()) as TJSONObject;
+
+  if ResponseCNPJ.StatusCode = 429 then begin
+   ShowMessage('Limite de consultas atingido! Tente novamente mais tarde.');
+   Abort;
+  end;
+
+  status := vJSONCNPJ.GetValue<string>('status');
+
+  if status = 'ERROR' then begin
+  Mensagem := vJSONCNPJ.GetValue<string>('message');
+   if Mensagem = 'CNPJ inválido' then begin
+    ShowMessage('Erro ao consultar na integração ReceitaWS, CNPJ Inválido!');
+    Abort;
+   end;
+   Abort;
+  end;
+
+  if status = 'OK' then begin
+   try
+    Nome := vJSONCNPJ.GetValue<string>('nome');
+    Fantasia := vJSONCNPJ.GetValue<string>('fantasia');
+
+    CEP := vJSONCNPJ.GetValue<string>('cep');
+    CEP := StringReplace(CEP, '.', '', [rfReplaceALL]);
+    CEP := StringReplace(CEP, '-', '', [rfReplaceALL]);
+
+    with CadCEPDM.qryConsultarCEP do
+    begin
+    SQL.Clear;
+    SQL.Add('select * from cadcep where CEP = :CEP');
+    ParamByName('CEP').AsString := CEP;
+    Open;
+
+     if IsEmpty then begin
+      ShowMessage('CEP não cadastrado no sistema! Cadastrando automaticamente!');
+
+      try
+       ResponseCEP := HttpCEP.Get('https://viacep.com.br/ws/' + CEP + '/json');
+       vJSONCEP := TJSONObject.ParseJSONValue(ResponseCEP.ContentAsString()) as TJSONObject;
+
+       if ResponseCEP.StatusCode = 400 then begin
+        ShowMessage('CEP não encontrado na integração VIACEP');
+        Abort;
+       end;
+
+       if ResponseCEP.StatusCode = 200 then begin
+        vJSONCEP := TJSONObject.ParseJSONValue(ResponseCEP.ContentAsString()) as TJSONObject;
+
+        try
+         Rua := vJSONCEP.GetValue<string>('logradouro');
+         Complemento := vJSONCEP.GetValue<string>('complemento');
+         Bairro := vJSONCEP.GetValue<string>('bairro');
+         Cidade := vJSONCEP.GetValue<string>('localidade');
+         CodigoIBGECidade := vJSONCEP.GetValue<string>('ibge');
+         UF := vJSONCEP.GetValue<string>('uf');
+
+         with CadEstadoDM.qryConsultarEstado do
+         begin
+          SQL.Clear;
+          SQL.Add('select pais from cadestado where sigla = :UF');
+          ParamByName('UF').AsString := UF;
+          Open;
+
+          Pais := FieldByName('pais').AsString;
+         end;
+
+         with CadCidadeDM.qryConsultarCidade do
+         begin
+          SQL.Clear;
+          SQL.Add('select codigo from cadcidade where cidade = :cidade');
+          ParamByName('cidade').AsString := cidade;
+          Open;
+
+          if IsEmpty then begin
+           ShowMessage('Cidade encontrada na integração VIACEP não cadastrada no sistema, cadastrando automaticamente!');
+
+           with CadCidadeDM.qryInsert do
+           begin
+            SQL.Clear;
+            SQL.Add('insert into cadcidade (codigo, cidade, pais, estado, ativo, codigo_ibge)');
+            SQL.Add('values');
+            SQL.Add('(:codigo, :cidade, :pais, :estado, :ativo, :codigo_ibge)');
+
+            with CadCidadeDM.qrySelect do
+            begin
+             SQL.Clear;
+             SQL.Add('select (max(cast(codigo as integer)) + 1) as codigo from cadcidade');
+             Open;
+
+            if FieldByName('codigo').IsNull or IsEmpty then CodigoCidade := '1' else CodigoCidade := FieldByName('codigo').AsString;
+            end;
+
+            ParamByName('codigo').AsString := CodigoCidade;
+            ParamByName('cidade').AsString := Cidade;
+            ParamByName('pais').AsString := Pais;
+            ParamByName('estado').AsString := UF;
+            ParamByName('ativo').AsString := 'S';
+            ParamByName('codigo_ibge').AsString := CodigoIBGECidade;
+            ExecSQL;
+           end;
+
+           with CadCEPDM.qrySelect do
+           begin
+            SQL.Clear;
+            SQL.Add('select (max(cast(codigo as integer)) + 1) as codigoCEP from cadcep');
+            Open;
+
+            if FieldByName('codigoCEP').IsNull or IsEmpty then CodigoCEP := '1' else CodigoCEP := FieldByName('codigoCEP').AsString;
+           end;
+
+           with CadCEPDM.qryInsert do
+           begin
+            SQL.Clear;
+            SQL.Add('insert into cadcep (cep, cidade, estado, pais, ativo, codigo, bairro, rua, complemento)');
+            SQL.Add('values');
+            SQL.Add('(:cep, :cidade, :estado, :pais, :ativo, :codigo, :bairro, :rua, :complemento)');
+            ParamByName('CEP').AsString := CEP;
+            ParamByName('cidade').AsString := cidade;
+            ParamByName('estado').AsString := UF;
+            ParamByName('pais').AsString := pais;
+            ParamByName('ativo').AsString := 'S';
+            ParamByName('codigo').AsString := CodigoCEP;
+            ParamByName('bairro').AsString := bairro;
+            ParamByName('rua').AsString := rua;
+            ParamByName('complemento').AsString := complemento;
+            ExecSQL;
+           end;
+          end;
+         end;
+         finally
+         vJSONCEP.Free;
+        end;
+       end;
+      finally
+      HttpCEP.Free;
+      end;
+
+     Email := vJSONCNPJ.GetValue<string>('email');
+
+     Telefone := vJSONCNPJ.GetValue<string>('telefone');
+     Telefone := StringReplace(telefone, '(', '', [rfReplaceAll]);
+     Telefone := StringReplace(telefone, ')', '', [rfReplaceAll]);
+     Telefone := StringReplace(telefone, '-', '', [rfReplaceAll]);
+     Telefone := StringReplace(telefone, '/', '', [rfReplaceAll]);
+     Telefone := StringReplace(telefone, ' ', '', [rfReplaceAll]);
+
+     DDD := COPY(Telefone, 1, 2);
+     Telefone := COPY(Telefone, 3, 8);
+
+     EdtNome.Text := Nome;
+     EdtFantasia.Text := Fantasia;
+     EdtCEP.Text := CEP;
+     EdtEmail.Text := Email;
+     EdtTelefone.Text := Telefone;
+     EdtDDD.Text := DDD;
+     end;
+    end;
+   finally
+   vJSONCNPJ.Free;
+   end;
+  end
+  else begin
+   ShowMessage('Erro ao consultar: ' + ResponseCNPJ.StatusText);
+   Abort;
+  end;
+  finally
+  HttpCNPJ.Free;
+ end;
+end;
+
+procedure TCadEntidade.FormShow(Sender: TObject);
+begin
+ CBTipo.ItemIndex := 0;
+ lblCNPJ.Visible := False;
+ EdtCNPJ.Visible := False;
+ LblIE.Visible := False;
+ EdtIE.Visible := False;
+ lblIndicadorIE.Visible := False;
+ CBIndIE.Visible := False;
+ btnWWW.Visible := False;
+
+ lblCPF.Visible := True;
+ EdtCPF.Visible := True;
+end;
+
+procedure TCadEntidade.CBTipoChange(Sender: TObject);
+begin
+ if CBTipo.ItemIndex = 0 then begin
+  lblCNPJ.Visible := False;
+  EdtCNPJ.Visible := False;
+  LblIE.Visible := False;
+  EdtIE.Visible := False;
+  lblIndicadorIE.Visible := False;
+  CBIndIE.Visible := False;
+  btnWWW.Visible := False;
+
+  lblCPF.Visible := True;
+  EdtCPF.Visible := True;
+ end;
+
+ if CBTipo.ItemIndex = 1 then begin
+  lblCNPJ.Visible := True;
+  EdtCNPJ.Visible := True;
+  LblIE.Visible := True;
+  EdtIE.Visible := True;
+  lblIndicadorIE.Visible := True;
+  CBIndIE.Visible := True;
+  btnWWW.Visible := True;
+
+  lblCPF.Visible := False;
+  EdtCPF.Visible := False;
+ end;
+end;
+
+procedure TCadEntidade.btnIncluirClick(Sender: TObject);
+begin
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnConsultar.Visible := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+
+ EdtCodigo.Clear;
+ EdtNome.Clear;
+ EdtCPF.Clear;
+ EdtCNPJ.Clear;
+ EdtDDD.Clear;
+ EdtTelefone.Clear;
+ EdtRua.Clear;
+ EdtNumero.Clear;
+ EdtEstado.Clear;
+ EdtBairro.Clear;
+ EdtCidade.Clear;
+ EdtPais.Clear;
+ EdtComplemento.Clear;
+ EdtCEP.Clear;
+ EdtEmail.Clear;
+ EdtIE.Clear;
+
+ EdtCodigo.Enabled := True;
+ EdtNome.Enabled := True;
+ EdtCPF.Enabled := True;
+ EdtCNPJ.Enabled := True;
+ EdtDDD.Enabled := True;
+ EdtTelefone.Enabled := True;
+ EdtRua.Enabled := True;
+ EdtNumero.Enabled := True;
+ EdtBairro.Enabled := True;
+ EdtEmail.Enabled := True;
+ EdtComplemento.Enabled := True;
+ EdtCEP.Enabled := True;
+ SBCEP.Enabled := True;
+ CBConsumidorFinal.Enabled := True;
+ CBAtivo.Enabled := True;
+ CBIndIE.Enabled := True;
+ CBTipo.Enabled := True;
+ EdtIE.Enabled := True;
+ btnWWW.Enabled := True;
+end;
+
+procedure TCadEntidade.BtnGravarIncluirClick(Sender: TObject);
+var codigo, nome, ativo, cpf, cnpj, ddd, telefone, consumidor_final, rua, numero, estado, bairro, cidade, pais, complemento, cep, email, indIe, IE,
+    tipo, fantasia, doc: string;
+begin
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+ if CBConsumidorFinal.Checked then consumidor_final := 'S' else consumidor_final := 'N';
+ codigo := Edtcodigo.Text;
+ nome := EdtNome.Text;
+ Fantasia := EdtFantasia.Text;
+ cpf := Edtcpf.Text;
+ cnpj := EdtCNPJ.Text;
+ ddd := Edtddd.Text;
+ telefone := Edttelefone.Text;
+ rua := Edtrua.Text;
+ numero := Edtnumero.Text;
+ estado := Edtestado.Text;
+ bairro := Edtbairro.Text;
+ cidade := Edtcidade.Text;
+ pais := Edtpais.Text;
+ complemento := Edtcomplemento.Text;
+ cep := Edtcep.Text;
+ email := EdtEmail.Text;
+ IE := EdtIE.Text;
+ if CBTipo.ItemIndex = 0 then Tipo := '1';
+ if CBTipo.ItemIndex = 1 then Tipo := '2';
+
+ if CBTipo.ItemIndex = 0 then IndIE := '9'
+ else if CBIndIE.ItemIndex = 0 then IndIE := '1'
+ else if CBIndIE.ItemIndex = 1 then IndIE := '2'
+ else if CBIndIE.ItemIndex = 2 then IndIE := '9'
+ else if CBIndIE.Text = '' then IndIE := '9';
+
+ if CBTipo.ItemIndex = 0 then begin
+   if EdtCPF.Text = '' then begin
+    ShowMessage('CPF não pode ser vazio!');
+    Abort;
+   end;
+    if Length(EdtCPF.Text) <> 11 then begin
+     ShowMessage('CPF precisa ter 11 dígitos!');
+     Abort;
+    end;
+ end;
+
+ if CBTipo.ItemIndex = 1 then begin
+  if EdtCNPJ.Text = '' then begin
+    ShowMessage('CNPJ não pode ser vazio!');
+    Abort;
+  end;
+   if CBIndIE.Text = '' then begin
+    ShowMessage('Indicador da IE não pode ser vazio!');
+    Abort;
+   end;
+    if (CBIndIE.ItemIndex = 0) and (EdtIE.Text = '') then begin
+     ShowMessage('IE não pode ser vazio!');
+     Abort;
+    end;
+     if Length(EdtCNPJ.Text) <> 14 then begin
+      ShowMessage('CNPJ precisa ter 14 dígitos!');
+     end;
+ end;
+
+  if Codigo = '' then begin
+   ShowMessage('Código não pode ser vazio!');
+   Abort;
+  end;
+
+  if Nome = '' then begin
+   ShowMessage('Nome não pode ser vazio!');
+   Abort;
+  end;
+
+  if DDD = '' then begin
+   ShowMessage('DDD não pode ser vazio!');
+   Abort;
+  end;
+
+  if Telefone = '' then begin
+   ShowMessage('Telefone não pode ser vazio!');
+   Abort;
+  end;
+
+  if Rua = '' then begin
+   ShowMessage('Rua não pode ser vazia!');
+   Abort;
+  end;
+
+  if Numero = '' then begin
+   ShowMessage('Numero não pode ser vazio!');
+   Abort;
+  end;
+
+  if Estado = '' then begin
+   ShowMessage('Estado não pode ser vazio!');
+   Abort;
+  end;
+
+  if Bairro = '' then begin
+   ShowMessage('Bairro não pode ser vazio!');
+   Abort;
+  end;
+
+  if Cidade = '' then begin
+   ShowMessage('Cidade não pode ser vazia!');
+   Abort;
+  end;
+
+  if Pais = '' then begin
+   ShowMessage('País não pode ser vazio!');
+   Abort;
+  end;
+
+  if Complemento = '' then begin
+   ShowMessage('Complemento não pode ser vazio!');
+   Abort;
+  end;
+
+  if CEP = '' then begin
+   ShowMessage('CEP não pode ser vazio!');
+   Abort;
+  end;
+
+  if Email = '' then begin
+   ShowMessage('Email não pode ser  vazio!');
+   Abort;
+  end;
+
+  if Fantasia = '' then begin
+   ShowMessage('Fantasia não pode ser  vazio!');
+   Abort;
+  end;
+
+  with CadEntidadeDM.qrySelect do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadentidade where codigo = :codigo');
+   Parambyname('codigo').AsString := codigo;
+   Open;
+
+   if not IsEmpty then begin
+    ShowMessage('Entidade já cadastrada!');
+    Abort;
+   end;
+  end;
+
+ CadEntidadeDM.Conexão.StartTransaction;
+ try
+  with CadEntidadeDM.qryInsert do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into cadentidade');
+   SQL.Add('(codigo, nome, ativo, cpf, ddd, telefone, consumidor_final, rua, numero, estado, bairro, cidade, pais, complemento, fantasia');
+   SQL.Add('cep, email, indIe, IE, Tipo)');
+   SQL.Add('values');
+   SQL.Add('(:codigo, :nome, :ativo, :cpf, :ddd, :telefone, :consumidor_final, :rua, :numero, :estado, :bairro, :cidade, :pais, :complemento, :fantasia');
+   SQL.Add(':cep, :email, :indIe, :IE, :Tipo)');
+   Parambyname('codigo').AsString := codigo;
+   Parambyname('nome').AsString := nome;
+   if tipo = '1' then Parambyname('cpf').AsString := cpf;
+   if tipo = '2' then Parambyname('cpf').AsString := cnpj;
+   Parambyname('ativo').AsString := ativo;
+   Parambyname('ddd').AsString := ddd;
+   Parambyname('telefone').AsString := telefone;
+   Parambyname('consumidor_final').AsString := consumidor_final;
+   Parambyname('rua').AsString := rua;
+   Parambyname('numero').AsString := numero;
+   Parambyname('estado').AsString := estado;
+   Parambyname('bairro').AsString := bairro;
+   Parambyname('cidade').AsString := cidade;
+   Parambyname('pais').AsString := pais;
+   Parambyname('complemento').AsString := complemento;
+   Parambyname('cep').AsString := cep;
+   Parambyname('email').AsString := email;
+   Parambyname('fantasia').AsString := fantasia;
+   if tipo = '1' then Parambyname('IE').AsString := '';
+   if tipo = '2' then Parambyname('IE').AsString := IE;
+   Parambyname('indIE').AsString := IndIE;
+   ParamByName('Tipo').AsString := Tipo;
+   ExecSQL;
+  end;
+
+   with LogsDM.InserirLog do
+   begin
+    if tipo = '1' then doc := ' no CPF ' + CPF
+    else if tipo = '2' then doc := ' no CNPJ ' + CNPJ;
+
+    SQL.Clear;
+    SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+    SQL.Add('values');
+    SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+    ParamByName('descricao').AsString :=
+    'Inseriu a entidade ' + nome + ' no código ' + codigo + ' ' + doc;
+    ParamByName('tela').AsString := 'CadEntidade';
+    ParamByName('data').AsDatetime := Now;
+    ParamByName('usuario').AsString := UsuarioLogado;
+    ParamByName('emp_id').AsString := EmpresaLogada;
+    ExecSQL;
+   end;
+
+   CadEntidadeDM.Conexão.Commit;
+   ShowMessage('Gravado com sucesso!');
+   btnIncluir.Visible := True;
+   btnAlterar.Visible := True;
+   btnExcluir.Visible := True;
+   btnConsultar.Visible := True;
+
+   btnGravarIncluir.Visible := False;
+   btnDesistir.Visible := False;
+
+   EdtCodigo.Enabled := False;
+   EdtNome.Enabled := False;
+   EdtFantasia.Enabled := False;
+   EdtCPF.Enabled := False;
+   EdtCNPJ.Enabled := False;
+   EdtDDD.Enabled := False;
+   EdtTelefone.Enabled := False;
+   EdtRua.Enabled := False;
+   EdtNumero.Enabled := False;
+   EdtEstado.Enabled := False;
+   EdtBairro.Enabled := False;
+   EdtCidade.Enabled := False;
+   EdtPais.Enabled := False;
+   EdtComplemento.Enabled := False;
+   EdtCEP.Enabled := False;
+   EdtEmail.Enabled := False;
+   EdtIE.Enabled := False;
+   btnWWW.Enabled := False;
+
+   CBConsumidorFinal.Enabled := False;
+   CBAtivo.Enabled := False;
+   CBIndIE.Enabled := False;
+   CBTipo.Enabled := False;
+   SBCEP.Enabled := False;
+   except
+  CadEntidadeDM.Conexão.Rollback;
+  ShowMessage('Erro na gravação!');
+ end;
+end;
+
+procedure TCadEntidade.btnAlterarClick(Sender: TObject);
+begin
+ if EdtCodigo.Text = '' then begin
+  ShowMessage('Nenhuma entidade selecionada!');
+  Abort;
+ end;
+  btnIncluir.Visible := False;
+  btnAlterar.Visible := False;
+  btnExcluir.Visible := False;
+  btnConsultar.Visible := False;
+  btnGravarIncluir.Visible := False;
+
+  btnGravarAlterar.Visible := True;
+  btnDesistir.Visible := True;
+  SBCEP.Enabled := True;
+
+  btnWWW.Enabled := True;
+  EdtNome.Enabled := True;
+  EdtDDD.Enabled := True;
+  EdtTelefone.Enabled := True;
+  EdtIE.Enabled := True;
+  CBConsumidorFinal.Enabled := True;
+  CBAtivo.Enabled := True;
+  CBIndIE.Enabled := True;
+  EdtRua.Enabled := True;
+  EdtNumero.Enabled := True;
+  EdtBairro.Enabled := True;
+  EdtComplemento.Enabled := True;
+  EdtCEP.Enabled := True;
+  EdtEmail.Enabled := True;
+end;
+
+procedure TCadEntidade.btnGravarAlterarClick(Sender: TObject);
+var codigo, nome, ativo, cpf, cnpj, ddd, telefone, consumidor_final, rua, numero, estado, bairro, cidade, pais, complemento, cep, email, indIe, IE,
+    Tipo, fantasia, doc: string;
+begin
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+ if CBConsumidorFinal.Checked then consumidor_final := 'S' else consumidor_final := 'N';
+ codigo := Edtcodigo.Text;
+ nome := EdtNome.Text;
+ cpf := Edtcpf.Text;
+ cnpj := EdtCNPJ.Text;
+ ddd := Edtddd.Text;
+ telefone := Edttelefone.Text;
+ rua := Edtrua.Text;
+ numero := Edtnumero.Text;
+ estado := Edtestado.Text;
+ bairro := Edtbairro.Text;
+ Fantasia := EdtFantasia.Text;
+ cidade := Edtcidade.Text;
+ pais := Edtpais.Text;
+ complemento := Edtcomplemento.Text;
+ cep := Edtcep.Text;
+ email := EdtEmail.text;
+ IE := EdtIE.Text;
+ if CBTipo.ItemIndex = 0 then Tipo := '1';
+ if CBTipo.ItemIndex = 1 then Tipo := '2';
+
+ if CBTipo.ItemIndex = 0 then IndIE := '9'
+ else if CBIndIE.ItemIndex = 0 then IndIE := '1'
+ else if CBIndIE.ItemIndex = 1 then IndIE := '2'
+ else if CBIndIE.ItemIndex = 2 then IndIE := '9'
+ else if CBIndIE.Text = '' then IndIE := '9';
+
+ if CBTipo.ItemIndex = 0 then begin
+   if EdtCPF.Text = '' then begin
+    ShowMessage('CPF não pode ser vazio!');
+    Abort;
+   end;
+ end;
+
+ if CBTipo.ItemIndex = 1 then begin
+  if EdtCNPJ.Text = '' then begin
+    ShowMessage('CNPJ não pode ser vazio!');
+    Abort;
+  end;
+   if CBIndIE.Text = '' then begin
+    ShowMessage('Indicador da IE não pode ser vazio!');
+    Abort;
+   end;
+    if (CBIndIE.Text = '1 - Contribuinte ICMS (possui IE)') and (EdtIE.Text = '') then begin
+     ShowMessage('IE não pode ser vazio!');
+     Abort;
+    end;
+ end;
+
+  if Codigo = '' then begin
+   ShowMessage('Código não pode ser vazio!');
+   Abort;
+  end;
+
+  if Nome = '' then begin
+   ShowMessage('Nome não pode ser vazio!');
+   Abort;
+  end;
+
+  if DDD = '' then begin
+   ShowMessage('DDD não pode ser vazio!');
+   Abort;
+  end;
+
+  if Telefone = '' then begin
+   ShowMessage('Telefone não pode ser vazio!');
+   Abort;
+  end;
+
+  if Rua = '' then begin
+   ShowMessage('Rua não pode ser vazia!');
+   Abort;
+  end;
+
+  if Numero = '' then begin
+   ShowMessage('Numero não pode ser vazio!');
+   Abort;
+  end;
+
+  if Estado = '' then begin
+   ShowMessage('Estado não pode ser vazio!');
+   Abort;
+  end;
+
+  if Bairro = '' then begin
+   ShowMessage('Bairro não pode ser vazio!');
+   Abort;
+  end;
+
+  if Cidade = '' then begin
+   ShowMessage('Cidade não pode ser vazia!');
+   Abort;
+  end;
+
+  if Pais = '' then begin
+   ShowMessage('País não pode ser vazio!');
+   Abort;
+  end;
+
+  if Complemento = '' then begin
+   ShowMessage('Complemento não pode ser vazio!');
+   Abort;
+  end;
+
+  if CEP = '' then begin
+   ShowMessage('CEP não pode ser vazio!');
+   Abort;
+  end;
+
+  if Email = '' then begin
+   ShowMessage('Email não pode ser  vazio!');
+   Abort;
+  end;
+
+  if Fantasia = '' then begin
+   ShowMessage('Fantasia não pode ser  vazio!');
+   Abort;
+  end;
+
+ CadEntidadeDM.Conexão.StartTransaction;
+ try
+  with CadEntidadeDM.qryUpdate do
+  begin
+   SQL.Clear;
+   SQL.Add('update cadentidade set nome = :nome, ativo = :ativo, cpf = :cpf, ddd = :ddd, telefone = :telefone, fantasia = :famtasia');
+   SQL.Add('consumidor_final = :consumidor_final, indIe = :indIe, IE = :IE, rua = :rua, numero = :numero, estado = :estado, bairro = :bairro');
+   SQL.Add('cidade = :cidade, pais = :pais, complemento = :complemento, cep = :cep, email = :email, tipo = :tipo where codigo = :codigo');
+   Parambyname('codigo').AsString := codigo;
+   Parambyname('nome').AsString := nome;
+   if cpf <> '' then Parambyname('cpf').AsString := cpf;
+   if cnpj <> '' then Parambyname('cpf').AsString := cnpj;
+   Parambyname('ativo').AsString := ativo;
+   Parambyname('ddd').AsString := ddd;
+   Parambyname('telefone').AsString := telefone;
+   Parambyname('consumidor_final').AsString := consumidor_final;
+   Parambyname('rua').AsString := rua;
+   Parambyname('numero').AsString := numero;
+   Parambyname('estado').AsString := estado;
+   Parambyname('bairro').AsString := bairro;
+   Parambyname('cidade').AsString := cidade;
+   Parambyname('pais').AsString := pais;
+   Parambyname('complemento').AsString := complemento;
+   Parambyname('cep').AsString := cep;
+   Parambyname('email').AsString := email;
+   Parambyname('IE').AsString := IE;
+   Parambyname('IndIE').AsString := IndIE;
+   Parambyname('tipo').AsString := tipo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   if tipo = '1' then doc := ' no CPF ' + CPF
+   else if tipo = '2' then doc := ' no CNPJ ' + CNPJ;
+
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Alterou a entidade ' + nome + ' no código ' + codigo + ' ' + doc;
+   ParamByName('tela').AsString := 'CadEntidade';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadEntidadeDM.Conexão.Commit;
+  ShowMessage('Gravado com sucesso!');
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnConsultar.Visible := True;
+
+  btnGravarIncluir.Visible := False;
+  btnGravarAlterar.Visible := False;
+  btnDesistir.Visible := False;
+
+  EdtCodigo.Enabled := False;
+  EdtNome.Enabled := False;
+  EdtCPF.Enabled := False;
+  EdtCNPJ.Enabled := False;
+  EdtDDD.Enabled := False;
+  EdtTelefone.Enabled := False;
+  EdtRua.Enabled := False;
+  EdtNumero.Enabled := False;
+  EdtEstado.Enabled := False;
+  EdtBairro.Enabled := False;
+  EdtCidade.Enabled := False;
+  EdtPais.Enabled := False;
+  EdtComplemento.Enabled := False;
+  EdtCEP.Enabled := False;
+  EdtEmail.Enabled := False;
+  EdtIE.Enabled := False;
+  btnWWW.Enabled := False;
+
+  CBConsumidorFinal.Enabled := False;
+  CBAtivo.Enabled := False;
+  CBIndIE.Enabled := False;
+  CBTipo.Enabled := False;
+  SBCEP.Enabled := False;
+  except
+  CadEntidadeDM.Conexão.Rollback;
+  ShowMessage('Erro na gravação!');
+ end;
+end;
+
+procedure TCadEntidade.BtnConsultarClick(Sender: TObject);
+var codigo, nome, ativo, cpf, ddd, telefone, rua, numero, estado, bairro, cidade, pais, complemento, cep, consumidor_final, email, IndIE, IE,
+    Tipo, Fantasia: string;
+begin
+ with CadEntidadeDM.qryConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarEntidade, ConsultarEntidade);
+ codigo := ConsultarEntidade.SelecionarEntidade;
+ if codigo <> '' then begin
+  Nome := ConsultarEntidade.nome;
+  Fantasia := ConsultarEntidade.Fantasia;
+  CPF := ConsultarEntidade.CPF;
+  DDD := ConsultarEntidade.DDD;
+  Telefone := ConsultarEntidade.Telefone;
+  Rua := ConsultarEntidade.Rua;
+  Numero := ConsultarEntidade.Numero;
+  Estado := ConsultarEntidade.Estado;
+  Bairro := ConsultarEntidade.Bairro;
+  Cidade := ConsultarEntidade.Cidade;
+  Pais := ConsultarEntidade.Pais;
+  Complemento := ConsultarEntidade.Complemento;
+  CEP := ConsultarEntidade.CEP;
+  Consumidor_Final := ConsultarEntidade.Consumidor_Final;
+  Ativo := ConsultarEntidade.Ativo;
+  email := ConsultarEntidade.Email;
+  IE := ConsultarEntidade.IE;
+  IndIE := ConsultarEntidade.IndIE;
+  Tipo := ConsultarEntidade.Tipo;
+  EdtCodigo.Text := codigo;
+  EdtNome.Text := nome;
+   if Length(CPF) = 14 then begin
+    CBTipo.ItemIndex := 1;
+    lblCNPJ.Visible := True;
+    EdtCNPJ.Visible := True;
+    lblIE.Visible := True;
+    EdtIE.Visible := True;
+    lblIndicadorIE.Visible := True;
+    CBIndIE.Visible := True;
+    if IndIE = '1' then CBIndIE.ItemIndex := 0;
+    if IndIE = '2' then CBIndIE.ItemIndex := 1;
+    if IndIE = '9' then CBIndIE.ItemIndex := 2;
+
+    lblCPF.Visible := False;
+    EdtCPF.Visible := False;
+    EdtCPF.Clear;
+
+    EdtCNPJ.Text := cpf;
+   end;
+
+   if Length(CPF) = 11 then begin
+    CBTipo.ItemIndex := 0;
+    lblCNPJ.Visible := False;
+    EdtCNPJ.Visible := False;
+    EdtCNPJ.Clear;
+    lblIE.Visible := False;
+    EdtIE.Visible := False;
+    EdtIE.Clear;
+    lblIndicadorIE.Visible := False;
+    CBIndIE.Visible := False;
+
+    lblCPF.Visible := True;
+    EdtCPF.Visible := True;
+
+    EdtCPF.Text := cpf;
+   end;
+
+  EdtDDD.Text := DDD;
+  EdtTelefone.Text := Telefone;
+  EdtRua.Text := Rua;
+  EdtNumero.Text := numero;
+  EdtEstado.Text := Estado;
+  EdtBairro.Text := Bairro;
+  EdtCidade.Text := Cidade;
+  EdtPais.Text := Pais;
+  EdtCEP.Text := CEP;
+  EdtEmail.Text := Email;
+  EdtComplemento.Text := Complemento;
+  EdtIE.Text := IE;
+  CBAtivo.Checked := Ativo = 'S';
+  CBConsumidorFinal.Checked := Consumidor_final = 'S';
+  if IndIE = '1' then CBIndIE.ItemIndex := 0
+  else if IndIE = '2' then CBIndIE.ItemIndex := 1
+  else if IndIE = '9' then CBIndIE.ItemIndex := 2;
+  if Tipo = '1' then CBTipo.ItemIndex := 0
+  else if Tipo = '2' then CBTipo.ItemIndex := 1
+ end;
+end;
+
+procedure TCadEntidade.BtnDesistirClick(Sender: TObject);
+begin
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+ btnConsultar.Visible := True;
+
+ btnGravarIncluir.Visible := False;
+ BtnGravarAlterar.Visible := False;
+ btnDesistir.Visible := False;
+
+ EdtCodigo.Enabled := False;
+ EdtNome.Enabled := False;
+ EdtCPF.Enabled := False;
+ EdtCNPJ.Enabled := False;
+ EdtDDD.Enabled := False;
+ EdtTelefone.Enabled := False;
+ EdtRua.Enabled := False;
+ EdtNumero.Enabled := False;
+ EdtEstado.Enabled := False;
+ EdtBairro.Enabled := False;
+ EdtCidade.Enabled := False;
+ EdtPais.Enabled := False;
+ EdtComplemento.Enabled := False;
+ EdtCEP.Enabled := False;
+ EdtIE.Enabled := False;
+ EdtEmail.Enabled := False;
+ btnWWW.Enabled := False;
+
+ CBConsumidorFinal.Enabled := False;
+ CBAtivo.Enabled := False;
+ CBIndIE.Enabled := False;
+ CBTipo.Enabled := False;
+ SBCEP.Enabled := False;
+
+ EdtCodigo.Clear;
+ EdtNome.Clear;
+ EdtFantasia.Clear;
+ EdtEmail.Clear;
+ EdtCPF.Clear;
+ EdtCNPJ.Clear;
+ EdtDDD.Clear;
+ EdtTelefone.Clear;
+ EdtRua.Clear;
+ EdtNumero.Clear;
+ EdtEstado.Clear;
+ EdtBairro.Clear;
+ EdtCidade.Clear;
+ EdtPais.Clear;
+ EdtComplemento.Clear;
+ EdtCEP.Clear;
+ EdtIE.Clear;
+end;
+
+procedure TCadEntidade.BtnExcluirClick(Sender: TObject);
+var codigo, nome, cpf, cnpj, tipo, doc: string;
+begin
+ codigo := Edtcodigo.Text;
+ cnpj := EdtCNPJ.Text;
+ cpf := Edtcpf.Text;
+ if CBTipo.ItemIndex = 0 then Tipo := '1';
+ if CBTipo.ItemIndex = 1 then Tipo := '2';
+
+ with CadEntidadeDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where codigo = :codigo');
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  if IsEmpty then begin
+   ShowMessage('Entidade não encontrada!');
+   Abort;
+  end;
+ end;
+
+ CadEntidadeDM.Conexão.StartTransaction;
+ try
+  with CadEntidadeDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadentidade where codigo = :codigo');
+   ParamByName('codigo').AsString := codigo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   if tipo = '1' then doc := ' no CPF ' + CPF
+   else if tipo = '2' then doc := ' no CNPJ ' + CNPJ;
+
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Inseriu a entidade ' + nome + ' no código ' + codigo + ' ' + doc;
+   ParamByName('tela').AsString := 'CadEntidade';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadEntidadeDM.Conexão.Commit;
+  ShowMessage('Excluído com sucesso!');
+  EdtCodigo.Clear;
+  EdtNome.Clear;
+  EdtCPF.Clear;
+  EdtCNPJ.Clear;
+  EdtDDD.Clear;
+  EdtTelefone.Clear;
+  EdtRua.Clear;
+  EdtNumero.Clear;
+  EdtEstado.Clear;
+  EdtBairro.Clear;
+  EdtCidade.Clear;
+  EdtPais.Clear;
+  EdtComplemento.Clear;
+  EdtCEP.Clear;
+  EdtIE.Clear;
+  EdtEmail.Clear;
+  except
+  CadEntidadeDM.Conexão.Rollback;
+  ShowMessage('Erro na gravação!');
+ end;
+end;
+
+procedure TCadEntidade.SBAcessoClearIndIEClick(Sender: TObject);
+begin
+ CBAcessoIndIE.Clear;
+end;
+
+procedure TCadEntidade.SBCEPClick(Sender: TObject);
+var CEP, Cidade, Estado, Pais, Codigo, Complemento, Bairro, Rua: string;
+begin
+ with CadCEPDM.qryConsultarCEP do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcep where ativo = :ativo');
+  ParamByName('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarCEP, ConsultarCEP);
+ Codigo := ConsultarCEP.SelecionarCEP;
+
+ if codigo <> '' then begin
+  CEP := ConsultarCEP.CEP;
+  EdtCEP.Text := CEP;
+  Cidade := ConsultarCEP.Cidade;
+  EdtCidade.Text := Cidade;
+  Estado := ConsultarCEP.Estado;
+  EdtEstado.Text := Estado;
+  Pais := ConsultarCEP.Pais;
+  EdtPais.Text := Pais;
+  Complemento := ConsultarCEP.Complemento;
+  EdtComplemento.Text := Complemento;
+  Bairro := ConsultarCEP.Bairro;
+  EdtBairro.Text := Bairro;
+  Rua := ConsultarCEP.Rua;
+  EdtRua.Text := Rua;
+ end;
+end;
+
+procedure TCadEntidade.EdtCEPChange(Sender: TObject);
+var CEP: string;
+begin
+ CEP := EdtCEP.Text;
+
+ with CadCEPDM.qryConsultarCEP do
+ begin
+  SQL.Clear;
+  SQL.Add('select cidade, estado, pais, bairro, rua, Complemento from cadcep where CEP = :CEP and ativo = :ativo');
+  ParamByName('ativo').AsString := 'S';
+  ParamByName('CEP').AsString := CEP;
+  Open;
+
+  EdtCidade.Text := FieldByName('Cidade').AsString;
+  EdtPais.Text := FieldByName('Pais').AsString;
+  EdtEstado.Text := FieldByName('Estado').AsString;
+  EdtBairro.Text := FieldByName('Bairro').AsString;
+  EdtRua.Text := FieldByName('rua').AsString;
+  EdtComplemento.Text := FieldByName('Complemento').AsString;
+ end;
+end;
+
+procedure TCadEntidade.EdtCNPJExit(Sender: TObject);
+begin
+ with CadEntidadeDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where CPF = :CPF');
+  ParamByName('CPF').AsString := EdtCNPJ.Text;
+  Open;
+
+  if not IsEmpty then begin
+   btnGravarIncluir.Visible := False;
+   btnGravarAlterar.Visible := True;
+   EdtCodigo.Enabled := False;
+   EdtCNPJ.Enabled := False;
+   CBTipo.Enabled := False;
+
+   ShowMessage('CNPJ já cadastrado! Redirecionando para o cadastro da entidade com esse CNPJ ' + '(' + EdtCNPJ.Text + ')');
+
+   EdtCodigo.Text := FieldByName('codigo').AsString;
+   EdtNome.Text := FieldByName('nome').AsString;
+   if FieldByName('ativo').AsString = 'S' then CBAtivo.Checked := True;;
+   EdtCNPJ.Text := FieldByName('CPF').AsString;
+   EdtDDD.Text := FieldByName('DDD').AsString;
+   Edttelefone.Text := FieldByName('telefone').AsString;
+   if FieldByName('consumidor_final').AsString = 'S' then CBConsumidorFinal.Checked := True;
+   Edtnumero.Text := FieldByName('numero').AsString;
+   EdtRua.Text := FieldByName('Rua').AsString;
+   EdtEstado.Text := FieldByName('Estado').AsString;
+   EdtBairro.Text := FieldByName('Bairro').AsString;
+   EdtCidade.Text := FieldByName('Cidade').AsString;
+   EdtPais.Text := FieldByName('Pais').AsString;
+   EdtComplemento.Text := FieldByName('Complemento').AsString;
+   EdtCEP.Text := FieldByName('CEP').AsString;
+   EdtEmail.Text := FieldByName('Email').AsString;
+   EdtIE.Text := FieldByName('IE').AsString;
+   if FieldByName('IndIE').AsString = '1' then CBIndIE.ItemIndex := 0;
+   if FieldByName('IndIE').AsString = '2' then CBIndIE.ItemIndex := 1;
+   if FieldByName('IndIE').AsString = '9' then CBIndIE.ItemIndex := 3;
+  end;
+ end;
+end;
+
+procedure TCadEntidade.EdtCPFExit(Sender: TObject);
+begin
+ with CadEntidadeDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where CPF = :CPF');
+  ParamByName('CPF').AsString := EdtCPF.Text;
+  Open;
+
+  if not IsEmpty then begin
+   btnGravarIncluir.Visible := False;
+   btnGravarAlterar.Visible := True;
+   EdtCodigo.Enabled := False;
+   EdtCPF.Enabled := False;
+   CBTipo.Enabled := False;
+
+   ShowMessage('CPF já cadastrado! Redirecionando para o cadastro da entidade com esse CPF ' + '(' + EdtCPF.Text + ')');
+   EdtCodigo.Text := FieldByName('codigo').AsString;
+   EdtNome.Text := FieldByName('nome').AsString;
+   if FieldByName('ativo').AsString = 'S' then CBAtivo.Checked := True;;
+   EdtCNPJ.Text := FieldByName('CPF').AsString;
+   EdtDDD.Text := FieldByName('DDD').AsString;
+   Edttelefone.Text := FieldByName('telefone').AsString;
+   if FieldByName('consumidor_final').AsString = 'S' then CBConsumidorFinal.Checked := True;
+   Edtnumero.Text := FieldByName('numero').AsString;
+   EdtRua.Text := FieldByName('Rua').AsString;
+   EdtEstado.Text := FieldByName('Estado').AsString;
+   EdtBairro.Text := FieldByName('Bairro').AsString;
+   EdtCidade.Text := FieldByName('Cidade').AsString;
+   EdtPais.Text := FieldByName('Pais').AsString;
+   EdtComplemento.Text := FieldByName('Complemento').AsString;
+   EdtCEP.Text := FieldByName('CEP').AsString;
+   EdtEmail.Text := FieldByName('Email').AsString;
+  end;
+ end;
+end;
+
+procedure TCadEntidade.btnAcessoConsultarClick(Sender: TObject);
+var codigo, estado, cidade, pais, cep, ativo, consumidor_final, IndIE: string;
+    temwhere: boolean;
+    I: integer;
+begin
+ codigo := EdtAcessoCodigo.Text;
+ Estado := EdtAcessoSiglaEstado.Text;
+ Cidade := EdtAcessoCidade.Text;
+ Pais := EdtAcessoSiglaPais.Text;
+ cep := EdtAcessoCEP.Text;
+ if RGAcessoAtivo.ItemIndex = 0 then ativo := 'S'
+ else if RGAcessoAtivo.ItemIndex = 1 then ativo := 'N';
+ if RGAcessoConsumidor_Final.ItemIndex = 0 then consumidor_final := 'S'
+ else if RGAcessoConsumidor_Final.ItemIndex = 1 then consumidor_final := 'N';
+ if CBAcessoIndIE.ItemIndex = 0 then IndIE := '1'
+ else if CBAcessoIndIE.ItemIndex = 1 then IndIE := '2'
+ else if CBAcessoIndIE.ItemIndex = 3 then IndIE := '9';
+
+ with CadEntidadeDM.qryAcesso do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade');
+  temwhere := false;
+
+  if EdtAcessoCodigoCEP.Text <> '' then begin
+   if temwhere then begin
+    SQL.Add('and CEP = :CEP');
+   end
+   else begin
+    SQL.Add('where CEP = :CEP');
+    temwhere := true;
+   end;
+  ParamByName('CEP').AsString := CEP;
+  end;
+
+  if codigo <> '' then begin
+   if temwhere then begin
+    SQL.Add('and codigo = :codigo');
+   end
+   else begin
+    SQL.Add('where codigo = :codigo');
+    temwhere := true;
+   end;
+  ParamByName('codigo').AsString := codigo;
+  end;
+
+  if estado <> '' then begin
+   if temwhere then begin
+    SQL.Add('and estado = :estado');
+   end
+   else begin
+    SQL.Add('where estado = :estado');
+    temwhere := true;
+   end;
+  ParamByName('estado').AsString := estado;
+  end;
+
+  if EdtAcessoCodigoCidade.Text <> '' then begin
+   if temwhere then begin
+    SQL.Add('and cidade = :cidade');
+   end
+   else begin
+    SQL.Add('where cidade = :cidade');
+    temwhere := true;
+   end;
+  ParamByName('cidade').AsString := cidade;
+  end;
+
+  if pais <> '' then begin
+   if temwhere then begin
+    SQL.Add('and pais = :pais');
+   end
+   else begin
+    SQL.Add('where pais = :pais');
+    temwhere := true;
+   end;
+  ParamByName('pais').AsString := pais;
+  end;
+
+  if ativo = 'S' then begin
+   if temwhere then begin
+    SQL.Add('and ativo = :ativo');
+   end
+   else begin
+    SQL.Add('where ativo = :ativo');
+    temwhere := true;
+   end;
+  ParamByName('ativo').AsString := ativo;
+  end;
+
+  if ativo = 'N' then begin
+   if temwhere then begin
+    SQL.Add('and ativo = :ativo');
+   end
+   else begin
+    SQL.Add('where ativo = :ativo');
+    temwhere := true;
+   end;
+  ParamByName('ativo').AsString := ativo;
+  end;
+
+  if consumidor_final = 'S' then begin
+   if temwhere then begin
+    SQL.Add('and consumidor_final = :consumidor_final');
+   end
+   else begin
+    SQL.Add('where consumidor_final = :consumidor_final');
+    temwhere := true;
+   end;
+  ParamByName('consumidor_final').AsString := consumidor_final;
+  end;
+
+  if consumidor_final = 'N' then begin
+   if temwhere then begin
+    SQL.Add('and consumidor_final = :consumidor_final');
+   end
+   else begin
+    SQL.Add('where consumidor_final = :consumidor_final');
+    temwhere := true;
+   end;
+  ParamByName('consumidor_final').AsString := consumidor_final;
+  end;
+
+  if IndIE = '1' then begin
+   if temwhere then begin
+    SQL.Add('and indIE = :IndIE');
+   end
+   else begin
+    SQL.Add('where indIE = :IndIE');
+    temwhere := true;
+   end;
+  ParamByName('IndIE').AsString := IndIE;
+  end;
+
+  if IndIE = '2' then begin
+   if temwhere then begin
+    SQL.Add('and indIE = :IndIE');
+   end
+   else begin
+    SQL.Add('where indIE = :IndIE');
+    temwhere := true;
+   end;
+  ParamByName('IndIE').AsString := IndIE;
+  end;
+
+  if IndIE = '9' then begin
+   if temwhere then begin
+    SQL.Add('and indIE = :IndIE');
+   end
+   else begin
+    SQL.Add('where indIE = :IndIE');
+    temwhere := true;
+   end;
+  ParamByName('IndIE').AsString := IndIE;
+  end;
+  Open;
+  for i := 0 to AcessoGrid.Columns.Count - 1 do
+   AcessoGrid.Columns[i].Width := AcessoGrid.Canvas.TextWidth(AcessoGrid.Columns[i].Title.Caption + '     ');
+ end;
+end;
+
+procedure TCadEntidade.SBConsCEPClick(Sender: TObject);
+var CEP, Codigo: string;
+begin
+ with CadCEPDM.qryConsultarCEP do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcep');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarCEP, ConsultarCEP);
+ Codigo := ConsultarCEP.SelecionarCEP;
+ if codigo <> '' then begin
+  EdtAcessoCodigoCEP.Text := Codigo;
+  CEP := ConsultarCEP.CEP;
+  EdtAcessoCEP.Text := CEP;
+ end;
+end;
+
+procedure TCadEntidade.SBConsCidadeClick(Sender: TObject);
+var codigo, cidade: string;
+begin
+ with CadCidadeDM.qryConsultarCidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcidade');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarCidade, ConsultarCidade);
+ Codigo := ConsultarCidade.ConsultarCidade;
+
+ if codigo <> '' then begin
+  EdtAcessoCodigoCidade.Text := codigo;
+  cidade := ConsultarCidade.Cidade;
+  EdtAcessoCidade.Text := cidade;
+ end;
+end;
+
+procedure TCadEntidade.SBConsEntidadeClick(Sender: TObject);
+var codigo, nome: string;
+begin
+ with CadEntidadeDM.qryConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarEntidade, ConsultarEntidade);
+ codigo := ConsultarEntidade.SelecionarEntidade;
+
+ if codigo <> '' then begin
+  EdtAcessoCodigo.Text := codigo;
+  Nome := ConsultarEntidade.nome;
+  EdtAcessoNome.Text := nome;
+ end;
+end;
+
+procedure TCadEntidade.SBConsEstadoClick(Sender: TObject);
+var codigo, estado, sigla: string;
+begin
+ with CadEstadoDM.qryConsultarEstado do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadestado');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarEstado, ConsultarEstado);
+ codigo := ConsultarEstado.SelecionarEstado;
+
+ if codigo <> '' then begin
+  sigla := ConsultarEstado.Sigla;
+  EdtAcessoSiglaEstado.Text := sigla;
+  Estado := ConsultarEstado.Estado;
+  EdtAcessoEstado.Text := estado;
+ end;
+end;
+
+procedure TCadEntidade.SBConsPaisClick(Sender: TObject);
+var codigo, sigla, pais: string;
+begin
+ with CadPaisDM.qryConsultarPais do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarPais, ConsultarPais);
+ Codigo := ConsultarPais.SelecionarPais;
+
+ if codigo <> '' then begin
+  sigla := ConsultarPais.Sigla;
+  EdtAcessoSiglaPais.Text := sigla;
+  Pais := ConsultarPais.Pais;
+  EdtAcessoPais.Text := Pais;
+ end;
+end;
+
+procedure TCadEntidade.EdtAcessoCodigoCEPChange(Sender: TObject);
+var Codigo: string;
+begin
+ codigo := EdtAcessoCodigoCEP.Text;
+
+ with CadCEPDM.qryConsultarCEP do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcep where codigo = :codigo');
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  EdtAcessoCEP.Text := FieldByName('CEP').AsString;
+ end;
+end;
+
+procedure TCadEntidade.EdtAcessoCodigoCidadeChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtAcessoCodigoCidade.Text;
+
+ with CadCidadeDM.qryConsultarCidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcidade where codigo = :codigo');
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  EdtAcessoCidade.Text := FieldByName('cidade').AsString;
+ end;
+end;
+
+procedure TCadEntidade.EdtAcessoCodigoChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtAcessoCodigo.Text;
+
+ with CadEntidadeDM.qryConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where codigo = :codigo');
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  EdtAcessoNome.Text := FieldByName('nome').AsString;
+ end;
+end;
+
+procedure TCadEntidade.EdtAcessoSiglaEstadoChange(Sender: TObject);
+var estado, sigla: string;
+begin
+ sigla := EdtAcessoSiglaEstado.Text;
+
+ with CadEstadoDM.qryConsultarEstado do
+ begin
+  SQL.Clear;
+  SQl.Add('select * from cadestado where sigla = :sigla');
+  ParamByName('sigla').AsString := sigla;
+  Open;
+
+  EdtAcessoEstado.Text := FieldByName('estado').AsString;
+ end;
+end;
+
+procedure TCadEntidade.EdtAcessoSiglaPaisChange(Sender: TObject);
+var sigla, pais: string;
+begin
+ sigla := EdtAcessoSiglaPais.Text;
+
+ with CadPaisDM.qryConsultarPais do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais where sigla = :sigla');
+  ParamByName('sigla').AsString := sigla;
+  Open;
+
+  EdtAcessoPais.Text := FieldByName('pais').AsString;
+ end;
+end;
+
+procedure TCadEntidade.CBAcessoIndIEDropDown(Sender: TObject);
+begin
+ CBAcessoIndIE.Items.Clear;
+ CBAcessoIndIE.Items.Add('1 - Contribuinte ICMS (possui IE)');
+ CBAcessoIndIE.Items.Add('2 - Contribuinte isento de IE');
+ CBAcessoIndIE.Items.Add('9 - Não contribuinte');
+end;
+
+procedure TCadEntidade.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+end.

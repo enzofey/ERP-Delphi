@@ -1,0 +1,362 @@
+unit Receber;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.StdCtrls,
+  Vcl.Buttons, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  GlobalUnit,
+  ConsultarEntidadeForm, EntidadeDM,
+  ReceberDM, MoedaDM, ConsultarMoedaForm,
+  ImpressaoNFEFormDM, ConsultarFaturaForm;
+
+type
+  TReceberForm = class(TForm)
+    Panel1: TPanel;
+    Pages: TPageControl;
+    Acesso: TTabSheet;
+    Manutencao: TTabSheet;
+    dtEmissaoIni: TLabel;
+    dtEmissaoFim: TLabel;
+    lblNumero: TLabel;
+    lblEntidade: TLabel;
+    EdtNumero: TEdit;
+    lblNumeroDUPL: TLabel;
+    EdtNumeroDUPL: TEdit;
+    DTPEmissaoIni: TDateTimePicker;
+    DTPEmissaoFim: TDateTimePicker;
+    lblVenctoIni: TLabel;
+    DTPVenctoIni: TDateTimePicker;
+    lblVenctoFim: TLabel;
+    DTPVenctoFim: TDateTimePicker;
+    lblValorIni: TLabel;
+    EdtValorIni: TEdit;
+    lblValorFim: TLabel;
+    EdtValorFim: TEdit;
+    SBEntidade: TSpeedButton;
+    Grid: TDBGrid;
+    btnFechar: TButton;
+    lblFatura: TLabel;
+    EdtFatura: TEdit;
+    SBFatura: TSpeedButton;
+    btnConsultar: TButton;
+    lblEntidadeDUPL: TLabel;
+    lblFaturaDUPL: TLabel;
+    lbldtEmissaoDUPL: TLabel;
+    DTPdtEmiDUPL: TDateTimePicker;
+    lbldtVenctoDUPL: TLabel;
+    EdtCodigoEntidadeDUPL: TEdit;
+    DTPdtVenctoDUPL: TDateTimePicker;
+    EdtFaturaDUPL: TEdit;
+    EdtEntidadeDUPL: TEdit;
+    EdtCodigoEntidade: TEdit;
+    EdtEntidade: TEdit;
+    lblMoeda: TLabel;
+    EdtMoeda: TEdit;
+    EdtDescricaoMoeda: TEdit;
+    SBMoeda: TSpeedButton;
+    EdtMoedaDUPL: TEdit;
+    EdtDescricaoMoedaDUPL: TEdit;
+    lblMoedaDUPL: TLabel;
+    procedure btnFecharClick(Sender: TObject);
+    procedure SBEntidadeClick(Sender: TObject);
+    procedure SBFaturaClick(Sender: TObject);
+    procedure btnConsultarClick(Sender: TObject);
+    procedure GridCellClick(Column: TColumn);
+    procedure EdtCodigoEntidadeChange(Sender: TObject);
+    procedure EdtCodigoEntidadeDUPLChange(Sender: TObject);
+    procedure SBMoedaClick(Sender: TObject);
+    procedure EdtMoedaChange(Sender: TObject);
+    procedure EdtMoedaDUPLChange(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ReceberForm: TReceberForm;
+
+implementation
+
+{$R *.dfm}
+
+procedure TReceberForm.btnConsultarClick(Sender: TObject);
+var dtEmissaoFim, dtEmissaoIni, dtVenctoIni, dtVenctoFim: tdate;
+    entidade, numero, Fatura, moeda: string;
+    ValorIni, ValorFim: double;
+    temwhere: boolean;
+    I: integer;
+begin
+ dtEmissaoIni := DTPemissaoIni.Date;
+ dtEmissaoFim := DTPemissaoFim.Date;
+ dtVenctoIni := DTPVenctoIni.Date;
+ dtVenctoFim := DTPVenctoFim.Date;
+ entidade := EdtEntidade.Text;
+ Numero := EdtNumero.Text;
+ Fatura := EdtFatura.Text;
+ Moeda := EdtMoeda.text;
+
+ with ReceberDataModule.ConsultarReceber do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from receber');
+  temwhere := false;
+
+  if dtEmissaoIni <> 0 then begin
+   if temwhere then begin
+    SQL.Add('and dtemissao >= :dtEmissaoIni');
+   end
+   else begin
+    SQL.Add('where dtemissao >= :dtEmissaoIni');
+    temwhere := true;
+   end;
+   Parambyname('dtEmissaoIni').AsDate := dtEmissaoIni;
+  end;
+
+  if dtEmissaoFim <> 0 then begin
+   if temwhere then begin
+    SQL.Add('and dtemissao <= :dtEmissaoFim');
+   end
+   else begin
+    SQL.Add('where dtemissao <= :dtEmissaoFim');
+    temwhere := true;
+   end;
+   Parambyname('dtEmissaoFim').AsDate := dtEmissaoFim;
+  end;
+
+  if dtVenctoIni <> 0 then begin
+   if temwhere then begin
+    SQL.Add('and dtVencto >= :dtVenctoIni');
+   end
+   else begin
+    SQL.Add('where dtVencto >= :dtVenctoIni');
+    temwhere := true;
+   end;
+   Parambyname('dtVenctoIni').AsDate := dtVenctoIni;
+  end;
+
+  if dtVenctoIni <> 0 then begin
+   if temwhere then begin
+    SQL.Add('and dtVencto <= :dtVenctoFim');
+   end
+   else begin
+    SQL.Add('where dtVencto <= :dtVenctoFim');
+    temwhere := true;
+   end;
+   Parambyname('dtVenctoFim').AsDate := dtVenctoFim;
+  end;
+
+  if entidade <> '' then begin
+   if temwhere then begin
+    SQL.Add('and entidade = :entidade');
+   end
+   else begin
+   SQL.Add('where entidade = :entidade');
+   temwhere := true;
+   end;
+  ParamByName('entidade').AsString := entidade;
+  end;
+
+  if numero <> '' then begin
+   if temwhere then begin
+    SQL.Add('and numero = :numero');
+   end
+   else begin
+   SQL.Add('where numero = :numero');
+   temwhere := true;
+   end;
+  ParamByName('numero').AsString := numero;
+  end;
+
+  if fatura <> '' then begin
+   if temwhere then begin
+    SQL.Add('and fatura = :fatura');
+   end
+   else begin
+   SQL.Add('where fatura = :fatura');
+   temwhere := true;
+   end;
+  ParamByName('fatura').AsString := fatura;
+  end;
+
+  if moeda <> '' then begin
+   if temwhere then begin
+    SQL.Add('and moeda = :moeda');
+   end
+   else begin
+   SQL.Add('where moeda = :moeda');
+   temwhere := true;
+   end;
+  ParamByName('moeda').AsString := moeda;
+  end;
+
+  if EdtValorIni.Text <> '' then begin
+   if temwhere then begin
+    SQL.Add('and Valor >= :ValorIni');
+   end
+   else begin
+   SQL.Add('where Valor >= :ValorIni');
+   temwhere := true;
+   end;
+  ParamByName('ValorIni').AsString := EdtValorIni.Text;
+  end;
+
+  if EdtValorFim.Text <> '' then begin
+   if temwhere then begin
+    SQL.Add('and Valor <= :ValorFim');
+   end
+   else begin
+   SQL.Add('where Valor <= :ValorFim');
+   temwhere := true;
+   end;
+  ParamByName('ValorFim').AsString := fatura;
+  end;
+  Open;
+  for i := 0 to Grid.Columns.Count - 1 do
+   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+ end;
+end;
+
+procedure TReceberForm.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+
+procedure TReceberForm.GridCellClick(Column: TColumn);
+begin
+ Pages.ActivePage := Manutencao;
+ with ReceberDataModule.ConsultarReceber do
+ begin
+  EdtFaturaDUPL.Text := FieldByName('fatura').AsString;
+  EdtEntidadeDUPL.Text := FieldByName('entidade').AsString;
+  EdtnumeroDUPL.Text := FieldByName('numero').AsString;
+  DTPdtVenctoDUPL.Date := FieldByName('dtVencto').AsDateTime;
+  DTPdtEmiDUPL.Date := FieldByName('dtEmissao').AsDateTime;
+  EdtMoedaDUPL.Text := FieldByName('moeda').AsString;
+ end;
+end;
+
+procedure TReceberForm.SBEntidadeClick(Sender: TObject);
+var codigo, nome: string;
+begin
+ with CadEntidadeDM.ConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarEntidade, ConsultarEntidade);
+ codigo := ConsultarEntidade.SelecionarEntidade;
+
+ if codigo <> '' then begin
+ EdtCodigoEntidade.text := codigo;
+ nome := ConsultarEntidade.nome;
+ EdtEntidade.Text := nome;
+ end;
+end;
+
+procedure TReceberForm.EdtCodigoEntidadeChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtCodigoEntidade.Text;
+ with CadEntidadeDM.ConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where codigo = :codigo');
+  Parambyname('codigo').AsString := codigo;
+  Open;
+
+  EdtCodigoEntidade.Text := codigo;
+  EdtEntidade.Text := Fieldbyname('nome').AsString;
+ end;
+end;
+
+procedure TReceberForm.EdtCodigoEntidadeDUPLChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtCodigoEntidade.Text;
+ with CadEntidadeDM.ConsultarEntidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where codigo = :codigo');
+  Parambyname('codigo').AsString := codigo;
+  Open;
+
+  EdtCodigoEntidadeDUPL.Text := codigo;
+  EdtEntidadeDUPL.Text := Fieldbyname('nome').AsString;
+ end;
+end;
+
+procedure TReceberForm.SBFaturaClick(Sender: TObject);
+var fatura: string;
+begin
+ with ImpressaoNFEDM.ConsultarFatura do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from nota');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarFatura, ConsultarFatura);
+ fatura := ConsultarFatura.SelecionarFatura;
+
+ if fatura <> '' then begin
+  EdtFatura.Text := fatura;
+ end;
+end;
+
+procedure TReceberForm.SBMoedaClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+ with CadMoedaDM.ConsultarMoeda do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadmoeda');
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarMoeda, ConsultarMoeda);
+ codigo := ConsultarMoeda.SelecionarMoeda;
+
+ if codigo <> '' then begin
+  EdtMoeda.Text := codigo;
+  descricao := ConsultarMoeda.Descricao;
+  EdtDescricaoMoeda.Text := Descricao;
+ end;
+end;
+
+procedure TReceberForm.EdtMoedaChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtMoeda.Text;
+ with CadMoedaDM.ConsultarMoeda do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadmoeda where codigo = :codigo');
+  Parambyname('codigo').AsString := codigo;
+  Open;
+
+  EdtDescricaoMoeda.Text := Fieldbyname('descricao').AsString;
+ end;
+end;
+
+procedure TReceberForm.EdtMoedaDUPLChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtMoedaDUPL.Text;
+ with CadMoedaDM.ConsultarMoeda do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadmoeda where codigo = :codigo');
+  Parambyname('codigo').AsString := codigo;
+  Open;
+
+  EdtDescricaoMoedaDUPL.Text := Fieldbyname('descricao').AsString;
+ end;
+end;
+
+end.

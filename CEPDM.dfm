@@ -3,17 +3,16 @@
   Width = 640
   object Conexão: TFDConnection
     Params.Strings = (
+	  'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
       'DriverID=PG')
-    Connected = True
     LoginPrompt = False
     Left = 32
     Top = 24
   end
   object qryConsultarCEP: TFDQuery
-    Active = True
     Connection = Conexão
     SQL.Strings = (
       'select * from cadcep')

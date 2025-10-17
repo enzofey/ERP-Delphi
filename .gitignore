@@ -5,6 +5,7 @@
 *.local
 *.dsk
 *.identcache
+*.vlb
 
 # Compilação
 *.exe
@@ -16,6 +17,7 @@
 \bin\
 \release\
 \debug\
+\__history\
 
 # Pacotes intermediários
 *.dcp

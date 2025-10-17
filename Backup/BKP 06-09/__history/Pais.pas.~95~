@@ -1,0 +1,439 @@
+unit Pais;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.ComCtrls,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids,
+  PaisDataModule,
+  Log, LogDataModule,
+  GlobalUnit;
+
+type
+  TCadPaisForm = class(TForm)
+    Panel1: TPanel;
+    lblSigla: TLabel;
+    lblPais: TLabel;
+    lblAtivo: TLabel;
+    EdtSigla: TEdit;
+    EdtPais: TEdit;
+    CBAtivo: TCheckBox;
+    Grid: TDBGrid;
+    btnIncluir: TButton;
+    btnDesistir: TButton;
+    btnExcluir: TButton;
+    btnGravarIncluir: TButton;
+    btnGravarAlterar: TButton;
+    btnAlterar: TButton;
+    btnFechar: TButton;
+    lblCodigoIBGE: TLabel;
+    EdtCodigoIBGE: TEdit;
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure GridCellClick(Column: TColumn);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadPaisForm: TCadPaisForm;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadPaisForm.btnIncluirClick(Sender: TObject);
+var I: Integer;
+begin
+ CadPaisDataModule.ConsultarPais.SQL.Clear;
+ CadPaisDataModule.ConsultarPais.SQL.Text :=
+ 'select * from cadpais';
+ CadPaisDataModule.ConsultarPais.Open;
+
+ EdtSigla.Enabled := True;
+ EdtPais.Enabled := True;
+ CBAtivo.Enabled := True;
+ EdtCodigoIBGE.Enabled := True;
+
+ EdtSigla.Clear;
+ EdtPais.Clear;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnGravarAlterar.Visible := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadPaisForm.btnGravarIncluirClick(Sender: TObject);
+var sigla, pais, ativo, codigo: string;
+    I: Integer;
+begin
+ sigla := EdtSigla.Text;
+ Pais := EdtPais.Text;
+ if CBAtivo.Checked then Ativo := 'S'
+ else Ativo := 'N';
+ codigo := EdtCodigoIBGE.text;
+
+ if EdtSigla.Text = '' then begin
+ ShowMessage('Sigla não pode ser vazia!');
+ end
+ else begin
+
+ if EdtPais.Text = '' then begin
+ ShowMessage('País não pode ser vazio!');
+ end
+ else begin
+
+ if EdtCodigoIBGE.Text = '' then begin
+ ShowMessage('Código do IBGE não pode ser vazio!');
+ end
+ else begin
+
+ CadPaisDataModule.SelectQuery.SQL.Clear;
+ CadPaisDataModule.SelectQuery.SQL.Text :=
+ 'select * from cadpais where sigla = :sigla';
+ CadPaisDataModule.SelectQuery.ParambyName('sigla').AsString := sigla;
+
+ if CadPaisDataModule.SelectQuery.SQL.IsEmpty then begin
+ ShowMessage('País já cadastrado')
+ end
+ else begin
+ CadPaisDataModule.InsertQuery.SQL.Text :=
+ 'insert into cadpais (sigla, pais, ativo, codigo) values (:sigla, :pais, :ativo, :codigoibge)';
+ CadPaisDataModule.InsertQuery.ParamByName('sigla').AsString := sigla;
+ CadPaisDataModule.InsertQuery.ParamByName('ativo').AsString := ativo;
+ CadPaisDataModule.InsertQuery.ParamByName('pais').AsString := pais;
+ CadPaisDataModule.InsertQuery.ParamByName('codigoibge').AsString := codigo;
+
+ LogModule.InserirLog.SQL.Clear;
+ LogModule.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogModule.InserirLog.ParamByName('descricao').AsString :=
+ 'Inseriu o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
+ LogModule.InserirLog.ParamByName('tela').AsString := 'CadPais';
+ LogModule.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogModule.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogModule.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+
+ try
+ CadPaisDataModule.InsertQuery.ExecSQL;
+ LogModule.InserirLog.ExecSQL;
+ ShowMessage('Gravado com sucesso!');
+ EdtSigla.Enabled := False;
+ EdtPais.Enabled := False;
+ CBAtivo.Enabled := False;
+ EdtCodigoIBGE.Enabled := False;
+
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+
+ btnGravarAlterar.Visible := False;
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+
+ CadPaisDataModule.ConsultarPais.SQL.Clear;
+ CadPaisDataModule.ConsultarPais.SQL.Text :=
+ 'select * from cadpais';
+ CadPaisDataModule.ConsultarPais.Open;
+
+ for i := 0 to Grid.Columns.Count - 1 do
+ Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+ except
+ ShowMessage('Erro na inclusão!');
+ end;
+ end;
+end;
+end;
+end;
+end;
+
+procedure TCadPaisForm.btnAlterarClick(Sender: TObject);
+var I: integer;
+begin
+  if EdtSigla.Text = '' then begin
+  ShowMessage('País não selecionado!')
+  end
+  else begin
+  EdtPais.Enabled := True;
+  CBAtivo.Enabled := True;
+  EdtCodigoIBGE.Enabled := True;
+
+  btnIncluir.Visible := False;
+  btnAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnExcluir.Visible := False;
+
+  btnGravarAlterar.Visible := True;
+  btnDesistir.Visible := True;
+
+  CadPaisDataModule.ConsultarPais.SQL.Clear;
+  CadPaisDataModule.ConsultarPais.SQL.Text :=
+  'select * from cadpais';
+  CadPaisDataModule.ConsultarPais.Open;
+
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+end;
+
+procedure TCadPaisForm.btnGravarAlterarClick(Sender: TObject);
+var sigla, pais, ativo, codigo: string;
+    I: integer;
+begin
+  Sigla := EdtSigla.Text;
+  Pais := EdtPais.Text;
+  if CBAtivo.Checked then Ativo := 'S'
+  else Ativo := 'N';
+  codigo := EdtCodigoIBGE.Text;
+
+  if EdtSigla.Text = '' then begin
+ ShowMessage('Sigla não pode ser vazia!');
+ end
+ else begin
+
+ if EdtPais.Text = '' then begin
+ ShowMessage('País não pode ser vazio!');
+ end
+ else begin
+
+ if EdtCodigoIBGE.Text = '' then begin
+ ShowMessage('Código do IBGE não pode ser vazio!');
+ end
+ else begin
+
+  CadPaisDataModule.UpdateQuery.SQl.Clear;
+  CadPaisDataModule.UpdateQuery.SQL.Text :=
+  'update cadpais set pais = :pais, ativo = :ativo, codigo = :codigoibge where sigla = :sigla';
+  CadPaisDataModule.UpdateQuery.ParamByName('sigla').AsString := sigla;
+  CadPaisDataModule.UpdateQuery.ParamByName('pais').AsString := pais;
+  CadPaisDataModule.UpdateQuery.ParamByName('ativo').AsString := ativo;
+  CadPaisDataModule.UpdateQuery.ParamByName('codigoibge').AsString := codigo;
+
+  LogModule.InserirLog.SQL.Clear;
+  LogModule.InserirLog.SQL.Text :=
+  'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
+  LogModule.InserirLog.ParamByName('descricao').AsString :=
+  'Alterou o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
+  LogModule.InserirLog.ParamByName('tela').AsString := 'CadPais';
+  LogModule.InserirLog.ParamByName('data').AsDatetime := Now;
+  LogModule.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogModule.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  try
+  CadPaisDataModule.UpdateQuery.ExecSQL;
+  LogModule.InserirLog.ExecSQL;
+  ShowMessage('Alterado com sucesso!');
+
+  CadPaisDataModule.ConsultarPais.SQL.Clear;
+  CadPaisDataModule.ConsultarPais.SQL.Text :=
+  'select * from cadpais';
+  CadPaisDataModule.ConsultarPais.Open;
+
+  EdtSigla.Enabled := False;
+  EdtPais.Enabled := False;
+  CBAtivo.Enabled := False;
+  EdtCodigoIBGE.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+
+  btnGravarAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+  except
+  ShowMessage('Erro na alteração!');
+  end;
+end;
+end;
+end;
+end;
+
+procedure TCadPaisForm.btnDesistirClick(Sender: TObject);
+var I: integer;
+begin
+ CadPaisDataModule.ConsultarPais.SQL.Clear;
+ CadPaisDataModule.ConsultarPais.SQL.Text :=
+ 'select * from cadpais';
+ CadPaisDataModule.ConsultarPais.Open;
+
+ EdtSigla.Enabled := False;
+ EdtPais.Enabled := False;
+ CBAtivo.Enabled := False;
+ EdtCodigoIBGE.Enabled := False;
+
+ EdtSigla.Clear;
+ EdtPais.Clear;
+ EdtCodigoIBGE.Clear;
+
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+
+ btnGravarAlterar.Visible := False;
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+
+  for i := 0 to Grid.Columns.Count - 1 do
+    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadPaisForm.btnExcluirClick(Sender: TObject);
+var pais, sigla, ativo: string;
+    I: integer;
+begin
+  sigla := EdtSigla.Text;
+  pais := edtpais.text;
+  if CBAtivo.Checked then Ativo := 'S'
+  else Ativo := 'N';
+
+  CadPaisDataModule.SelectQuery.SQl.Clear;
+  CadPaisDataModule.SelectQuery.SQl.Text :=
+  'select * from cadCEP where pais = :sigla';
+  CadPaisDataModule.SelectQuery.ParamByName('sigla').AsString := sigla;
+  CadPaisDataModule.SelectQuery.Open;
+
+   if not CadPaisDataModule.SelectQuery.IsEmpty then begin
+  ShowMessage('País está sendo usado no cadastro de CEP! Favor verifique!');
+  end
+  else begin
+
+  CadPaisDataModule.SelectQuery.SQl.Clear;
+  CadPaisDataModule.SelectQuery.SQl.Text :=
+  'select * from cadestado where pais = :sigla';
+  CadPaisDataModule.SelectQuery.ParamByName('sigla').AsString := sigla;
+  CadPaisDataModule.SelectQuery.Open;
+
+   if not CadPaisDataModule.SelectQuery.IsEmpty then begin
+  ShowMessage('País está sendo usado no cadastro de Estado! Favor verifique!');
+  end
+  else begin
+
+  CadPaisDataModule.SelectQuery.SQl.Clear;
+  CadPaisDataModule.SelectQuery.SQl.Text :=
+  'select * from cadcidade where pais = :sigla';
+  CadPaisDataModule.SelectQuery.ParamByName('sigla').AsString := sigla;
+  CadPaisDataModule.SelectQuery.Open;
+
+   if not CadPaisDataModule.SelectQuery.IsEmpty then begin
+  ShowMessage('País está sendo usado no cadastro de Cidade! Favor verifique!');
+  end
+  else begin
+
+  CadPaisDataModule.SelectQuery.SQl.Clear;
+  CadPaisDataModule.SelectQuery.SQl.Text :=
+  'select * from cadentidade where pais = :sigla';
+  CadPaisDataModule.SelectQuery.ParamByName('sigla').AsString := sigla;
+  CadPaisDataModule.SelectQuery.Open;
+
+   if not CadPaisDataModule.SelectQuery.IsEmpty then begin
+  ShowMessage('País está sendo usado no cadastro de Entidade! Favor verifique!');
+  end
+  else begin
+
+  CadPaisDataModule.SelectQuery.SQl.Clear;
+  CadPaisDataModule.SelectQuery.SQl.Text :=
+  'select * from cadpais where sigla = :sigla';
+  CadPaisDataModule.SelectQuery.ParamByName('sigla').AsString := sigla;
+  CadPaisDataModule.SelectQuery.Open;
+
+  if CadPaisDataModule.SelectQuery.IsEmpty then begin
+  showmessage('País não encontrado');
+  end
+  else begin
+
+  CadPaisDataModule.DeleteQuery.SQL.Clear;
+  CadPaisDataModule.DeleteQuery.SQL.Text :=
+  'delete from cadpais where sigla = :sigla';
+  CadPaisDataModule.DeleteQuery.ParamByName('sigla').AsString := sigla;
+
+  LogModule.InserirLog.SQL.Clear;
+  LogModule.InserirLog.SQL.Text :=
+  'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+  LogModule.InserirLog.ParamByName('descricao').AsString :=
+  'Deletou o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
+  LogModule.InserirLog.ParamByName('tela').AsString := 'CadPaís';
+  LogModule.InserirLog.ParamByName('data').AsDatetime := Now;
+  LogModule.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogModule.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+try
+  CadPaisDataModule.DeleteQuery.ExecSQL;
+  LogModule.InserirLog.ExecSQL;
+  ShowMessage('Excluído com sucesso!');
+
+  CadPaisDataModule.ConsultarPais.SQL.Clear;
+  CadPaisDataModule.ConsultarPais.SQL.Text :=
+  'select * from cadpais';
+  CadPaisDataModule.ConsultarPais.Open;
+
+  EdtSigla.Enabled := False;
+  EdtPais.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  EdtSigla.Clear;
+  EdtPais.Clear;
+  EdtCodigoIBGE.Clear;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+
+  btnGravarAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  begin
+  for i := 0 to Grid.Columns.Count - 1 do
+   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+  end;
+  except
+  ShowMessage('Erro na exclusão');
+  end;
+end;
+end;
+end;
+end;
+end;
+end;
+
+procedure TCadPaisForm.btnFecharClick(Sender: TObject);
+begin
+ Fechartela(sender);
+end;
+
+procedure TCadPaisForm.GridCellClick(Column: TColumn);
+var codigo, sigla, pais, ativo: string;
+begin
+  EdtCodigoIBGE.Text := CadPaisDataModule.ConsultarPais.FieldByName('codigo').AsString;
+  EdtSigla.Text := CadPaisDataModule.ConsultarPais.FieldByName('sigla').AsString;
+  EdtPais.Text   := CadPaisDataModule.ConsultarPais.FieldByName('pais').AsString;
+  CBAtivo.Checked := CadPaisDataModule.ConsultarPais.FieldByName('ativo').AsString = 'S';
+end;
+
+procedure TCadPaisForm.FormShow(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to Grid.Columns.Count - 1 do
+    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+end.

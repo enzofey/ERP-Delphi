@@ -6,8 +6,8 @@
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
+      'Server=192.168.1.23'
       'DriverID=PG')
-    Connected = True
     LoginPrompt = False
     Left = 32
     Top = 24

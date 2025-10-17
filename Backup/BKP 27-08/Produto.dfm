@@ -1,0 +1,271 @@
+object CadProduto: TCadProduto
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'CadProduto'
+  ClientHeight = 683
+  ClientWidth = 1072
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  WindowState = wsMaximized
+  OnShow = FormShow
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1072
+    Height = 683
+    Align = alClient
+    TabOrder = 0
+    object lblCodigo: TLabel
+      Left = 40
+      Top = 48
+      Width = 42
+      Height = 15
+      Caption = 'C'#243'digo:'
+    end
+    object lblDescricao: TLabel
+      Left = 40
+      Top = 80
+      Width = 54
+      Height = 15
+      Caption = 'Descri'#231#227'o:'
+    end
+    object LblAtivo: TLabel
+      Left = 608
+      Top = 48
+      Width = 31
+      Height = 15
+      Caption = 'Ativo:'
+    end
+    object lblFaixa: TLabel
+      Left = 568
+      Top = 282
+      Width = 98
+      Height = 15
+      Caption = 'Faixa de Tamanho:'
+    end
+    object SBFaixa: TSpeedButton
+      Left = 1030
+      Top = 279
+      Width = 23
+      Height = 23
+      Enabled = False
+      OnClick = SBFaixaClick
+    end
+    object lblNCM: TLabel
+      Left = 40
+      Top = 189
+      Width = 31
+      Height = 15
+      Caption = 'NCM:'
+    end
+    object SBNCM: TSpeedButton
+      Left = 199
+      Top = 186
+      Width = 23
+      Height = 23
+      Enabled = False
+      OnClick = SBNCMClick
+    end
+    object lblUniCom: TLabel
+      Left = 40
+      Top = 122
+      Width = 109
+      Height = 15
+      Caption = 'Unidade de Compra:'
+    end
+    object lblUniVenda: TLabel
+      Left = 274
+      Top = 122
+      Width = 98
+      Height = 15
+      Caption = 'Unidade de Venda:'
+    end
+    object lblBrinde: TLabel
+      Left = 608
+      Top = 77
+      Width = 37
+      Height = 15
+      Caption = 'Brinde:'
+    end
+    object lblOrigem: TLabel
+      Left = 40
+      Top = 221
+      Width = 43
+      Height = 15
+      Caption = 'Origem:'
+    end
+    object edtCodigo: TEdit
+      Left = 100
+      Top = 45
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 0
+    end
+    object EdtDescricao: TEdit
+      Left = 100
+      Top = 74
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 1
+    end
+    object CBAtivo: TCheckBox
+      Left = 645
+      Top = 48
+      Width = 20
+      Height = 17
+      Enabled = False
+      TabOrder = 2
+    end
+    object btnIncluir: TButton
+      Left = 24
+      Top = 599
+      Width = 145
+      Height = 57
+      Caption = 'Incluir'
+      TabOrder = 3
+      OnClick = btnIncluirClick
+    end
+    object btnGravarIncluir: TButton
+      Left = 24
+      Top = 599
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 4
+      Visible = False
+      OnClick = btnGravarIncluirClick
+    end
+    object btnDesistir: TButton
+      Left = 175
+      Top = 599
+      Width = 145
+      Height = 57
+      Caption = 'Desistir'
+      TabOrder = 5
+      Visible = False
+      OnClick = btnDesistirClick
+    end
+    object btnAlterar: TButton
+      Left = 175
+      Top = 599
+      Width = 145
+      Height = 57
+      Caption = 'Alterar'
+      TabOrder = 6
+      OnClick = btnAlterarClick
+    end
+    object btnConsultar: TButton
+      Left = 478
+      Top = 599
+      Width = 145
+      Height = 57
+      Caption = 'Consultar'
+      TabOrder = 7
+      OnClick = btnConsultarClick
+    end
+    object btnExcluir: TButton
+      Left = 326
+      Top = 599
+      Width = 146
+      Height = 57
+      Caption = 'Excluir'
+      TabOrder = 8
+      OnClick = btnExcluirClick
+    end
+    object btnGravarAlterar: TButton
+      Left = 24
+      Top = 599
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 9
+      Visible = False
+      OnClick = btnGravarAlterarClick
+    end
+    object Grid: TDBGrid
+      Left = 568
+      Top = 312
+      Width = 485
+      Height = 265
+      DataSource = CadCorModule.dsCorEstoque
+      TabOrder = 10
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -12
+      TitleFont.Name = 'Segoe UI'
+      TitleFont.Style = []
+    end
+    object EdtFaixaTamanho: TEdit
+      Left = 672
+      Top = 279
+      Width = 352
+      Height = 23
+      Enabled = False
+      TabOrder = 11
+    end
+    object EdtNCM: TEdit
+      Left = 77
+      Top = 186
+      Width = 116
+      Height = 23
+      Enabled = False
+      TabOrder = 12
+    end
+    object CBUniCom: TComboBox
+      Left = 155
+      Top = 119
+      Width = 94
+      Height = 23
+      Style = csDropDownList
+      Enabled = False
+      TabOrder = 13
+      OnDropDown = CBUniComDropDown
+    end
+    object CBUniVenda: TComboBox
+      Left = 378
+      Top = 119
+      Width = 94
+      Height = 23
+      Style = csDropDownList
+      Enabled = False
+      TabOrder = 14
+      OnDropDown = CBUniVendaDropDown
+    end
+    object CBBrinde: TCheckBox
+      Left = 651
+      Top = 77
+      Width = 20
+      Height = 17
+      Enabled = False
+      TabOrder = 15
+    end
+    object CBOrigem: TComboBox
+      Left = 89
+      Top = 215
+      Width = 208
+      Height = 23
+      Style = csDropDownList
+      Enabled = False
+      TabOrder = 16
+      OnDropDown = CBOrigemDropDown
+    end
+    object btnFechar: TButton
+      Left = 908
+      Top = 599
+      Width = 145
+      Height = 57
+      Caption = 'Fechar'
+      TabOrder = 17
+      OnClick = btnFecharClick
+    end
+  end
+end

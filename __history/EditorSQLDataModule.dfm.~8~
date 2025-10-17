@@ -1,0 +1,38 @@
+﻿object EditorSQLModule: TEditorSQLModule
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Server=127.0.0.1'
+      'Database=estoque'
+      'User_Name=root'
+      'DriverID=MySQL')
+    Connected = True
+    LoginPrompt = False
+    Left = 40
+    Top = 40
+  end
+  object FDQuery1: TFDQuery
+    Connection = Conexão
+    Left = 136
+    Top = 40
+  end
+  object dsEditorSQL: TDataSource
+    DataSet = FDQuery1
+    Left = 40
+    Top = 120
+  end
+  object TablesBanco: TFDQuery
+    Active = True
+    Connection = Conexão
+    SQL.Strings = (
+      'SELECT table_name AS TABELA'
+      'FROM information_schema.tables'
+      'WHERE table_schema = '#39'estoque'#39
+      '  AND table_type = '#39'BASE TABLE'#39
+      'ORDER BY table_name;'
+      '')
+    Left = 128
+    Top = 120
+  end
+end

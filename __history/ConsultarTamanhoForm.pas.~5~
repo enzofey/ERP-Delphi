@@ -1,0 +1,66 @@
+unit ConsultarTamanhoForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Grids,
+  Vcl.DBGrids, Vcl.ExtCtrls, TamanhoDataModule;
+
+type
+  TConsultarTamanhoForma = class(TForm)
+    Panel1: TPanel;
+    GridConsultaTamanho: TDBGrid;
+    BtnSelecionarDeposito: TButton;
+    procedure BtnSelecionarTamanhoClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    TCodigo: string;
+    TDescricao: string;
+    TAtivo: string;
+  public
+    function SelecionarTamanho: string;
+    function Descricao: string;
+    function Ativo: string;
+  end;
+
+var
+  ConsultarTamanhoForma: TConsultarTamanhoForma;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarTamanhoForma.SelecionarTamanho: string;
+begin
+  TCodigo := '';
+  ShowModal;
+  Result := TCodigo;
+end;
+
+function TConsultarTamanhoForma.Descricao: string;
+begin
+  Result := TDescricao;
+end;
+
+function TConsultarTamanhoForma.Ativo: string;
+begin
+  Result := TAtivo;
+end;
+
+procedure TConsultarTamanhoForma.FormShow(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 0 to GridConsultaTamanho.Columns.Count - 1 do
+    GridConsultaTamanho.Columns[i].Width := GridConsultaTamanho.Canvas.TextWidth(GridConsultaTamanho.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TConsultarTamanhoForma.BtnSelecionarTamanhoClick(Sender: TObject);
+begin
+  TCodigo := CadTamanhoDataModule.FDQuery.FieldByName('codigo').AsString;
+  TDescricao := CadTamanhoDataModule.FDQuery.FieldByName('descricao').AsString;
+  TAtivo := CadTamanhoDataModule.FDQuery.FieldByName('ativo').AsString;
+  Close;
+end;
+end.

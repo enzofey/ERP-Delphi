@@ -3,6 +3,7 @@
   Width = 871
   object Conexão: TFDConnection
     Params.Strings = (
+	  'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
