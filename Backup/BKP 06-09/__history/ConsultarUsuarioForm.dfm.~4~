@@ -1,4 +1,0 @@
-object ConsultarUsuario: TConsultarUsuario
-  Height = 480
-  Width = 640
-end

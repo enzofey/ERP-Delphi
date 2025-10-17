@@ -1,9 +1,0 @@
-unit GlobalUnit;
-
-interface
-
-var UsuarioLogado: String;
-
-implementation
-
-end.
