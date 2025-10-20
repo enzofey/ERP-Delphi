@@ -1,0 +1,167 @@
+object CadPaisForm: TCadPaisForm
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'CadPais'
+  ClientHeight = 662
+  ClientWidth = 1008
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  OnShow = FormShow
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1008
+    Height = 662
+    Align = alClient
+    TabOrder = 0
+    object lblSigla: TLabel
+      Left = 40
+      Top = 48
+      Width = 28
+      Height = 15
+      Caption = 'Sigla:'
+    end
+    object lblPais: TLabel
+      Left = 40
+      Top = 88
+      Width = 24
+      Height = 15
+      Caption = 'Pa'#237's:'
+    end
+    object lblAtivo: TLabel
+      Left = 640
+      Top = 48
+      Width = 31
+      Height = 15
+      Caption = 'Ativo:'
+    end
+    object lblCodigoIBGE: TLabel
+      Left = 40
+      Top = 128
+      Width = 69
+      Height = 15
+      Caption = 'C'#243'digo IBGE:'
+    end
+    object EdtSigla: TEdit
+      Left = 96
+      Top = 45
+      Width = 121
+      Height = 23
+      Enabled = False
+      MaxLength = 3
+      TabOrder = 0
+    end
+    object EdtPais: TEdit
+      Left = 96
+      Top = 85
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 1
+    end
+    object CBAtivo: TCheckBox
+      Left = 677
+      Top = 48
+      Width = 20
+      Height = 17
+      Enabled = False
+      TabOrder = 2
+    end
+    object Grid: TDBGrid
+      Left = 16
+      Top = 248
+      Width = 969
+      Height = 313
+      DataSource = CadPaisDataModule.dsCadPais
+      TabOrder = 3
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -12
+      TitleFont.Name = 'Segoe UI'
+      TitleFont.Style = []
+      OnCellClick = GridCellClick
+    end
+    object btnIncluir: TButton
+      Left = 64
+      Top = 584
+      Width = 145
+      Height = 57
+      Caption = 'Incluir'
+      TabOrder = 4
+      OnClick = btnIncluirClick
+    end
+    object btnDesistir: TButton
+      Left = 215
+      Top = 584
+      Width = 145
+      Height = 57
+      Caption = 'Desistir'
+      TabOrder = 5
+      Visible = False
+      OnClick = btnDesistirClick
+    end
+    object btnExcluir: TButton
+      Left = 366
+      Top = 584
+      Width = 145
+      Height = 57
+      Caption = 'Excluir'
+      TabOrder = 6
+      OnClick = btnExcluirClick
+    end
+    object btnGravarIncluir: TButton
+      Left = 64
+      Top = 584
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 7
+      Visible = False
+      OnClick = btnGravarIncluirClick
+    end
+    object btnGravarAlterar: TButton
+      Left = 64
+      Top = 584
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 8
+      Visible = False
+      OnClick = btnGravarAlterarClick
+    end
+    object btnAlterar: TButton
+      Left = 215
+      Top = 584
+      Width = 145
+      Height = 57
+      Caption = 'Alterar'
+      TabOrder = 9
+      OnClick = btnAlterarClick
+    end
+    object EdtCodigoIBGE: TEdit
+      Left = 115
+      Top = 125
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 10
+    end
+    object btnFechar: TButton
+      Left = 840
+      Top = 584
+      Width = 145
+      Height = 57
+      Caption = 'Fechar'
+      TabOrder = 11
+      OnClick = btnFecharClick
+    end
+  end
+end

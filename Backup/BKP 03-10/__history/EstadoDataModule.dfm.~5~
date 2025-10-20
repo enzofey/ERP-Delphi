@@ -1,0 +1,73 @@
+﻿object CadEstadoModule: TCadEstadoModule
+  Height = 564
+  Width = 886
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Database=estoque'
+      'User_Name=root'
+      'Server=127.0.0.1'
+      'DriverID=MySQL')
+    Connected = True
+    LoginPrompt = False
+    Left = 72
+    Top = 72
+  end
+  object dsCadEstado: TDataSource
+    DataSet = FDQuery1
+    Left = 152
+    Top = 120
+  end
+  object tbCadEstado: TFDTable
+    Active = True
+    IndexFieldNames = 'ID'
+    MasterSource = dsCadEstado
+    Connection = Conexão
+    ResourceOptions.AssignedValues = [rvEscapeExpand]
+    TableName = 'estoque.cadestado'
+    Left = 72
+    Top = 184
+    object tbCadEstadoID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object tbCadEstadoCodigo: TStringField
+      FieldName = 'Codigo'
+      Origin = 'Codigo'
+      Required = True
+      Size = 2
+    end
+    object tbCadEstadoEstado: TStringField
+      FieldName = 'Estado'
+      Origin = 'Estado'
+      Required = True
+      Size = 255
+    end
+    object tbCadEstadoAtivo: TStringField
+      FieldName = 'Ativo'
+      Origin = 'Ativo'
+      Required = True
+      Size = 1
+    end
+    object tbCadEstadoPais: TStringField
+      FieldName = 'Pais'
+      Origin = 'Pais'
+      Required = True
+      Size = 255
+    end
+  end
+  object FDQuery1: TFDQuery
+    Active = True
+    Connection = Conexão
+    SQL.Strings = (
+      'select * from cadestado')
+    Left = 160
+    Top = 208
+  end
+  object FDQuery: TFDQuery
+    Connection = Conexão
+    Left = 64
+    Top = 448
+  end
+end

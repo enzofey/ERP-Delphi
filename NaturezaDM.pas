@@ -13,13 +13,13 @@ uses
 type
   TCadNaturezaDM = class(TDataModule)
     Conexão: TFDConnection;
-    SelectQuery: TFDQuery;
-    InsertQuery: TFDQuery;
-    UpdateQuery: TFDQuery;
+    qrySelect: TFDQuery;
+    qryInsert: TFDQuery;
+    qryUpdate: TFDQuery;
     qryConsultarNatureza: TFDQuery;
     ConsultarNatureza: TDataSource;
     PGLink: TFDPhysPgDriverLink;
-    DeleteQuery: TFDQuery;
+    qryDelete: TFDQuery;
     dsAcesso: TDataSource;
     qryAcesso: TFDQuery;
   private

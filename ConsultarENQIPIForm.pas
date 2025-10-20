@@ -51,8 +51,8 @@ end;
 
 procedure TConsultarENQIPI.btnSelecionarENQIPIClick(Sender: TObject);
 begin
- EnqIPI := CadEnqIPIDM.ConsultarENQIPI.FieldByName('CST').AsString;
- EnqIPIDescricao := CadEnqIPIDM.ConsultarENQIPI.FieldByName('Descricao').AsString;
+ EnqIPI := CadEnqIPIDM.qryConsultarENQIPI.FieldByName('CST').AsString;
+ EnqIPIDescricao := CadEnqIPIDM.qryConsultarENQIPI.FieldByName('Descricao').AsString;
  Close;
 end;
 end.

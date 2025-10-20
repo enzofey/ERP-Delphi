@@ -1,0 +1,50 @@
+unit ConsultarUsuarioForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.StdCtrls, Vcl.Grids,
+  Vcl.DBGrids, Vcl.ExtCtrls, UsuarioDataModule;
+
+type
+  TConsultarUsuario = class(TForm)
+    Panel1: TPanel;
+    Grid: TDBGrid;
+    BtnSelecionarUsuario: TButton;
+    procedure BtnSelecionarUsuarioClick(Sender: TObject);
+  private
+    UCodigo: string;
+    UUsuario: string;
+  public
+    function SelecionarUsuario;
+    function Usuario;
+  end;
+
+var
+  ConsultarUsuario: TConsultarUsuario;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarUsuario.SelecionarUsuario: string;
+begin
+  UCodigo := '';
+  ShowModal;
+  Result := UCodigo;
+end;
+
+function TConsultarUsuario.Usuario: string;
+begin
+  Result := UUsuario;
+end;
+
+procedure TConsultarUsuario.BtnSelecionarUsuarioClick(Sender: TObject);
+begin
+  UCodigo := CadUsuarioDataModule.FDQuery1.FieldByName('codigo').AsString;
+  UUsuario := CadUsuarioDataModule.FDQuery1.FieldByName('usuario').AsString;
+  Close;
+end;
+
+end.

@@ -26,13 +26,9 @@ type
     btnGravarAlterar: TButton;
     btnAlterar: TButton;
     btnFechar: TButton;
-    lblCodigoIBGE: TLabel;
-    EdtCodigoIBGE: TEdit;
     Pages: TPageControl;
     AcessoPage: TTabSheet;
     CadastroPage: TTabSheet;
-    lblCodigo: TLabel;
-    EdtCodigo: TEdit;
     RGAcessoAtivo: TRadioGroup;
     lblAcessoSiglaPais: TLabel;
     EdtAcessoSiglaPais: TEdit;
@@ -41,6 +37,7 @@ type
     btnAcessoFechar: TButton;
     btnAcessoConsultar: TButton;
     AcessoGrid: TDBGrid;
+    EdtCodigo_IBGE: TEdit;
     procedure btnIncluirClick(Sender: TObject);
     procedure btnDesistirClick(Sender: TObject);
     procedure btnGravarIncluirClick(Sender: TObject);
@@ -76,16 +73,14 @@ begin
   Open;
  end;
 
- EdtCodigo.Enabled := True;
  EdtSigla.Enabled := True;
  EdtPais.Enabled := True;
  CBAtivo.Enabled := True;
- EdtCodigoIBGE.Enabled := True;
+ Edtcodigo_ibge.Enabled := True;
 
  EdtSigla.Clear;
  EdtPais.Clear;
- EdtCodigo.Clear;
- EdtCodigoIBGE.Clear;
+ Edtcodigo_ibge.Clear;
 
  btnIncluir.Visible := False;
  btnAlterar.Visible := False;
@@ -100,177 +95,92 @@ begin
 end;
 
 procedure TCadPaisForm.btnGravarIncluirClick(Sender: TObject);
-var sigla, pais, ativo, codigo: string;
+var sigla, pais, ativo, codigo_ibge: string;
     I: Integer;
 begin
  sigla := EdtSigla.Text;
  Pais := EdtPais.Text;
  if CBAtivo.Checked then Ativo := 'S'
  else Ativo := 'N';
- codigo := EdtCodigoIBGE.text;
+ codigo_ibge := Edtcodigo_ibge.text;
 
- if EdtSigla.Text = '' then begin
+ if Sigla = '' then begin
   ShowMessage('Sigla não pode ser vazia!');
   Abort;
  end;
 
- if EdtPais.Text = '' then begin
+ if Pais = '' then begin
   ShowMessage('País não pode ser vazio!');
   Abort;
  end;
 
- if EdtCodigoIBGE.Text = '' then begin
+ if codigo_ibge = '' then begin
   ShowMessage('Código do IBGE não pode ser vazio!');
   Abort;
  end;
 
- CadPaisDM.SelectQuery.SQL.Clear;
- CadPaisDM.SelectQuery.SQL.Text :=
- 'select * from cadpais where sigla = :sigla';
- CadPaisDM.SelectQuery.ParambyName('sigla').AsString := sigla;
+ with CadPaisDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais where sigla = :sigla');
+  ParambyName('sigla').AsString := sigla;
+  Open;
 
- if CadPaisDM.SelectQuery.SQL.IsEmpty then begin
-  ShowMessage('País já cadastrado');
-  Abort;
+  if IsEmpty then begin
+   ShowMessage('Sigla já cadastrada!');
+   Abort;
+  end;
  end;
 
- CadPaisDM.InsertQuery.SQL.Text :=
- 'insert into cadpais (sigla, pais, ativo, codigo) values (:sigla, :pais, :ativo, :codigoibge)';
- CadPaisDM.InsertQuery.ParamByName('sigla').AsString := sigla;
- CadPaisDM.InsertQuery.ParamByName('ativo').AsString := ativo;
- CadPaisDM.InsertQuery.ParamByName('pais').AsString := pais;
- CadPaisDM.InsertQuery.ParamByName('codigoibge').AsString := codigo;
+ with CadPaisDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais where codigo_ibge = :codigo_ibge');
+  ParambyName('codigo_ibge').AsString := codigo_ibge;
+  Open;
 
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
- LogsDM.InserirLog.ParamByName('descricao').AsString :=
- 'Inseriu o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadPais';
- LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  if IsEmpty then begin
+   ShowMessage('Código IBGE já cadastrado!');
+   Abort;
+  end;
+ end;
 
+ CadPaisDM.Conexão.StartTransaction;
  try
- CadPaisDM.InsertQuery.ExecSQL;
- LogsDM.InserirLog.ExecSQL;
- ShowMessage('Gravado com sucesso!');
- EdtSigla.Enabled := False;
- EdtPais.Enabled := False;
- CBAtivo.Enabled := False;
- EdtCodigoIBGE.Enabled := False;
- EdtCodigo.Enabled := False;
-
- btnIncluir.Visible := True;
- btnAlterar.Visible := True;
- btnExcluir.Visible := True;
-
- btnGravarAlterar.Visible := False;
- btnGravarIncluir.Visible := False;
- btnDesistir.Visible := False;
-
-  with CadPaisDM.qryConsultarPais do
+  with CadPaisDM.qryInsert do
   begin
    SQL.Clear;
-   SQL.Add('select * from cadpais');
-   Open;
+   SQL.Add('insert into cadpais (sigla, pais, ativo, codigo_ibge)');
+   SQL.Add('values');
+   SQL.Add('(:sigla, :pais, :ativo, :codigo_ibge)');
+   ParamByName('sigla').AsString := sigla;
+   ParamByName('ativo').AsString := ativo;
+   ParamByName('pais').AsString := pais;
+   ParamByName('codigo_ibge').AsString := codigo_ibge;
+   ExecSQL;
   end;
 
- for i := 0 to Grid.Columns.Count - 1 do
- Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
- except
- ShowMessage('Erro na inclusão!');
- end;
-end;
-
-procedure TCadPaisForm.btnAlterarClick(Sender: TObject);
-var I: integer;
-begin
-  if EdtCodigo.Text = '' then begin
-  ShowMessage('País não selecionado!')
-  end
-  else begin
-  EdtPais.Enabled := True;
-  CBAtivo.Enabled := True;
-  EdtCodigoIBGE.Enabled := True;
-
-  btnIncluir.Visible := False;
-  btnAlterar.Visible := False;
-  btnGravarIncluir.Visible := False;
-  btnExcluir.Visible := False;
-
-  btnGravarAlterar.Visible := True;
-  btnDesistir.Visible := True;
-
-  with CadPaisDM.qryConsultarPais do
+  with LogsDM.InserirLog do
   begin
    SQL.Clear;
-   SQL.Add('select * from cadpais');
-   Open;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Inseriu o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadPais';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
   end;
 
-  for i := 0 to Grid.Columns.Count - 1 do
-  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
-end;
-end;
-
-procedure TCadPaisForm.btnGravarAlterarClick(Sender: TObject);
-var sigla, pais, ativo, codigo: string;
-    I: integer;
-begin
- Sigla := EdtSigla.Text;
- Pais := EdtPais.Text;
- if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
- codigo := EdtCodigoIBGE.Text;
-
- if EdtSigla.Text = '' then begin
-  ShowMessage('Sigla não pode ser vazia!');
-  Abort;
- end;
-
- if EdtPais.Text = '' then begin
-  ShowMessage('País não pode ser vazio!');
-  Abort;
- end;
-
- if EdtCodigoIBGE.Text = '' then begin
-  ShowMessage('Código do IBGE não pode ser vazio!');
-  Abort;
- end;
-
-  CadPaisDM.UpdateQuery.SQl.Clear;
-  CadPaisDM.UpdateQuery.SQL.Text :=
-  'update cadpais set pais = :pais, ativo = :ativo, codigo = :codigoibge where sigla = :sigla';
-  CadPaisDM.UpdateQuery.ParamByName('sigla').AsString := sigla;
-  CadPaisDM.UpdateQuery.ParamByName('pais').AsString := pais;
-  CadPaisDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
-  CadPaisDM.UpdateQuery.ParamByName('codigoibge').AsString := codigo;
-
-  LogsDM.InserirLog.SQL.Clear;
-  LogsDM.InserirLog.SQL.Text :=
-  'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
-  LogsDM.InserirLog.ParamByName('descricao').AsString :=
-  'Alterou o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
-  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadPais';
-  LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
-  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
-  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  try
-  CadPaisDM.UpdateQuery.ExecSQL;
-  LogsDM.InserirLog.ExecSQL;
-  ShowMessage('Alterado com sucesso!');
-
-  with CadPaisDM.qryConsultarPais do
-  begin
-   SQL.Clear;
-   SQL.Add('select * from cadpais');
-   Open;
-  end;
-
+  CadPaisDM.Conexão.Commit;
+  ShowMessage('Gravado com sucesso!');
   EdtSigla.Enabled := False;
   EdtPais.Enabled := False;
   CBAtivo.Enabled := False;
-  EdtCodigoIBGE.Enabled := False;
+  Edtcodigo_ibge.Enabled := False;
 
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
@@ -280,12 +190,159 @@ begin
   btnGravarIncluir.Visible := False;
   btnDesistir.Visible := False;
 
-  for i := 0 to Grid.Columns.Count - 1 do
-  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
-
-  except
-  ShowMessage('Erro na alteração!');
+  with CadPaisDM.qryConsultarPais do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadpais');
+   Open;
   end;
+
+  for i := 0 to Grid.Columns.Count - 1 do
+   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+  except
+  ShowMessage('Erro na inclusão!');
+  CadPaisDM.Conexão.Rollback;
+ end;
+end;
+
+procedure TCadPaisForm.btnAlterarClick(Sender: TObject);
+var I: integer;
+begin
+ if Edtcodigo_ibge.Text = '' then begin
+  ShowMessage('País não selecionado!');
+  Abort;
+ end;
+
+ EdtPais.Enabled := True;
+ CBAtivo.Enabled := True;
+ Edtcodigo_ibge.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnGravarIncluir.Visible := False;
+ btnExcluir.Visible := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+
+ with CadPaisDM.qryConsultarPais do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais');
+  Open;
+ end;
+
+ for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TCadPaisForm.btnGravarAlterarClick(Sender: TObject);
+var sigla, pais, ativo, codigo_ibge: string;
+    I: integer;
+begin
+ Sigla := EdtSigla.Text;
+ Pais := EdtPais.Text;
+ if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
+ codigo_ibge := Edtcodigo_ibge.Text;
+
+ if Sigla = '' then begin
+  ShowMessage('Sigla não pode ser vazia!');
+  Abort;
+ end;
+
+ if Pais = '' then begin
+  ShowMessage('País não pode ser vazio!');
+  Abort;
+ end;
+
+ if codigo_ibge = '' then begin
+  ShowMessage('Código do IBGE não pode ser vazio!');
+  Abort;
+ end;
+
+ with CadPaisDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais where sigla = :sigla');
+  ParambyName('sigla').AsString := sigla;
+  Open;
+
+  if IsEmpty then begin
+   ShowMessage('Sigla já cadastrada!');
+   Abort;
+  end;
+ end;
+
+ with CadPaisDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais where codigo_ibge = :codigo_ibge');
+  ParambyName('codigo_ibge').AsString := codigo_ibge;
+  Open;
+
+  if IsEmpty then begin
+   ShowMessage('Código IBGE já cadastrado!');
+   Abort;
+  end;
+ end;
+
+ CadPaisDM.Conexão.StartTransaction;
+ try
+  with CadPaisDM.qryUpdate do
+  begin
+   SQL.Clear;
+   SQL.Add('update cadpais set pais = :pais, ativo = :ativo, codigo_ibge = :codigo_ibge where sigla = :sigla');
+   ParamByName('sigla').AsString := sigla;
+   ParamByName('pais').AsString := pais;
+   ParamByName('ativo').AsString := ativo;
+   ParamByName('codigo_ibge').AsString := codigo_ibge;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   ParamByName('descricao').AsString :=
+   'Alterou o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadPais';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadPaisDM.Conexão.Commit;
+  ShowMessage('Alterado com sucesso!');
+
+  EdtSigla.Enabled := False;
+  EdtPais.Enabled := False;
+  CBAtivo.Enabled := False;
+  Edtcodigo_ibge.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+
+  btnGravarAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  with CadPaisDM.qryConsultarPais do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadpais');
+   Open;
+  end;
+  for i := 0 to Grid.Columns.Count - 1 do
+   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+ except
+  CadPaisDM.Conexão.Rollback;
+  ShowMessage('Erro na alteração!');
+ end;
 end;
 
 procedure TCadPaisForm.btnDesistirClick(Sender: TObject);
@@ -298,15 +355,14 @@ begin
   Open;
  end;
 
- EdtCodigo.Enabled := False;
  EdtSigla.Enabled := False;
  EdtPais.Enabled := False;
  CBAtivo.Enabled := False;
- EdtCodigoIBGE.Enabled := False;
+ Edtcodigo_ibge.Enabled := False;
 
  EdtSigla.Clear;
  EdtPais.Clear;
- EdtCodigoIBGE.Clear;
+ Edtcodigo_ibge.Clear;
 
  btnIncluir.Visible := True;
  btnAlterar.Visible := True;
@@ -316,8 +372,8 @@ begin
  btnGravarIncluir.Visible := False;
  btnDesistir.Visible := False;
 
-  for i := 0 to Grid.Columns.Count - 1 do
-    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+ for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 end;
 
 procedure TCadPaisForm.btnExcluirClick(Sender: TObject);
@@ -328,95 +384,93 @@ begin
  pais := edtpais.text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
- CadPaisDM.SelectQuery.SQl.Clear;
- CadPaisDM.SelectQuery.SQl.Text :=
- 'select * from cadCEP where pais = :sigla';
- CadPaisDM.SelectQuery.ParamByName('sigla').AsString := sigla;
- CadPaisDM.SelectQuery.Open;
-
- if not CadPaisDM.SelectQuery.IsEmpty then begin
-  ShowMessage('País está sendo usado no cadastro de CEP! Favor verifique!');
-  Abort;
- end;
-
- CadPaisDM.SelectQuery.SQl.Clear;
- CadPaisDM.SelectQuery.SQl.Text :=
- 'select * from cadestado where pais = :sigla';
- CadPaisDM.SelectQuery.ParamByName('sigla').AsString := sigla;
- CadPaisDM.SelectQuery.Open;
-
- if not CadPaisDM.SelectQuery.IsEmpty then begin
-  ShowMessage('País está sendo usado no cadastro de Estado! Favor verifique!');
-  Abort;
- end;
-
- CadPaisDM.SelectQuery.SQl.Clear;
- CadPaisDM.SelectQuery.SQl.Text :=
- 'select * from cadcidade where pais = :sigla';
- CadPaisDM.SelectQuery.ParamByName('sigla').AsString := sigla;
- CadPaisDM.SelectQuery.Open;
-
- if not CadPaisDM.SelectQuery.IsEmpty then begin
-  ShowMessage('País está sendo usado no cadastro de Cidade! Favor verifique!');
-  Abort;
- end;
-
- CadPaisDM.SelectQuery.SQl.Clear;
- CadPaisDM.SelectQuery.SQl.Text :=
- 'select * from cadentidade where pais = :sigla';
- CadPaisDM.SelectQuery.ParamByName('sigla').AsString := sigla;
- CadPaisDM.SelectQuery.Open;
-
- if not CadPaisDM.SelectQuery.IsEmpty then begin
-  ShowMessage('País está sendo usado no cadastro de Entidade! Favor verifique!');
-  Abort;
- end;
-
- CadPaisDM.SelectQuery.SQl.Clear;
- CadPaisDM.SelectQuery.SQl.Text :=
- 'select * from cadpais where sigla = :sigla';
- CadPaisDM.SelectQuery.ParamByName('sigla').AsString := sigla;
- CadPaisDM.SelectQuery.Open;
-
- if CadPaisDM.SelectQuery.IsEmpty then begin
-  showmessage('País não encontrado');
-  Abort;
- end;
-
- CadPaisDM.DeleteQuery.SQL.Clear;
- CadPaisDM.DeleteQuery.SQL.Text :=
- 'delete from cadpais where sigla = :sigla';
- CadPaisDM.DeleteQuery.ParamByName('sigla').AsString := sigla;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
- LogsDM.InserirLog.ParamByName('descricao').AsString :=
- 'Deletou o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadPaís';
- LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- try
-  CadPaisDM.DeleteQuery.ExecSQL;
-  LogsDM.InserirLog.ExecSQL;
-  ShowMessage('Excluído com sucesso!');
-
-  with CadPaisDM.qryConsultarPais do
+ with CadPaisDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadpais');
+  SQL.Add('select * from cadCEP where pais = :sigla');
+  ParamByName('sigla').AsString := sigla;
   Open;
+
+  if not IsEmpty then begin
+   ShowMessage('País está sendo usado no cadastro de CEP! Favor verifique!');
+   Abort;
+  end;
  end;
+
+ with CadPaisDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadestado where pais = :sigla');
+  ParamByName('sigla').AsString := sigla;
+  Open;
+
+  if not IsEmpty then begin
+   ShowMessage('País está sendo usado no cadastro de Estado! Favor verifique!');
+   Abort;
+  end;
+ end;
+
+ with CadPaisDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcidade where pais = :sigla');
+  ParamByName('sigla').AsString := sigla;
+  Open;
+
+  if not IsEmpty then begin
+   ShowMessage('País está sendo usado no cadastro de Cidade! Favor verifique!');
+   Abort;
+  end;
+ end;
+
+ with CadPaisDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where pais = :sigla');
+  ParamByName('sigla').AsString := sigla;
+  Open;
+
+  if not IsEmpty then begin
+   ShowMessage('País está sendo usado no cadastro de Entidade! Favor verifique!');
+   Abort;
+  end;
+ end;
+
+ CadPaisDM.Conexão.StartTransaction;
+ try
+  with CadPaisDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadpais where sigla = :sigla');
+   ParamByName('sigla').AsString := sigla;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Deletou o país ' + pais + ' na sigla ' + sigla + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadPaís';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  ShowMessage('Excluído com sucesso!');
+  CadPaisDM.Conexão.Commit;
 
   EdtSigla.Enabled := False;
   EdtPais.Enabled := False;
   CBAtivo.Enabled := False;
 
-  EdtCodigo.Clear;
   EdtSigla.Clear;
   EdtPais.Clear;
-  EdtCodigoIBGE.Clear;
+  Edtcodigo_ibge.Clear;
 
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
@@ -426,11 +480,19 @@ begin
   btnGravarIncluir.Visible := False;
   btnDesistir.Visible := False;
 
+  with CadPaisDM.qryConsultarPais do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadpais');
+   Open;
+  end;
+
   for i := 0 to Grid.Columns.Count - 1 do
-  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
   except
   ShowMessage('Erro na exclusão');
-  end;
+  CadPaisDM.Conexão.Rollback;
+ end;
 end;
 
 procedure TCadPaisForm.btnFecharClick(Sender: TObject);
@@ -443,8 +505,7 @@ procedure TCadPaisForm.GridCellClick(Column: TColumn);
 begin
  with CadPaisDM.qryConsultarPais do
  begin
-  EdtCodigo.Text := FieldByName('codigo').AsString;
-  EdtCodigoIBGE.Text := FieldByName('codigo_IBGE').AsString;
+  Edtcodigo_ibge.Text := FieldByName('codigo_IBGE').AsString;
   EdtSigla.Text := FieldByName('sigla').AsString;
   EdtPais.Text := FieldByName('pais').AsString;
   CBAtivo.Checked := FieldByName('ativo').AsString = 'S';

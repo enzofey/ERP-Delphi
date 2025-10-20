@@ -13,13 +13,13 @@ uses
 type
   TCadEnqIPIDM = class(TDataModule)
     Conexão: TFDConnection;
-    SelectQuery: TFDQuery;
-    UpdateQuery: TFDQuery;
-    InsertQuery: TFDQuery;
-    ConsultarENQIPI: TFDQuery;
+    qrySelect: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryInsert: TFDQuery;
+    qryConsultarENQIPI: TFDQuery;
     dsENQIPI: TDataSource;
     PGLink: TFDPhysPgDriverLink;
-    DeleteQuery: TFDQuery;
+    qryDelete: TFDQuery;
   private
     { Private declarations }
   public

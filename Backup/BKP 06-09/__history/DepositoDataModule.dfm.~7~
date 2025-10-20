@@ -1,0 +1,70 @@
+﻿object CadDepositoDataModule: TCadDepositoDataModule
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Database=00001P'
+      'User_Name=postgres'
+      'Password=evf'
+      'DriverID=PG')
+    Connected = True
+    LoginPrompt = False
+    Left = 32
+    Top = 24
+  end
+  object FDQuery1: TFDQuery
+    Connection = Conexão
+    Left = 24
+    Top = 80
+  end
+  object FDQuery: TFDQuery
+    Active = True
+    Connection = Conexão
+    SQL.Strings = (
+      'select * from caddeposito')
+    Left = 48
+    Top = 232
+  end
+  object dsCadDeposito: TDataSource
+    DataSet = FDQuery
+    Left = 144
+    Top = 288
+  end
+  object tbCadDeposito: TFDTable
+    IndexFieldNames = 'ID'
+    MasterSource = dsCadDeposito
+    Connection = Conexão
+    ResourceOptions.AssignedValues = [rvEscapeExpand]
+    TableName = 'estoque.caddeposito'
+    Left = 48
+    Top = 288
+    object tbCadDepositoID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ReadOnly = False
+    end
+    object tbCadDepositoCodigo: TStringField
+      FieldName = 'Codigo'
+      Origin = 'Codigo'
+      Required = True
+      Size = 255
+    end
+    object tbCadDepositoDescricao: TStringField
+      FieldName = 'Descricao'
+      Origin = 'Descricao'
+      Required = True
+      Size = 255
+    end
+    object tbCadDepositoAtivo: TStringField
+      FieldName = 'Ativo'
+      Origin = 'Ativo'
+      Required = True
+      Size = 1
+    end
+  end
+  object PGLink: TFDPhysPgDriverLink
+    VendorLib = 'C:\Program Files (x86)\PostgreSQL\psqlODBC\bin\libpq.dll'
+    Left = 120
+    Top = 24
+  end
+end

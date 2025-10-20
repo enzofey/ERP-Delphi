@@ -112,14 +112,14 @@ object CadPaisForm: TCadPaisForm
       end
       object lblCodigoIBGE: TLabel
         Left = 40
-        Top = 88
+        Top = 48
         Width = 55
         Height = 15
         Caption = 'C'#243'd. IBGE:'
       end
       object lblPais: TLabel
         Left = 40
-        Top = 126
+        Top = 86
         Width = 24
         Height = 15
         Caption = 'Pa'#237's:'
@@ -130,13 +130,6 @@ object CadPaisForm: TCadPaisForm
         Width = 28
         Height = 15
         Caption = 'Sigla:'
-      end
-      object lblCodigo: TLabel
-        Left = 40
-        Top = 48
-        Width = 42
-        Height = 15
-        Caption = 'C'#243'digo:'
       end
       object btnAlterar: TButton
         Left = 191
@@ -212,21 +205,13 @@ object CadPaisForm: TCadPaisForm
         Enabled = False
         TabOrder = 7
       end
-      object EdtCodigoIBGE: TEdit
-        Left = 101
-        Top = 85
-        Width = 121
-        Height = 23
-        Enabled = False
-        TabOrder = 8
-      end
       object EdtPais: TEdit
         Left = 70
-        Top = 123
+        Top = 83
         Width = 152
         Height = 23
         Enabled = False
-        TabOrder = 9
+        TabOrder = 8
       end
       object EdtSigla: TEdit
         Left = 274
@@ -235,14 +220,14 @@ object CadPaisForm: TCadPaisForm
         Height = 23
         Enabled = False
         MaxLength = 3
-        TabOrder = 10
+        TabOrder = 9
       end
       object Grid: TDBGrid
         Left = 40
         Top = 184
         Width = 1785
         Height = 617
-        TabOrder = 11
+        TabOrder = 10
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -12
@@ -250,14 +235,13 @@ object CadPaisForm: TCadPaisForm
         TitleFont.Style = []
         OnCellClick = GridCellClick
       end
-      object EdtCodigo: TEdit
+      object EdtCodigo_IBGE: TEdit
         Left = 101
         Top = 45
         Width = 121
         Height = 23
         Enabled = False
-        MaxLength = 3
-        TabOrder = 12
+        TabOrder = 11
       end
     end
   end

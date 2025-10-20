@@ -1,0 +1,144 @@
+object CadCor: TCadCor
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'CadCor'
+  ClientHeight = 620
+  ClientWidth = 930
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  WindowState = wsMaximized
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 930
+    Height = 620
+    Align = alClient
+    TabOrder = 0
+    object lblCodigoCor: TLabel
+      Left = 40
+      Top = 48
+      Width = 42
+      Height = 15
+      Caption = 'C'#243'digo:'
+    end
+    object lblDescricaoCor: TLabel
+      Left = 40
+      Top = 80
+      Width = 54
+      Height = 15
+      Caption = 'Descri'#231#227'o:'
+    end
+    object lblAtivoCor: TLabel
+      Left = 608
+      Top = 48
+      Width = 31
+      Height = 15
+      Caption = 'Ativo:'
+    end
+    object CBAtivoCor: TCheckBox
+      Left = 645
+      Top = 48
+      Width = 20
+      Height = 17
+      Enabled = False
+      TabOrder = 0
+    end
+    object EdtCodigoCor: TEdit
+      Left = 100
+      Top = 45
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 1
+    end
+    object EdtDescricaoCor: TEdit
+      Left = 100
+      Top = 77
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 2
+    end
+    object btnIncluirCor: TButton
+      Left = 33
+      Top = 496
+      Width = 145
+      Height = 57
+      Caption = 'Incluir'
+      TabOrder = 3
+      OnClick = btnIncluirCorClick
+    end
+    object btnGravarIncluirCor: TButton
+      Left = 33
+      Top = 496
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 4
+      Visible = False
+      OnClick = btnGravarIncluirCorClick
+    end
+    object btnAlterarCor: TButton
+      Left = 184
+      Top = 496
+      Width = 145
+      Height = 57
+      Caption = 'Alterar'
+      TabOrder = 5
+      OnClick = btnAlterarCorClick
+    end
+    object btnGravarAlterarCor: TButton
+      Left = 33
+      Top = 496
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 6
+      Visible = False
+      OnClick = btnGravarAlterarCorClick
+    end
+    object btnConsultarCor: TButton
+      Left = 335
+      Top = 496
+      Width = 145
+      Height = 57
+      Caption = 'Consultar'
+      TabOrder = 7
+      OnClick = btnConsultarCorClick
+    end
+    object BtnExcluirCor: TButton
+      Left = 486
+      Top = 496
+      Width = 145
+      Height = 57
+      Caption = 'Excluir'
+      TabOrder = 8
+      OnClick = BtnExcluirCorClick
+    end
+    object btnDesistirCor: TButton
+      Left = 184
+      Top = 496
+      Width = 145
+      Height = 57
+      Caption = 'Desistir'
+      TabOrder = 9
+      Visible = False
+      OnClick = btnDesistirCorClick
+    end
+  end
+  object btnFechar: TButton
+    Left = 753
+    Top = 496
+    Width = 145
+    Height = 57
+    Caption = 'Fechar'
+    TabOrder = 1
+  end
+end

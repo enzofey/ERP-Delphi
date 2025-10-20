@@ -88,29 +88,29 @@ implementation
 
 procedure TCadCidade.btnIncluirClick(Sender: TObject);
 begin
-  BtnIncluir.Visible := False;
-  btnAlterar.Visible := False;
-  btnExcluir.Visible := False;
-  btnGravarAlterar.Visible := False;
-  btnConsultar.Visible := False;
+ BtnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnGravarAlterar.Visible := False;
+ btnConsultar.Visible := False;
 
-  BtnGravarIncluir.Visible := True;
-  BtnDesistir.Visible := True;
-  SBEstado.Enabled := True;
-  SBPais.Enabled := True;
+ BtnGravarIncluir.Visible := True;
+ BtnDesistir.Visible := True;
+ SBEstado.Enabled := True;
+ SBPais.Enabled := True;
 
-  EdtCodigo.Clear;
-  EdtCidade.Clear;
-  EdtPais.Clear;
-  EdtEstado.Clear;
-  EdtSiglaPais.Clear;
-  EdtSiglaEstado.Clear;
+ EdtCodigo.Clear;
+ EdtCidade.Clear;
+ EdtPais.Clear;
+ EdtEstado.Clear;
+ EdtSiglaPais.Clear;
+ EdtSiglaEstado.Clear;
 
-  EdtCodigo.Enabled := True;
-  EdtCidade.Enabled := True;;
-  EdtSiglaPais.Enabled := True;;
-  EdtSiglaEstado.Enabled := True;
-  CBAtivo.Enabled := True;
+ EdtCodigo.Enabled := True;
+ EdtCidade.Enabled := True;;
+ EdtSiglaPais.Enabled := True;;
+ EdtSiglaEstado.Enabled := True;
+ CBAtivo.Enabled := True;
 end;
 
 procedure TCadCidade.btnGravarIncluirClick(Sender: TObject);
@@ -122,23 +122,23 @@ begin
  estado := EdtSiglaEstado.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
- if EdtCodigo.Text = '' then begin
+ if Codigo = '' then begin
   ShowMessage('Código IBGE não pode ser vazio!');
   Abort;
  end;
 
- if EdtCidade.Text = '' then begin
+ if Cidade = '' then begin
   ShowMessage('Cidade não pode ser vazia!');
   Abort;
  end;
 
- if EdtEstado.Text = '' then begin
+ if Estado = '' then begin
  ShowMessage('Estado não pode ser vazio!');
   Abort;
  end;
 
- if EdtPais.Text = '' then begin
- ShowMessage('País não pode ser vazia!');
+ if Pais = '' then begin
+  ShowMessage('País não pode ser vazia!');
   Abort;
  end;
 
@@ -205,32 +205,33 @@ begin
   EdtSiglaEstado.Enabled := False;
   CBAtivo.Enabled := False;
   except
-   CadCidadeDM.Conexão.Rollback;
+  CadCidadeDM.Conexão.Rollback;
   ShowMessage('Erro na gravação!');
  end;
 end;
 
 procedure TCadCidade.btnAlterarClick(Sender: TObject);
 begin
-  if EdtCodigo.Text = '' then begin
-   ShowMessage('Nenhuma cidade selecionada');
-   Abort;
-  end;
-  BtnIncluir.Visible := False;
-  btnAlterar.Visible := False;
-  btnExcluir.Visible := False;
-  btnConsultar.Visible := False;
-  BtnGravarIncluir.Visible := False;
+ if EdtCodigo.Text = '' then begin
+  ShowMessage('Nenhuma cidade selecionada');
+  Abort;
+ end;
 
-  btnGravarAlterar.Visible := True;
-  BtnDesistir.Visible := True;
-  SBEstado.Enabled := True;
-  SBPais.Enabled := True;
+ BtnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnConsultar.Visible := False;
+ BtnGravarIncluir.Visible := False;
 
-  EdtCidade.Enabled := True;
-  EdtSiglaPais.Enabled := True;
-  EdtSiglaEstado.Enabled := True;
-  CBAtivo.Enabled := True
+ btnGravarAlterar.Visible := True;
+ BtnDesistir.Visible := True;
+ SBEstado.Enabled := True;
+ SBPais.Enabled := True;
+
+ EdtCidade.Enabled := True;
+ EdtSiglaPais.Enabled := True;
+ EdtSiglaEstado.Enabled := True;
+ CBAtivo.Enabled := True
 end;
 
 procedure TCadCidade.btnGravarAlterarClick(Sender: TObject);
@@ -242,66 +243,77 @@ begin
  Pais := EdtSiglaPais.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
- if EdtCodigo.Text = '' then begin
+ if Codigo = '' then begin
   ShowMessage('Código IBGE não pode ser vazio!');
   Abort;
  end;
 
- if EdtCidade.Text = '' then begin
+ if Cidade = '' then begin
   ShowMessage('Cidade não pode ser vazia!');
   Abort;
  end;
 
- if EdtEstado.Text = '' then begin
+ if Estado = '' then begin
   ShowMessage('Estado não pode ser vazio!');
   Abort;
  end;
 
- if EdtPais.Text = '' then begin
+ if Pais = '' then begin
   ShowMessage('País não pode ser vazia!');
   Abort;
  end;
 
- CadCidadeDM.UpdateQuery.SQL.Text :=
- 'update cadcidade set cidade = :cidade, estado = :estado, pais = :pais, ativo = :ativo where codigo = :codigo';
- CadCidadeDM.UpdateQuery.ParamByName('cidade').AsString := Cidade;
- CadCidadeDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
- CadCidadeDM.UpdateQuery.ParamByName('estado').AsString := estado;
- CadCidadeDM.UpdateQuery.ParamByName('pais').AsString := pais;
- CadCidadeDM.UpdateQuery.ParamByName('codigo').AsString := codigo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
- LogsDM.InserirLog.ParamByName('descricao').AsString :=
- 'Alterou a cidade ' + cidade + ' no código ' + codigo + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCidade';
- LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  try
-   CadCidadeDM.UpdateQuery.ExecSQL;
-   LogsDM.InserirLog.ExecSQL;
-   ShowMessage('Alterado com sucesso!');
-   BtnIncluir.Visible := True;
-   btnAlterar.Visible := True;
-   btnExcluir.Visible := True;
-   btnConsultar.Visible := True;
-
-   btnGravarAlterar.Visible := False;
-   BtnGravarIncluir.Visible := False;
-   BtnDesistir.Visible := False;
-   SBEstado.Enabled := False;
-   SBPais.Enabled := False;
-
-   EdtCodigo.Enabled := False;
-   EdtCidade.Enabled := False;
-   EdtSiglaPais.Enabled := False;
-   EdtSiglaEstado.Enabled := False;
-   CBAtivo.Enabled := False;
-   except
-   ShowMessage('Erro na operação');
+ CadCidadeDM.Conexão.StartTransaction;
+ try
+  with CadCidadeDM.qryUpdate do
+  begin
+   SQL.Clear;
+   SQL.Add('update cadcidade set cidade = :cidade, estado = :estado, pais = :pais, ativo = :ativo where codigo = :codigo');
+   ParamByName('cidade').AsString := Cidade;
+   ParamByName('ativo').AsString := ativo;
+   ParamByName('estado').AsString := estado;
+   ParamByName('pais').AsString := pais;
+   ParamByName('codigo').AsString := codigo;
+   ExecSQL;
   end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Alterou a cidade ' + cidade + ' no código ' + codigo + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadCidade';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadCidadeDM.Conexão.Commit;
+  ShowMessage('Alterado com sucesso!');
+  BtnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnConsultar.Visible := True;
+
+  btnGravarAlterar.Visible := False;
+  BtnGravarIncluir.Visible := False;
+  BtnDesistir.Visible := False;
+  SBEstado.Enabled := False;
+  SBPais.Enabled := False;
+
+  EdtCodigo.Enabled := False;
+  EdtCidade.Enabled := False;
+  EdtSiglaPais.Enabled := False;
+  EdtSiglaEstado.Enabled := False;
+  CBAtivo.Enabled := False;
+  except
+  CadCidadeDM.Conexão.Rollback;
+  ShowMessage('Erro na operação');
+ end;
 end;
 
 procedure TCadCidade.btnConsultarClick(Sender: TObject);
@@ -328,29 +340,29 @@ end;
 
 procedure TCadCidade.btnDesistirClick(Sender: TObject);
 begin
-  BtnIncluir.Visible := True;
-  btnAlterar.Visible := True;
-  btnExcluir.Visible := True;
-  btnConsultar.Visible := True;
+ BtnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+ btnConsultar.Visible := True;
 
-  btnGravarAlterar.Visible := False;
-  BtnGravarIncluir.Visible := False;
-  BtnDesistir.Visible := False;
-  SBEstado.Enabled := False;
-  SBPais.Enabled := False;
+ btnGravarAlterar.Visible := False;
+ BtnGravarIncluir.Visible := False;
+ BtnDesistir.Visible := False;
+ SBEstado.Enabled := False;
+ SBPais.Enabled := False;
 
-  EdtCodigo.Clear;
-  EdtCidade.Clear;
-  EdtPais.Clear;
-  EdtEstado.Clear;
-  EdtSiglaPais.Clear;
-  EdtSiglaEstado.Clear;
+ EdtCodigo.Clear;
+ EdtCidade.Clear;
+ EdtPais.Clear;
+ EdtEstado.Clear;
+ EdtSiglaPais.Clear;
+ EdtSiglaEstado.Clear;
 
-  EdtCodigo.Enabled := False;
-  EdtCidade.Enabled := False;
-  EdtSiglaPais.Enabled := False;
-  EdtSiglaEstado.Enabled := False;
-  CBAtivo.Enabled := False;
+ EdtCodigo.Enabled := False;
+ EdtCidade.Enabled := False;
+ EdtSiglaPais.Enabled := False;
+ EdtSiglaEstado.Enabled := False;
+ CBAtivo.Enabled := False;
 end;
 
 procedure TCadCidade.btnExcluirClick(Sender: TObject);
@@ -362,8 +374,8 @@ begin
  Pais := EdtSiglaPais.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
- if EdtCodigo.Text = '' then begin
-  showmessage ('Nenhuma cidade selecionada!');
+ if Codigo = '' then begin
+  ShowMessage('Nenhuma cidade selecionada!');
   Abort;
  end;
 
@@ -380,22 +392,32 @@ begin
   end;
  end;
 
- CadCidadeDM.DeleteQuery.SQL.Text :=
- 'delete from cadcidade where codigo = :codigo';
- CadCidadeDM.DeleteQuery.ParamByName('codigo').AsString := codigo;
+ CadCidadeDM.Conexão.StartTransaction;
+ try
+  with CadCidadeDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadcidade where codigo = :codigo');
+   ParamByName('codigo').AsString := codigo;
+   ExecSQL;
+  end;
 
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
- LogsDM.InserirLog.ParamByName('descricao').AsString :=
- 'Deletou a cidade ' + cidade + ' no código ' + codigo + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCidade';
- LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  try
-  CadCidadeDM.DeleteQuery.ExecSQL;
-  LogsDM.InserirLog.ExecSQL;
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   ParamByName('descricao').AsString :=
+   'Deletou a cidade ' + cidade + ' no código ' + codigo + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadCidade';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadCidadeDM.Conexão.Commit;
   ShowMessage('Excluído com sucesso!');
   BtnIncluir.Visible := True;
   btnAlterar.Visible := True;
@@ -420,6 +442,7 @@ begin
   EdtSiglaPais.Clear;
   EdtSiglaEstado.Clear;
   except
+  CadCidadeDM.Conexão.Rollback;
   ShowMessage('Erro na operação');
  end;
 end;

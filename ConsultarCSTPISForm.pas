@@ -51,8 +51,8 @@ end;
 
 procedure TConsultarCSTPIS.btnSelecionarCSTPISClick(Sender: TObject);
 begin
- PisCST := CadCSTPISDM.ConsultarCSTPIS.FieldByName('CST').AsString;
- PisCSTDescricao := CadCSTPISDM.ConsultarCSTPIS.FieldByName('descricao').AsString;
+ PisCST := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('CST').AsString;
+ PisCSTDescricao := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('descricao').AsString;
  Close;
 end;
 end.

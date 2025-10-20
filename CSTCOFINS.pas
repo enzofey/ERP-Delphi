@@ -53,13 +53,15 @@ implementation
 
 {$R *.dfm}
 
+uses ConsultarCSTCOFINSForm;
+
 procedure TCadCSTCOFINS.FormShow(Sender: TObject);
 var I: integer;
 begin
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Clear;
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Text :=
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
  'select * from cadcstcofins';
- CadCSTCOFINSDM.ConsultarCSTCOFINS.Open;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 end;
@@ -67,10 +69,10 @@ end;
 procedure TCadCSTCOFINS.btnIncluirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Clear;
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Text :=
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
  'select * from cadcstcofins';
- CadCSTCOFINSDM.ConsultarCSTCOFINS.Open;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -159,10 +161,10 @@ begin
   CadCSTCOFINSDM.InsertQuery.ExecSQL;
   ShowMessage('Gravado com sucesso!');
 
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Clear;
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Text :=
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
   'select * from cadcstcofins';
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.Open;
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -196,10 +198,10 @@ begin
   Abort;
  End;
 
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Clear;
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Text :=
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
  'select * from cadcstcofins';
- CadCSTCOFINSDM.ConsultarCSTCOFINS.Open;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -269,10 +271,10 @@ begin
   CadCSTCOFINSDM.UpdateQuery.ExecSQL;
   ShowMessage('Alterado com sucesso!');
 
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Clear;
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Text :=
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
   'select * from cadcstcofins';
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.Open;
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -300,10 +302,10 @@ end;
 procedure TCadCSTCOFINS.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Clear;
- CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Text :=
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
  'select * from cadcstcofins';
- CadCSTCOFINSDM.ConsultarCSTCOFINS.Open;
+ CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -368,10 +370,10 @@ begin
   CadCSTCOFINSDM.DeleteQuery.ExecSQL;
   ShowMessage('Excluído com sucesso!');
 
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Clear;
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.SQL.Text :=
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
   'select * from cadcstcofins';
-  CadCSTCOFINSDM.ConsultarCSTCOFINS.Open;
+  CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -389,10 +391,10 @@ end;
 procedure TCadCSTCOFINS.GridCellClick(Column: TColumn);
 var CST, Descricao, Modo, ativo: String;
 begin
- EdtCST.Text := CadCSTCOFINSDM.ConsultarCSTCOFINS.FieldByName('CST').AsString;
- EdtDescricao.Text := CadCSTCOFINSDM.ConsultarCSTCOFINS.FieldByName('Descricao').AsString;
- Modo := CadCSTCOFINSDM.ConsultarCSTCOFINS.FieldByName('Modo').AsString;
- ativo := CadCSTCOFINSDM.ConsultarCSTCOFINS.FieldByName('ativo').AsString;
+ EdtCST.Text := CadCSTCOFINSDM.qryConsultarCSTCOFINS.FieldByName('CST').AsString;
+ EdtDescricao.Text := CadCSTCOFINSDM.qryConsultarCSTCOFINS.FieldByName('Descricao').AsString;
+ Modo := CadCSTCOFINSDM.qryConsultarCSTCOFINS.FieldByName('Modo').AsString;
+ ativo := CadCSTCOFINSDM.qryConsultarCSTCOFINS.FieldByName('ativo').AsString;
  if Modo = 'B' then
  RBBase.Checked := True
  else if Modo = 'I' then

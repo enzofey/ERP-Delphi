@@ -18,8 +18,8 @@ type
     ConsultarCidade: TDataSource;
 	PGLink: TFDPhysPgDriverLink;
     qryInsert: TFDQuery;
-    UpdateQuery: TFDQuery;
-    DeleteQuery: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryDelete: TFDQuery;
     dsAcesso: TDataSource;
     qryAcesso: TFDQuery;
   private

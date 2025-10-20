@@ -1,0 +1,479 @@
+unit CEP;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, Vcl.ComCtrls,
+  CidadeDM, ConsultarCidadeForm,
+  EstadoDM, ConsultarEstadoForm,
+  PaisDM, ConsultarPaisForm,
+  CEPDM, ConsultarCEPForm,
+  Log, LogDM,
+  GlobalUnit, Vcl.Mask;
+
+type
+  TCadCEP = class(TForm)
+    Panel1: TPanel;
+    lblCEP: TLabel;
+    lblCidade: TLabel;
+    lblEstado: TLabel;
+    lblPais: TLabel;
+    EdtCidade: TEdit;
+    EdtEstado: TEdit;
+    EdtPais: TEdit;
+    SBPais: TSpeedButton;
+    SBEstado: TSpeedButton;
+    SBCidade: TSpeedButton;
+    btnIncluir: TButton;
+    btnAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnGravarAlterar: TButton;
+    btnDesistir: TButton;
+    btnConsultar: TButton;
+    btnExcluir: TButton;
+    lblAtivo: TLabel;
+    CBAtivo: TCheckBox;
+    btnFechar: TButton;
+    EdtCEP: TEdit;
+    lblCodigo: TLabel;
+    EdtCodigo: TEdit;
+    procedure SBCidadeClick(Sender: TObject);
+    procedure SBEstadoClick(Sender: TObject);
+    procedure SBPaisClick(Sender: TObject);
+    procedure btnConsultarClick(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadCEP: TCadCEP;
+
+implementation
+
+{$R *.dfm}
+
+uses MenuPrincipal;
+
+procedure TCadCEP.btnIncluirClick(Sender: TObject);
+begin
+  EdtCodigo.Enabled := True;
+  EdtCEP.Enabled := True;
+  EdtCidade.Enabled := True;
+  EdtEstado.Enabled := True;
+  EdtPais.Enabled := True;
+  SBCidade.Enabled := True;
+  SBEstado.Enabled := True;
+  SBPais.Enabled := True;
+  CBAtivo.Enabled := True;
+
+  EdtCEP.Clear;
+  EdtCidade.Clear;
+  EdtEstado.Clear;
+  EdtPais.Clear;
+
+  btnIncluir.Visible := False;
+  btnAlterar.Visible := False;
+  btnGravarAlterar.Visible := False;
+  btnExcluir.Visible := False;
+  btnConsultar.Visible := False;
+
+  btnGravarIncluir.Visible := True;
+  btnDesistir.Visible := True;
+end;
+
+procedure TCadCEP.btnGravarIncluirClick(Sender: TObject);
+var codigo, CEP, Cidade, Estado, Pais, Ativo: string;
+begin
+ codigo := EdtCodigo.Text;
+ CEP := EdtCEP.Text;
+ Cidade := EdtCidade.Text;
+ Estado := EdtEstado.Text;
+ Pais := EdtPais.Text;
+ if CBAtivo.Checked then Ativo := 'S'
+ else Ativo := 'N';
+
+ if EdtCodigo.Text = '' then begin
+ ShowMessage('Código não pode ser vazio!');
+ end
+ else begin
+
+ if EdtCEP.Text = '' then begin
+ ShowMessage('CEP não pode ser vazio!');
+ end
+ else begin
+
+ if EdtCidade.Text = '' then begin
+ ShowMessage('Cidade não pode ser vazia!');
+ end
+ else begin
+
+ if EdtEstado.Text = '' then begin
+ ShowMessage('Estado não pode ser vazio!');
+ end
+ else begin
+
+ if EdtPais.Text = '' then begin
+ ShowMessage('País não pode ser vazio!');
+ end
+ else begin
+
+ CadCEPDM.SelectQuery.SQL.Clear;
+ CadCEPDM.SelectQuery.Close;
+ CadCEPDM.SelectQuery.SQL.Text :=
+ 'select * from cadcep where CEP = :cep';
+ CadCEPDM.SelectQuery.ParamByName('CEP').AsString := CEP;
+ CadCEPDM.SelectQuery.Open;
+
+ if not CadCEPDM.SelectQuery.IsEmpty then begin
+ ShowMessage('CEP já cadastrado!')
+ end
+ else begin
+
+ CadCEPDM.InsertQuery.Close;
+ CadCEPDM.InsertQuery.SQL.Clear;
+ CadCEPDM.InsertQuery.SQL.Text :=
+ 'insert into cadCEP (CEP, cidade, estado, pais, ativo) values (:CEP, :Cidade, :Estado, :Pais, :Ativo)';
+ CadCEPDM.InsertQuery.ParamByName('CEP').AsString := CEP;
+ CadCEPDM.InsertQuery.ParamByName('cidade').AsString := cidade;
+ CadCEPDM.InsertQuery.ParamByName('estado').AsString := estado;
+ CadCEPDM.InsertQuery.ParamByName('pais').AsString := pais;
+ CadCEPDM.InsertQuery.ParamByName('ativo').AsString := ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Inseriu o CEP ' + CEP + ' na cidade ' + cidade + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCEP';
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ try
+ CadCEPDM.InsertQuery.ExecSQL;
+ LogsDM.InserirLog.ExecSQL;
+ ShowMessage('Cadastrado com sucesso!');
+ EdtCodigo.Enabled := False;
+ EdtCEP.Enabled := False;
+ EdtCidade.Enabled := False;
+ EdtEstado.Enabled := False;
+ EdtPais.Enabled := False;
+ SBCidade.Enabled := False;
+ SBEstado.Enabled := False;
+ SBPais.Enabled := False;
+
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+ btnConsultar.Visible := True;
+
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+ except
+ ShowMessage('Erro na inclusão');
+ end;
+end;
+end;
+end;
+end;
+end;
+end;
+end;
+
+procedure TCadCEP.btnAlterarClick(Sender: TObject);
+begin
+  if EdtCodigo.Text = '' then begin
+  ShowMessage('CEP não selecionado')
+  end
+  else begin
+  EdtCEP.Enabled := True;
+  EdtCidade.Enabled := True;
+  EdtEstado.Enabled := True;
+  EdtPais.Enabled := True;
+  SBCidade.Enabled := True;
+  SBEstado.Enabled := True;
+  SBPais.Enabled := True;
+  CBAtivo.Enabled := True;
+
+  btnIncluir.Visible := False;
+  btnAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnExcluir.Visible := False;
+  btnConsultar.Visible := False;
+
+  btnDesistir.Visible := True;
+  btnGravarAlterar.Visible := True;
+end;
+end;
+
+procedure TCadCEP.btnGravarAlterarClick(Sender: TObject);
+var Codigo, CEP, Cidade, Estado, Pais, Ativo: string;
+begin
+ Codigo := EdtCodigo.Text;
+ CEP := EdtCEP.Text;
+ Cidade := EdtCidade.Text;
+ Estado := EdtEstado.Text;
+ Pais := EdtPais.Text;
+ if CBAtivo.Checked then Ativo := 'S'
+ else Ativo := 'N';
+
+ if EdtCodigo.Text = '' then begin
+ ShowMessage('Código não pode ser vazio!');
+ end
+ else begin
+
+ if EdtCEP.Text = '' then begin
+ ShowMessage('CEP não pode ser vazio!');
+ end
+ else begin
+
+ if EdtCidade.Text = '' then begin
+ ShowMessage('Cidade não pode ser vazia!');
+ end
+ else begin
+
+ if EdtEstado.Text = '' then begin
+ ShowMessage('Estado não pode ser vazio!');
+ end
+ else begin
+
+ if EdtPais.Text = '' then begin
+ ShowMessage('País não pode ser vazio!');
+ end
+ else begin
+
+ CadCEPDM.UpdateQuery.Close;
+ CadCEPDM.UpdateQuery.SQL.Clear;
+ CadCEPDM.UpdateQuery.SQL.Text :=
+ 'update cadCEP set cidade = :cidade, estado = :estado, pais = :pais, ativo = :ativo where CEP = :CEP';
+ CadCEPDM.UpdateQuery.ParamByName('CEP').AsString := CEP;
+ CadCEPDM.UpdateQuery.ParamByName('cidade').AsString := cidade;
+ CadCEPDM.UpdateQuery.ParamByName('estado').AsString := estado;
+ CadCEPDM.UpdateQuery.ParamByName('pais').AsString := pais;
+ CadCEPDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Alterou o CEP ' + CEP + ' na cidade ' + cidade + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCEP';
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ try
+ CadCEPDM.UpdateQuery.ExecSQL;
+ LogsDM.InserirLog.ExecSQL;
+ ShowMessage('Alterado com sucesso!');
+ EdtCEP.Enabled := False;
+ EdtCidade.Enabled := False;
+ EdtEstado.Enabled := False;
+ EdtPais.Enabled := False;
+ SBCidade.Enabled := False;
+ SBEstado.Enabled := False;
+ SBPais.Enabled := False;
+ CBAtivo.Enabled := False;
+
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+ btnConsultar.Visible := True;
+
+ btnGravarIncluir.Visible := False;
+ btnGravarAlterar.Visible := False;
+ btnDesistir.Visible := False;
+ except
+ ShowMessage('Erro na alteração');
+ end;
+end;
+end;
+end;
+end;
+end;
+end;
+
+procedure TCadCEP.btnDesistirClick(Sender: TObject);
+begin
+  EdtCodigo.Enabled := False;
+  EdtCEP.Enabled := False;
+  EdtCidade.Enabled := False;
+  EdtEstado.Enabled := False;
+  EdtPais.Enabled := False;
+  SBCidade.Enabled := False;
+  SBEstado.Enabled := False;
+  SBPais.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  EdtCEP.Clear;
+  EdtCidade.Clear;
+  EdtEstado.Clear;
+  EdtPais.Clear;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnConsultar.Visible := True;
+
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+  btnGravarAlterar.Visible := False;
+end;
+
+procedure TCadCEP.btnExcluirClick(Sender: TObject);
+var Codigo, CEP, Cidade, Estado, Pais, Ativo: string;
+begin
+ Codigo := EdtCodigo.Text;
+ CEP := EdtCEP.Text;
+ Cidade := EdtCidade.Text;
+ Estado := EdtEstado.Text;
+ Pais := EdtPais.Text;
+ if CBAtivo.Checked then Ativo := 'S'
+ else Ativo := 'N';
+
+ CadCEPDM.SelectQuery.SQL.Clear;
+ CadCEPDM.SelectQuery.Close;
+ CadCEPDM.SelectQuery.SQL.Text :=
+ 'select * from cadentidade where CEP = :cep';
+ CadCEPDM.SelectQuery.ParamByName('CEP').AsString := CEP;
+ CadCEPDM.SelectQuery.Open;
+
+ if not CadCEPDM.SelectQuery.IsEmpty then begin
+ ShowMessage('CEP está sendo usado no cadastro de Entidade! Favor verifique!')
+ end
+ else begin
+
+ CadCEPDM.SelectQuery.SQL.Clear;
+ CadCEPDM.SelectQuery.Close;
+ CadCEPDM.SelectQuery.SQL.Text :=
+ 'select * from cadcep where CEP = :cep';
+ CadCEPDM.SelectQuery.ParamByName('CEP').AsString := CEP;
+ CadCEPDM.SelectQuery.Open;
+
+ if CadCEPDM.SelectQuery.IsEmpty then begin
+ ShowMessage('CEP já está cadastrado!')
+ end
+ else begin
+
+ CadCEPDM.DeleteQuery.SQL.Clear;
+ CadCEPDM.DeleteQuery.SQL.Text := 'delete from cadcep where codigo = :codigo';
+ CadCEPDM.DeleteQuery.ParamByName('codigo').AsString := codigo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Excluiu o CEP ' + CEP + ' na cidade ' + cidade + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCEP';
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ try
+ CadCEPDM.DeleteQuery.ExecSQL;
+ LogsDM.InserirLog.ExecSQL;
+ ShowMessage('Excluído com sucesso');
+ EdtCodigo.Clear;
+ EdtCEP.Clear;
+ EdtCidade.Clear;
+ EdtEstado.Clear;
+ EdtPais.Clear;
+ except
+ ShowMessage('Erro na exclusão!');
+ end;
+ end;
+ end;
+ end;
+
+procedure TCadCEP.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+
+procedure TCadCEP.btnConsultarClick(Sender: TObject);
+var Codigo, CEP, Cidade, Estado, Pais, ativo: string;
+begin
+ CadCEPDM.ConsultarCEP.SQL.Clear;
+ CadCEPDM.ConsultarCEP.SQL.Text :=
+ 'select * from cadcep';
+ CadCEPDM.ConsultarCEP.Open;
+
+  Application.CreateForm(TConsultarCEP, ConsultarCEP);
+  Codigo := ConsultarCEP.SelecionarCEP;
+  CEP := ConsultarCEP.Codigo;
+  Cidade := ConsultarCEP.Cidade;
+  Estado := ConsultarCEP.Estado;
+  Pais := ConsultarCEP.Pais;
+  Ativo := ConsultarCEP.Ativo;
+  if cep <> '' then
+  begin
+    EdtCodigo.Text := Codigo;
+    EdtCEP.Text := CEP;
+    EdtCidade.Text := Cidade;
+    EdtEstado.Text := Estado;
+    EdtPais.Text := Pais;
+    Ativo := ConsultarCEP.Ativo;
+    CBAtivo.Checked := Ativo = 'S';
+  end;
+end;
+
+procedure TCadCEP.SBCidadeClick(Sender: TObject);
+var codigo, cidade: string;
+begin
+  CadCidadeDM.ConsultarCidade.SQL.Clear;
+  CadCidadeDM.ConsultarCidade.SQL.Text :=
+  'select * from cadcidade';
+  CadCidadeDM.ConsultarCidade.Open;
+
+  Application.CreateForm(TConsultarCidade, ConsultarCidade);
+  codigo := ConsultarCidade.ConsultarCidade;
+  if codigo <> '' then
+  begin
+   Cidade := ConsultarCidade.Cidade;
+   EdtCidade.Text := cidade;
+  end;
+end;
+
+procedure TCadCEP.SBEstadoClick(Sender: TObject);
+var codigo, sigla: string;
+begin
+  CadEstadoDM.ConsultarEstado.SQL.Clear;
+  CadEstadoDM.ConsultarEstado.SQL.Text :=
+  'select * from cadestado where ativo = :ativo';
+  CadEstadoDM.ConsultarEstado.ParamByName('ativo').AsString := 'S';
+  CadEstadoDM.ConsultarEstado.Open;
+
+  Application.CreateForm(TConsultarEstado, ConsultarEstado);
+  codigo := ConsultarEstado.SelecionarEstado;
+  if codigo <> '' then
+  begin
+   sigla := ConsultarEstado.Sigla;
+   EdtEstado.Text := sigla;
+  end;
+end;
+
+procedure TCadCEP.SBPaisClick(Sender: TObject);
+var sigla: string;
+begin
+  CadPaisDM.ConsultarPais.SQL.Clear;
+  CadPaisDM.ConsultarPais.SQL.Text :=
+  'select * from cadpais where ativo = :ativo';
+  CadPaisDM.ConsultarPais.ParamByName('ativo').AsString := 'S';
+  CadPaisDM.ConsultarPais.Open;
+
+  Application.CreateForm(TConsultarPais, ConsultarPais);
+  sigla := ConsultarPais.SelecionarPais;
+  if sigla <> '' then
+  begin
+    EdtPais.Text := sigla;
+  end;
+end;
+end.

@@ -58,8 +58,8 @@ end;
 
 procedure TConsultarCSOSN.btnSelecionarCSOSNClick(Sender: TObject);
 begin
- CSOSNCSOSN := CadCSOSNDM.ConsultarCSOSN.FieldByName('CSOSN').AsString;
- CSOSNDescricao := CadCSOSNDM.ConsultarCSOSN.FieldByName('Descricao').AsString;
+ CSOSNCSOSN := CadCSOSNDM.qryConsultarCSOSN.FieldByName('CSOSN').AsString;
+ CSOSNDescricao := CadCSOSNDM.qryConsultarCSOSN.FieldByName('Descricao').AsString;
  close;
 end;
 end.

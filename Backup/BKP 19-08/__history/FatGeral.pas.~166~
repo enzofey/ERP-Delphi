@@ -1,0 +1,877 @@
+unit FatGeral;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
+  Vcl.Buttons, Vcl.Grids, Data.DB, Vcl.DBGrids,
+  ConsultarNaturezaForm, NaturezaDataModule,
+  ConsultarProdutoForm, ProdutoDataModule,
+  ConsultarCorForm, CorDataModule,
+  ConsultarDepositoForm, DepositoDataModule,
+  ConsultarTamanhoForm, TamanhoDataModule,
+  ConsultarEntidadeForm, EntidadeDataModule,
+  ConsultarCSTICMSForm, CSTICMSDataModule,
+  ConsultarCSOSNForm, CSOSNDataModule,
+  ConsultarCSTIPIForm, CSTIPIDataModule,
+  ConsultarENQIPIForm, ENQIPIDataModule,
+  ConsultarCSTPISForm, CSTPISDataModule,
+  ConsultarCSTCOFINSForm, CSTCOFINSDataModule,
+  GeralDataModule,
+  Log, LogDataModule,
+  GlobalUnit;
+
+type
+  TFatGeralForm = class(TForm)
+    Panel1: TPanel;
+    lblCliente: TLabel;
+    lblSerie: TLabel;
+    EdtEntidade: TEdit;
+    lblNatureza: TLabel;
+    lbldtEmissão: TLabel;
+    lbldtSaida: TLabel;
+    DTEmissao: TDateTimePicker;
+    DTSaida: TDateTimePicker;
+    EdtSerie: TEdit;
+    EdtNatureza: TEdit;
+    SBNatureza: TSpeedButton;
+    btnIncluir: TButton;
+    btnGravar: TButton;
+    btnDesistir: TButton;
+    btnFechar: TButton;
+    lblValFrete: TLabel;
+    EdtValFrete: TEdit;
+    lblDesconto: TLabel;
+    EdtValDesconto: TEdit;
+    NIGrid: TStringGrid;
+    SBEntidade: TSpeedButton;
+    Totais: TGroupBox;
+    lblValor_Total: TLabel;
+    edtValor_total: TEdit;
+    EdtValor_Base_ICMS: TEdit;
+    lblValor_base_icms: TLabel;
+    lblValor_ICMS: TLabel;
+    edtValor_ICMS: TEdit;
+    edtValor_Base_IPI: TEdit;
+    lblValor_Base_IPI: TLabel;
+    EdtValor_IPI: TEdit;
+    lblValor_IPI: TLabel;
+    lblValor_Base_PIS: TLabel;
+    lblValor_PIS: TLabel;
+    lblValor_Base_Cofins: TLabel;
+    lblValor_COFINS: TLabel;
+    EdtValor_base_PIS: TEdit;
+    EdtValor_PIS: TEdit;
+    edtvalor_base_cofins: TEdit;
+    EdtValor_COFINS: TEdit;
+    lblValor_Produtos: TLabel;
+    EdtValor_Produtos: TEdit;
+    lblQuantidade: TLabel;
+    EdtQuantidade: TEdit;
+    EdtDadosAdicionais: TEdit;
+    RBDadosAdicionais: TRadioGroup;
+    lblModFrete: TLabel;
+    CBPresenca: TComboBox;
+    CBmodFrete: TComboBox;
+    lblPresenca: TLabel;
+    lblPeso: TLabel;
+    lblPesoL: TLabel;
+    lblEspecie: TLabel;
+    EdtEspecie: TEdit;
+    EdtPesoL: TEdit;
+    EdtPesoB: TEdit;
+    lblVolumes: TLabel;
+    EdtVolumes: TEdit;
+    procedure FormShow(Sender: TObject);
+    procedure EdtValFreteExit(Sender: TObject);
+    procedure NIGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure EdtValDescontoExit(Sender: TObject);
+    procedure SBNaturezaClick(Sender: TObject);
+    procedure SBEntidadeClick(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnGravarClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FatGeralForm: TFatGeralForm;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFatGeralForm.btnIncluirClick(Sender: TObject);
+begin
+ EdtEntidade.Enabled := True;
+ EdtNatureza.Enabled := True;
+ EdtSerie.Enabled := True;
+ EdtValDesconto.Enabled := True;
+ EdtValFrete.Enabled := True;
+ NIGrid.Enabled := True;
+ DTEmissao.Enabled := True;
+ DtSaida.Enabled := True;
+ EdtDadosAdicionais.Enabled := True;
+ EdtEspecie.Enabled := True;
+ EdtVolumes.Enabled := True;
+ EdtPesoB.Enabled := True;
+ EdtPesoL.Enabled := True;
+ CBPresenca.Enabled := True;
+ CBmodFrete.Enabled := True;
+
+ NIGrid.RowCount := 2;
+
+ SBEntidade.Enabled := True;
+ SBNatureza.Enabled := True;
+
+ BtnGravar.Visible := True;
+ BtnDesistir.Visible := True;
+ btnIncluir.Visible := False;
+end;
+
+procedure TFatGeralForm.btnDesistirClick(Sender: TObject);
+begin
+ EdtEntidade.Enabled := False;
+ EdtNatureza.Enabled := False;
+ EdtSerie.Enabled := False;
+ EdtValDesconto.Enabled := False;
+ EdtValFrete.Enabled := False;
+ NIGrid.Enabled := False;
+ DTEmissao.Enabled := False;
+ DtSaida.Enabled := False;
+ EdtDadosAdicionais.Enabled := True;
+ EdtEspecie.Enabled := True;
+ EdtVolumes.Enabled := True;
+ EdtPesoB.Enabled := True;
+ EdtPesoL.Enabled := True;
+ CBPresenca.Enabled := True;
+ CBmodFrete.Enabled := True;
+
+ EdtEntidade.Clear;
+ EdtNatureza.Clear;
+ EdtSerie.Clear;
+ EdtValDesconto.Clear;
+ EdtValFrete.Clear;
+ EdtDadosAdicionais.Clear;
+ EdtEspecie.Clear;
+ EdtVolumes.Clear;
+ EdtPesoB.Clear;
+ EdtPesoL.Clear;
+
+ NIGrid.Enabled := False;
+ NIGrid.RowCount := 1;
+
+ SBEntidade.Enabled := False;
+ SBNatureza.Enabled := False;
+
+ BtnGravar.Visible := False;
+ BtnDesistir.Visible := False;
+ btnIncluir.Visible := Visible;
+end;
+
+procedure TFatGeralForm.btnFecharClick(Sender: TObject);
+begin
+ FecharTela(Sender);
+end;
+
+procedure TFatGeralForm.btnGravarClick(Sender: TObject);
+var Produto, Cor, Tamanho, Deposito, Lote, Natureza, CST_ICMS, CSOSN, CST_IPI,
+  ENQ_IPI, CST_PIS, CST_COFINS, cBenef, cCredPres, serie, entidade, dados_adicionais, especie, volumes, pesob, pesol, presenca, modfrete: string;
+  Qtde, Preco_Uni, Valor,
+  ALIQ_ICMS, Base_ICMS, Val_ICMS,
+  ALIQ_IPI, Base_IPI, Val_IPI,
+  ALIQ_COFINS, Base_COFINS, Val_COFINS,
+  ALIQ_PIS, Base_PIS, Val_PIS,
+  Val_Desconto, Val_Frete,
+  valor_produtos, valor_total, valor_icms, valor_base_icms, valor_ipi, valor_base_ipi, valor_cofins, valor_base_cofins, valor_pis,
+  valor_base_pis, quantidade, aliq_icms_nota, aliq_ipi_nota, aliq_pis_nota, aliq_cofins_nota: double;
+  dataemissao, datasaida: TDateTime;
+  i: Integer;
+begin
+  serie := EdtSerie.Text;
+  entidade := EdtEntidade.Text;
+  dataemissao := DtEmissao.DateTime;
+  datasaida := DtSaida.DateTime;
+  dados_adicionais := EdtDadosAdicionais.text;
+  especie := EdtEspecie.text;
+  volumes := EdtVolumes.text;
+  pesob := EdtPesoB.text;
+  pesol := EdtPesoL.text;
+
+  if CBPresenca.text = '0 - Não se aplica (por exemplo, emissão de NF-e de ajuste)' then presenca := '0'
+  else if CBPresenca.Text = '1 - Operação presencial' then presenca := '1'
+  else if CBPresenca.Text = '2 - Operação não presencial, pela internet' then presenca := '2'
+  else if CBPresenca.Text = '3 - Operação não presencial, teleatendimento' then presenca := '3'
+  else if CBPresenca.Text = '5 - Operação presencial, fora do estabelecimento' then presenca := '5'
+  else if CBPresenca.Text = '9 - Operação não presencial, outros' then presenca := '9';
+
+  if CBmodFrete.Text = '0 - Contratação do frete por conta do remetente (CIF)' then modfrete := '0'
+  else if CBmodFrete.Text = '1 - Contratação do frete por conta do destinatário/remetente (FOB)' then modfrete := '1'
+  else if CBmodFrete.Text = '2 - Contratação do frete por conta de terceiros' then modfrete := '2'
+  else if CBmodFrete.Text = '3 - Sem frete' then modfrete := '3'
+  else if CBmodFrete.Text = '4 - Contratação do transporte por conta do remetente (para venda à ordem/entrega futura)' then modfrete := '4'
+  else if CBmodFrete.Text = '9 - Sem ocorrência de transporte' then modfrete := '9';
+
+   if EdtEntidade.Text = '' then begin
+   ShowMessage('Cliente não pode ser vazio!');
+   Exit;
+   end;
+
+   if EdtNatureza.Text = '' then begin
+   ShowMessage('Natureza não pode ser vazia!');
+   Exit;
+   end;
+
+   if EdtSerie.Text = '' then begin
+   ShowMessage('Série não pode ser vazio!');
+   Exit;
+   end;
+
+   if CBPresenca.Text = '' then begin
+   ShowMessage('Presença precisa ser informada!');
+   Exit;
+   end;
+
+   if CBmodFrete.Text = '' then begin
+   ShowMessage('Frete precisa ser informado!');
+   Exit;
+   end;
+
+   if EdtPesoB.Text = '' then
+   EdtPesoB.Text := '0';
+
+   if EdtPesoL.Text = '' then
+   EdtPesoL.Text := '0';
+
+   if EdtVolumes.Text = '' then
+   EdtVolumes.Text := '0';
+
+   if EdtEspecie.text = '' then
+   EdtEspecie.Text := '0';
+
+   valor_produtos:= 0;
+   valor_icms:= 0;
+   valor_base_icms:= 0;
+   valor_ipi:= 0;
+   valor_base_ipi:= 0;
+   valor_cofins:= 0;
+   valor_base_cofins:= 0;
+   valor_pis:= 0;
+   valor_base_pis:= 0;
+   valor_total:= 0;
+   quantidade:= 0;
+
+ try
+  FatGeralDataModule.Conexão.StartTransaction;
+  try
+   for i := 1 to NIGrid.RowCount - 1 do
+   begin
+    Produto := NIGrid.Cells[0, i];
+    Cor := NIGrid.Cells[1, i];
+    Tamanho := NIGrid.Cells[2, i];
+    Deposito := NIGrid.Cells[3, i];
+    Lote := NIGrid.Cells[4, i];
+    Qtde := StrToFloatDef(NIGrid.Cells[5, i], 0);
+    Preco_Uni := StrToFloatDef(NIGrid.Cells[6, i], 0);
+    Natureza := NIGrid.Cells[8, i];
+    CST_ICMS := NIGrid.Cells[9, i];
+    CSOSN := NIGrid.Cells[10, i];
+    CST_IPI := NIGrid.Cells[14, i];
+    ENQ_IPI := NIGrid.Cells[15, i];
+    CST_PIS := NIGrid.Cells[19, i];
+    CST_COFINS := NIGrid.Cells[23, i];
+    cBenef := NIGrid.Cells[29, i];
+    cCredPres := NIGrid.Cells[30, i];
+    ALIQ_ICMS := StrToFloatDef(NIGrid.Cells[11, i], 0);
+    ALIQ_PIS := StrToFloatDef(NIGrid.Cells[20, i], 0);
+    ALIQ_IPI := StrToFloatDef(NIGrid.Cells[16, i], 0);
+    ALIQ_COFINS := StrToFloatDef(NIGrid.Cells[24, i], 0);
+    aliq_icms_nota := StrToFloatDef(NIGrid.Cells[11, i], 0);
+    aliq_ipi_nota := StrToFloatDef(NIGrid.Cells[16, i], 0);
+    aliq_pis_nota := StrToFloatDef(NIGrid.Cells[20, i], 0);
+    aliq_cofins_nota := StrToFloatDef(NIGrid.Cells[24, i], 0);
+    Val_Desconto := StrToFloatDef(NIGrid.Cells[27, i], 0);
+    Val_Frete := StrToFloatDef(NIGrid.Cells[28, i], 0);
+
+    Base_ICMS := ((Qtde * Preco_Uni) - Val_Desconto + Val_Frete);
+    Val_ICMS := Base_ICMS * (ALIQ_ICMS / 100);
+    Base_IPI := ((Qtde * Preco_Uni) - Val_Desconto + Val_Frete + Val_ICMS);
+    Val_IPI := Base_IPI * (ALIQ_IPI / 100);
+    Base_PIS := ((Qtde * Preco_Uni) - Val_Desconto + Val_Frete);
+    Val_PIS := Base_PIS * (ALIQ_PIS / 100);
+    Base_COFINS := ((Qtde * Preco_Uni) - Val_Desconto + Val_Frete);
+    Val_COFINS := Base_COFINS * (ALIQ_COFINS / 100);
+    Valor := ((Qtde * Preco_Uni) - Val_Desconto);
+
+    NIGrid.Cells[12, i] := FormatFloat('0.00', Base_ICMS);
+    NIGrid.Cells[13, i] := FormatFloat('0.00', Val_ICMS);
+    NIGrid.Cells[17, i] := FormatFloat('0.00', Base_IPI);
+    NIGrid.Cells[18, i] := FormatFloat('0.00', Val_IPI);
+    NIGrid.Cells[21, i] := FormatFloat('0.00', Base_PIS);
+    NIGrid.Cells[22, i] := FormatFloat('0.00', Val_PIS);
+    NIGrid.Cells[25, i] := FormatFloat('0.00', Base_COFINS);
+    NIGrid.Cells[26, i] := FormatFloat('0.00', Val_COFINS);
+    NIGrid.Cells[7, i] := FormatFloat('0.00', Valor);
+
+    valor_produtos := valor_produtos + StrToFloat(NIGrid.Cells[7, i]);
+    valor_icms := valor_icms + StrToFloat(NIGrid.Cells[13, i]);
+    valor_base_icms := valor_base_icms + StrToFloat(NIGrid.Cells[12, i]);
+    valor_ipi := valor_ipi + StrToFloat(NIGrid.Cells[18, i]);
+    valor_base_ipi := valor_base_ipi + StrToFloat(NIGrid.Cells[17, i]);
+    valor_cofins := valor_cofins + StrToFloat(NIGrid.Cells[26, i]);
+    valor_base_cofins := valor_base_cofins + StrToFloat(NIGrid.Cells[25, i]);
+    valor_pis := valor_pis + StrToFloat(NIGrid.Cells[22, i]);
+    valor_base_pis := valor_base_pis + StrToFloat(NIGrid.Cells[21, i]);
+    quantidade := quantidade + StrToFloat(NIGrid.Cells[5, i]);
+
+    FatGeralDataModule.SelectQuery.SQL.Clear;
+    FatGeralDataModule.SelectQuery.Close;
+    FatGeralDataModule.SelectQuery.SQL.Text :=
+     'select qtde from estoque ' +
+     'where codigo = :codigo ' +
+     'and cor = :cor ' +
+     'and tamanho = :tamanho ' +
+     'and deposito = :deposito ' +
+     'and lote = :lote ' +
+     'and qtde >= :qtde';
+    FatGeralDataModule.SelectQuery.ParamByName('codigo').AsString := produto;
+    FatGeralDataModule.SelectQuery.ParamByName('cor').AsString := cor;
+    FatGeralDataModule.SelectQuery.ParamByName('tamanho').AsString := tamanho;
+    FatGeralDataModule.SelectQuery.ParamByName('deposito').AsString := deposito;
+    FatGeralDataModule.SelectQuery.ParamByName('lote').AsString := lote;
+    FatGeralDataModule.SelectQuery.ParamByName('qtde').AsFloat := qtde;
+    FatGeralDataModule.SelectQuery.Open;
+
+    if FatGeralDataModule.SelectQuery.IsEmpty then begin
+    ShowMessage('Sem quantidades disponíveis no estoque para o produto: ' + produto + ' na cor: ' + cor + ' no tamanho: ' + tamanho + ' no lote: ' + lote + ' no depósito: ' + deposito);
+    Exit;
+    end;
+   end;
+
+     Valor_Total := (valor_produtos + valor_icms + valor_ipi + valor_cofins + valor_pis);
+
+     EdtValor_Produtos.Text := FormatFloat('0.00', valor_produtos);
+     EdtValor_ICMS.Text := FormatFloat('0.00', valor_icms);
+     EdtValor_Base_ICMS.Text := FormatFloat('0.00', valor_base_icms);
+     EdtValor_IPI.Text := FormatFloat('0.00', valor_ipi);
+     EdtValor_Base_IPI.Text := FormatFloat('0.00', valor_base_ipi);
+     EdtValor_COFINS.Text := FormatFloat('0.00', valor_cofins);
+     EdtValor_Base_COFINS.Text := FormatFloat('0.00', valor_base_cofins);
+     EdtValor_PIS.Text := FormatFloat('0.00', valor_pis);
+     EdtValor_Base_PIS.Text := FormatFloat('0.00', valor_base_pis);
+     EdtValor_Total.Text := FormatFloat('0.00', Valor_Total);
+     EdtQuantidade.Text := FormatFloat('0.00', Quantidade);
+
+     FatGeralDataModule.InsertNOTA.SQL.CLear;
+     FatGeralDataModule.InsertNOTA.SQL.Text :=
+     'insert into nota (EMP_ID, Serie, Codcli, dtemissao, dtsaida, Natureza, valor_produtos, valor_total, valor_icms, valor_base_icms, ' +
+     'valor_frete, valor_ipi, valor_base_ipi, valor_cofins, valor_base_cofins, valor_pis, valor_base_pis, valor_desconto, quantidade, ' +
+     'aliq_icms, aliq_ipi, aliq_pis, aliq_cofins, impresso, dados_adicionais, especie, volumes, pesob, pesol, presenca, modfrete) ' +
+     'values ' +
+     '(:EMP_ID, :Serie, :Codcli, :dtemissao, :dtsaida, :Natureza, :valor_produtos, :valor_total, :valor_icms, :valor_base_icms, ' +
+     ':valor_frete, :valor_ipi, :valor_base_ipi, :valor_cofins, :valor_base_cofins, :valor_pis, :valor_base_pis, :valor_desconto, :quantidade, ' +
+     ':aliq_icms, :aliq_ipi, :aliq_pis, :aliq_cofins, :impresso, :dados_adicionais, :especie, :volumes, :pesob, :pesol, :presenca, :modfrete)';
+     FatGeralDataModule.InsertNOTA.ParamByName('EMP_ID').AsString := EmpresaLogada;
+     FatGeralDataModule.InsertNOTA.ParamByName('Serie').AsString := EdtSerie.Text;
+     FatGeralDataModule.InsertNOTA.ParamByName('Codcli').AsString := EdtEntidade.Text;
+     FatGeralDataModule.InsertNOTA.ParamByName('dtemissao').AsDateTime := dtemissao.datetime;
+     FatGeralDataModule.InsertNOTA.ParamByName('dtsaida').AsDateTime := dtsaida.DateTime;
+     FatGeralDataModule.InsertNOTA.ParamByName('natureza').AsString := EdtNatureza.Text;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_produtos').AsFloat := valor_produtos;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_total').AsFloat := valor_total;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_icms').AsFloat := valor_icms;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_base_icms').AsFloat := valor_base_icms;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_frete').AsString := EdtValFrete.Text;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_ipi').AsFloat := valor_ipi;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_base_ipi').AsFloat := valor_base_ipi;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_cofins').AsFloat := valor_cofins;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_base_cofins').AsFloat := valor_base_cofins;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_pis').AsFloat := valor_pis;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_base_pis').AsFloat := valor_base_pis;
+     FatGeralDataModule.InsertNOTA.ParamByName('valor_desconto').AsString := EdtValDesconto.Text;
+     FatGeralDataModule.InsertNOTA.ParamByName('quantidade').AsFloat := quantidade;
+     FatGeralDataModule.InsertNOTA.ParamByName('aliq_icms').AsFloat := aliq_icms_nota;
+     FatGeralDataModule.InsertNOTA.ParamByName('aliq_ipi').AsFloat := aliq_ipi_nota;
+     FatGeralDataModule.InsertNOTA.ParamByName('aliq_pis').AsFloat := aliq_pis_nota;
+     FatGeralDataModule.InsertNOTA.ParamByName('aliq_cofins').AsFloat := aliq_cofins_nota;
+     FatGeralDataModule.InsertNOTA.ParamByName('dados_adicionais').AsString:= EdtDadosadicionais.Text;
+     FatGeralDataModule.InsertNOTA.ParamByName('especie').AsString:= EdtEspecie.text;
+     FatGeralDataModule.InsertNOTA.ParamByName('pesob').AsString:= EdtPesoB.text;
+     FatGeralDataModule.InsertNOTA.ParamByName('pesol').AsString:= EdtPesoL.text;
+     FatGeralDataModule.InsertNOTA.ParamByName('presenca').AsString:= presenca;
+     FatGeralDataModule.InsertNOTA.ParamByName('modfrete').AsString:= modfrete;
+     FatGeralDataModule.InsertNOTA.ParamByName('volumes').AsString:= EdtVolumes.text;
+     FatGeralDataModule.InsertNOTA.ParamByName('Impresso').AsString:= 'N';
+     ShowMessage('nota com sucesso!');
+     FatGeralDataModule.InsertNOTA.ExecSQL;
+
+     for i := 1 to NIGrid.RowCount - 1 do
+     begin
+      Produto := NIGrid.Cells[0, i];
+      Cor := NIGrid.Cells[1, i];
+      Tamanho := NIGrid.Cells[2, i];
+      Deposito := NIGrid.Cells[3, i];
+      Lote := NIGrid.Cells[4, i];
+      Qtde := StrToFloatDef(NIGrid.Cells[5, i], 0);
+      Preco_Uni := StrToFloatDef(NIGrid.Cells[6, i], 0);
+      Natureza := NIGrid.Cells[8, i];
+      CST_ICMS := NIGrid.Cells[9, i];
+      CSOSN := NIGrid.Cells[10, i];
+      CST_IPI := NIGrid.Cells[14, i];
+      ENQ_IPI := NIGrid.Cells[15, i];
+      CST_PIS := NIGrid.Cells[19, i];
+      CST_COFINS := NIGrid.Cells[23, i];
+      cBenef := NIGrid.Cells[29, i];
+      cCredPres := NIGrid.Cells[30, i];
+      ALIQ_ICMS := StrToFloatDef(NIGrid.Cells[11, i], 0);
+      ALIQ_PIS := StrToFloatDef(NIGrid.Cells[20, i], 0);
+      ALIQ_IPI := StrToFloatDef(NIGrid.Cells[16, i], 0);
+      ALIQ_COFINS := StrToFloatDef(NIGrid.Cells[24, i], 0);
+      Val_Desconto := StrToFloatDef(NIGrid.Cells[27, i], 0);
+      Val_Frete := StrToFloatDef(NIGrid.Cells[28, i], 0);
+      Base_ICMS := StrToFloatDef(NIGrid.Cells[12, i], 0);
+      Val_ICMS := StrToFloatDef(NIGrid.Cells[13, i], 0);
+      Base_IPI := StrToFloatDef(NIGrid.Cells[17, i], 0);
+      Val_IPI := StrToFloatDef(NIGrid.Cells[18, i], 0);
+      Base_PIS := StrToFloatDef(NIGrid.Cells[21, i], 0);
+      Val_PIS := StrToFloatDef(NIGrid.Cells[22, i], 0);
+      Base_COFINS := StrToFloatDef(NIGrid.Cells[25, i], 0);
+      Val_COFINS := StrToFloatDef(NIGrid.Cells[26, i], 0);
+      Valor := StrToFloatDef(NIGrid.Cells[7, i], 0);
+
+     FatGeralDataModule.InsertNOTAITEN.SQL.Clear;
+     FatGeralDataModule.InsertNOTAITEN.SQL.Text :=
+     'insert into notaiten (EMP_ID, Serie, Codigo, Cor, Tam, Deposito, Lote, Natureza, CST_ICMS, CSOSN, CST_IPI, ENQ_IPI, CST_PIS, CST_COFINS, cBenef, ' +
+     'cCredPres, Qtde, Preco_Uni, Valor, ALIQ_ICMS, Val_Base_ICMS, Val_ICMS, ALIQ_IPI, Val_Base_IPI, Val_IPI, ALIQ_COFINS, Val_Base_COFINS, Val_COFINS, ' +
+     'ALIQ_PIS, Val_Base_PIS, Val_PIS, Val_Desconto, Val_Frete) ' +
+     'values ' +
+     '(:EMP_ID, :Serie, :Codigo, :Cor, :Tam, :Deposito, :Lote, :Natureza, :CST_ICMS, :CSOSN, :CST_IPI, :ENQ_IPI, :CST_PIS, :CST_COFINS, :cBenef, ' +
+     ':cCredPres, :Qtde, :Preco_Uni, :Valor, :ALIQ_ICMS, :Val_Base_ICMS, :Val_ICMS, :ALIQ_IPI, :Val_Base_IPI, :Val_IPI, :ALIQ_COFINS, :Val_Base_COFINS, ' +
+     ':Val_COFINS, :ALIQ_PIS, :Val_Base_PIS, :Val_PIS, :Val_Desconto, :Val_Frete)';
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('EMP_ID').AsString := EmpresaLogada;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Serie').AsString := serie;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Codigo').AsString := Produto;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Cor').AsString := Cor;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Tam').AsString := Tamanho;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Deposito').AsString := Deposito;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Lote').AsString := Lote;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('natureza').AsString := natureza;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('CST_ICMS').AsString := CST_ICMS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('CSOSN').AsString := CSOSN;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('CST_IPI').AsString := CST_IPI;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('ENQ_IPI').AsString := ENQ_IPI;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('CST_PIS').AsString := CST_PIS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('CST_COFINS').AsString := CST_COFINS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('cBenef').AsString := cBenef;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('cCredPres').AsString := cCredPres;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Qtde').AsFloat := Qtde;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Preco_Uni').AsFloat := Preco_Uni;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Valor').AsFloat := Valor;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('ALIQ_ICMS').AsFloat := ALIQ_ICMS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_Base_ICMS').AsFloat := Base_ICMS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_ICMS').AsFloat := Val_ICMS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('ALIQ_IPI').AsFloat := ALIQ_IPI;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_Base_IPI').AsFloat := Base_IPI;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_IPI').AsFloat := Val_IPI;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('ALIQ_COFINS').AsFloat := ALIQ_COFINS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_Base_COFINS').AsFloat := Base_COFINS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_COFINS').AsFloat := Val_COFINS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('ALIQ_PIS').AsFloat := ALIQ_PIS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_Base_PIS').AsFloat := Base_PIS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_PIS').AsFloat := Val_PIS;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_Desconto').AsFloat := Val_Desconto;
+     FatGeralDataModule.InsertNOTAITEN.ParamByName('Val_Frete').AsFloat := Val_Frete;
+     ShowMessage('notaiten com sucesso!');
+     FatGeralDataModule.InsertNOTAITEN.ExecSQL;
+
+     FatGeralDataModule.UpdateEstoque.SQL.Clear;
+     FatGeralDataModule.UpdateEstoque.SQL.Text:=
+     'update estoque set qtde = (qtde - :qtde) where codigo = :codigo and cor = :cor and deposito = :deposito and lote = :lote and tamanho = :tamanho';
+     FatGeralDataModule.UpdateEstoque.ParamByName('Codigo').AsString := Produto;
+     FatGeralDataModule.UpdateEstoque.ParamByName('Cor').AsString := Cor;
+     FatGeralDataModule.UpdateEstoque.ParamByName('tamanho').AsString := Tamanho;
+     FatGeralDataModule.UpdateEstoque.ParamByName('Deposito').AsString := Deposito;
+     FatGeralDataModule.UpdateEstoque.ParamByName('Lote').AsString := Lote;
+     FatGeralDataModule.UpdateEstoque.ParamByName('qtde').AsFloat := qtde;
+     FatGeralDataModule.UpdateEstoque.ExecSQL;
+     ShowMessage('estoque com sucesso!');
+
+     FatGeralDataModule.InsertProdMov.SQL.CLear;
+     FatGeralDataModule.InsertProdMov.SQL.Text:=
+     'insert into prodmov (codigo, cor, tamanho, deposito, lote, qtde, data, tipo, Usuario, OBS) ' +
+     'values (:codigo, :cor, :tamanho, :deposito, :lote, :qtde, :data, :tipo, :Usuario, :OBS)';
+     FatGeralDataModule.InsertProdMov.ParamByName('codigo').AsString := produto;
+     FatGeralDataModule.InsertProdMov.ParamByName('cor').AsString := cor;
+     FatGeralDataModule.InsertProdMov.ParamByName('tamanho').AsString := tamanho;
+     FatGeralDataModule.InsertProdMov.ParamByName('deposito').AsString := deposito;
+     FatGeralDataModule.InsertProdMov.ParamByName('lote').AsString := lote;
+     FatGeralDataModule.InsertProdMov.ParamByName('qtde').AsFloat := qtde;
+     FatGeralDataModule.InsertProdMov.ParamByName('data').AsDateTime := Now;
+     FatGeralDataModule.InsertProdMov.ParamByName('tipo').AsString := 'S';
+     FatGeralDataModule.InsertProdMov.ParamByName('Usuario').AsString := UsuarioLogado;
+     FatGeralDataModule.InsertProdMov.ParamByName('OBS').AsString := 'Movimentação realizada a partir da gravação da nota X';
+     FatGeralDataModule.InsertProdMov.ExecSQL;
+     ShowMessage('prodmov com sucesso!');
+     end;
+
+     LogModule.InserirLog.SQL.Clear;
+     LogModule.InserirLog.SQL.Text :=
+     'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+     LogModule.InserirLog.ParamByName('descricao').AsString :=
+     'O usuário ' + usuariologado + ' gravou a nota X na série ' + serie + ' na empresa ' + empresalogada + ' para o cliente ' + entidade;
+     LogModule.InserirLog.ParamByName('tela').AsString := 'FatGeral';
+     LogModule.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+     LogModule.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+     LogModule.InserirLog.ParamByName('data').AsDateTime := Now;
+     ShowMessage('Log com sucesso!');
+     LogModule.InserirLog.ExecSQL;
+
+     FatGeralDataModule.Conexão.Commit;
+     ShowMessage('Gravado com sucesso!');
+     EdtEntidade.Enabled := False;
+     EdtNatureza.Enabled := False;
+     EdtSerie.Enabled := False;
+     EdtValDesconto.Enabled := False;
+     EdtValFrete.Enabled := False;
+     NIGrid.Enabled := False;
+     DTEmissao.Enabled := False;
+     DtSaida.Enabled := False;
+     EdtDadosAdicionais.Enabled := False;
+     EdtEspecie.Enabled := False;
+     EdtVolumes.Enabled := False;
+     EdtPesoB.Enabled := False;
+     EdtPesoL.Enabled := False;
+     CBPresenca.Enabled := False;
+     CBmodFrete.Enabled := False;
+
+     EdtEntidade.Clear;
+     EdtNatureza.Clear;
+     EdtSerie.Clear;
+     EdtValDesconto.Clear;
+     EdtValFrete.Clear;
+     EdtValor_Produtos.Clear;
+     EdtValor_ICMS.Clear;
+     EdtValor_Base_ICMS.Clear;
+     EdtValor_IPI.Clear;
+     EdtValor_Base_IPI.Clear;
+     EdtValor_COFINS.Clear;
+     EdtValor_Base_COFINS.Clear;
+     EdtValor_PIS.Clear;
+     EdtValor_Base_PIS.Clear;
+     EdtValor_Total.Clear;
+     EdtQuantidade.Clear;
+     EdtDadosAdicionais.Clear;
+     EdtEspecie.Clear;
+     EdtVolumes.Clear;
+     EdtPesoB.Clear;
+     EdtPesoL.Clear;
+
+     NIGrid.Enabled := False;
+     NIGrid.RowCount := 1;
+
+     SBEntidade.Enabled := False;
+     SBNatureza.Enabled := False;
+     BtnGravar.Visible := False;
+     BtnDesistir.Visible := False;
+     btnIncluir.Visible := Visible;
+     except
+     begin
+       FatGeralDataModule.Conexão.Rollback;
+       ShowMessage('Erro na gravação!');
+     end;
+  end;
+  except
+  ShowMessage('Erro na gravação!');
+ end;
+end;
+
+procedure TFatGeralForm.EdtValDescontoExit(Sender: TObject);
+var
+  i: Integer;
+  valorTotal, valorUnitario: Double;
+begin
+  if EdtValDesconto.Text = '' then begin
+  EdtValDesconto.Text := '0'
+  end
+  else begin
+  valorTotal := StrToFloat(EdtValFrete.Text);
+  valorUnitario := valorTotal / (NIGrid.RowCount - 1);
+
+  for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[27, i] := FormatFloat('0.00', valorUnitario);
+end;
+end;
+
+procedure TFatGeralForm.EdtValFreteExit(Sender: TObject);
+var
+  i: Integer;
+  valorTotal, valorUnitario: Double;
+begin
+  if EdtValFrete.Text = '' then begin
+  EdtValFrete.Text := '0'
+  end
+  else begin
+  valorTotal := StrToFloat(EdtValFrete.Text);
+  valorUnitario := valorTotal / (NIGrid.RowCount - 1);
+
+  for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[28, i] := FormatFloat('0.00', valorUnitario);
+end;
+end;
+
+procedure TFatGeralForm.FormShow(Sender: TObject);
+begin
+ NIGrid.Cells[0,0] := 'Produto';
+ NIGrid.Cells[1,0] := 'Cor';
+ NIGrid.Cells[2,0] := 'Tamanho';
+ NIGrid.Cells[3,0] := 'Depósito';
+ NIGrid.Cells[4,0] := 'Lote';
+ NIGrid.Cells[5,0] := 'Qtde';
+ NIGrid.Cells[6,0] := 'Preço_Uni';
+ NIGrid.Cells[7,0] := 'Valor';
+ NIGrid.Cells[8,0] := 'Natureza';
+ NIGrid.Cells[9,0] := 'CST_ICMS';
+ NIGrid.Cells[10,0] := 'CSOSN';
+ NIGrid.Cells[11,0] := 'ALIQ_ICMS';
+ NIGrid.Cells[12,0] := 'Base_ICMS';
+ NIGrid.Cells[13,0] := 'Valor_ICMS';
+ NIGrid.Cells[14,0] := 'CST_IPI';
+ NIGrid.Cells[15,0] := 'ENQ_IPI';
+ NIGrid.Cells[16,0] := 'ALIQ_IPI';
+ NIGrid.Cells[17,0] := 'Base_IPI';
+ NIGrid.Cells[18,0] := 'Valor_IPI';
+ NIGrid.Cells[19,0] := 'CST_PIS';
+ NIGrid.Cells[20,0] := 'ALIQ_PIS';
+ NIGrid.Cells[21,0] := 'Base_PIS';
+ NIGrid.Cells[22,0] := 'Valor_PIS';
+ NIGrid.Cells[23,0] := 'CST_COFINS';
+ NIGrid.Cells[24,0] := 'ALIQ_COFINS';
+ NIGrid.Cells[25,0] := 'Base_COFINS';
+ NIGrid.Cells[26,0] := 'Valor_COFINS';
+ NIGrid.Cells[27,0] := 'Desconto';
+ NIGrid.Cells[28,0] := 'Valor_Frete';
+ NIGrid.Cells[29,0] := 'cBenef';
+ NIGrid.Cells[30,0] := 'cCredPres';
+end;
+
+procedure TFatGeralForm.NIGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var FormDeposito: TConsultarDeposito;
+    FormProduto: TConsultarProduto;
+    FormCor: TConsultarCor;
+    FormTamanho: TConsultarTamanho;
+    FormCSTICMS: TConsultarCSTICMS;
+    FormNatureza: TConsultarNatureza;
+    FormCSOSN: TConsultarCSOSN;
+    FormCSTIPI: TConsultarCSTIPI;
+    FormENQIPI: TConsultarENQIPI;
+    FormCSTPIS: TConsultarCSTPIS;
+    FormCSTCOFINS: TConsultarCSTCOFINS;
+    deposito, produto, cor, tamanho, CST_ICMS, CSOSN, CST_IPI, ENQ_IPI, CST_PIS, CST_COFINS, natureza, descricaocor: string;
+begin
+  if Key = VK_DOWN then
+begin
+   if NIGrid.Row = NIGrid.RowCount - 1 then
+    begin
+      NIGrid.RowCount := NIGrid.RowCount + 1;
+      NIGrid.Row := NIGrid.RowCount - 1;
+    end;
+end;
+
+  if Key = VK_F4 then
+begin
+  case NIGrid.Col of
+    0:
+begin
+  CadProdutoModule.GridQuery.Close;
+  CadProdutoModule.GridQuery.Open;
+  FormProduto := TConsultarProduto.Create(Self);
+  NIGrid.Cells[0, NIGrid.Row] := FormProduto.SelecionarProduto;
+  FormProduto.Free;
+end;
+    1:
+    begin
+      CadCorModule.FDQuery.Close;
+      CadCorModule.FDQuery.Open;
+      FormCor := TConsultarCor.Create(Self);
+      cor := FormCor.SelecionarCor;
+      descricaocor := FormCor.Descricao;
+      NIGrid.Cells[1, NIGrid.Row] := descricaocor;
+      FormCor.Free;
+    end;
+
+    2:
+    begin
+      CadTamanhoDataModule.FDQuery.Close;
+      CadTamanhoDataModule.FDQuery.Open;
+      FormTamanho := TConsultarTamanho.Create(Self);
+      tamanho := FormTamanho.SelecionarTamanho;
+      NIGrid.Cells[2, NIGrid.Row] := tamanho;
+      FormTamanho.Free;
+    end;
+
+    3:
+    begin
+     CadDepositoDataModule.FDQuery.Close;
+     CadDepositoDataModule.FDQuery.Open;
+     FormDeposito := TConsultarDeposito.Create(Self);
+     deposito := FormDeposito.SelecionarDeposito;
+     NIGrid.Cells[3, NIGrid.Row] := deposito;
+     FormDeposito.Free;
+    end;
+
+    8:
+    begin
+     CadNaturezaDataModule.QueryNaturezas.Close;
+     CadNaturezaDataModule.QueryNaturezas.Open;
+     FormNatureza := TConsultarNatureza.Create(Self);
+     Natureza := FormNatureza.SelecionarNatureza;
+     NIGrid.Cells[8, NIGrid.Row] := natureza;
+     FormNatureza.Free;
+    end;
+
+    9:
+    begin
+     CadCSTICMSDataModule.GridQuery.Close;
+     CadCSTICMSDataModule.GridQuery.Open;
+     FormCSTICMS := TConsultarCSTICMS.Create(Self);
+     CST_ICMS := FormCSTICMS.SelecionarICMSCST;
+     NIGrid.Cells[9, NIGrid.Row] := CST_ICMS;
+     FormCSTICMS.Free
+    end;
+
+    10:
+    begin
+     CadCSOSNDataModule.GridQuery.Close;
+     CadCSOSNDataModule.GridQuery.Open;
+     FormCSOSN := TConsultarCSOSN.Create(Self);
+     CSOSN := FormCSOSN.SelecionarCSOSN;
+     NIGrid.Cells[10, NIGrid.Row] := CSOSN;
+     FormCSOSN.Free;
+    end;
+
+    14:
+    begin
+     CadCSTIPIDataModule.GridQuery.Close;
+     CadCSTIPIDataModule.GridQuery.Open;
+     FormCSTIPI := TConsultarCSTIPI.Create(Self);
+     CST_IPI := FormCSTIPI.SelecionarCstIPI;
+     NIGrid.Cells[14, NIGrid.Row] := CST_IPI;
+     FormCSTIPI.Free
+    end;
+
+    15:
+    begin
+     CadENQIPIDataModule.GridQuery.Close;
+     CadENQIPIDataModule.GridQuery.Open;
+     FormENQIPI := TConsultarENQIPI.Create(Self);
+     ENQ_IPI := FormENQIPI.SelecionarENQIPI;
+     NIGrid.Cells[15, NIGrid.Row] := ENQ_IPI;
+     FormENQIPI.Free;
+    end;
+
+    19:
+    begin
+     CadCSTPISDataModule.GridQuery.Close;
+     CadCSTPISDataModule.GridQuery.Open;
+     FormCSTPIS := TConsultarCSTPIS.Create(Self);
+     CST_PIS := FormCSTPIS.SelecionarPisCST;
+     NIGrid.Cells[19, NIGrid.Row] := CST_PIS;
+     FormCSTPIS.Free;
+    end;
+
+    23:
+    begin
+     CadCSTCOFINSDataModule.GridQuery.Close;
+     CadCSTCOFINSDataModule.GridQuery.Open;
+     FormCSTCOFINS := TConsultarCSTCOFINS.Create(Self);
+     CST_COFINS := FormCSTCOFINS.SelecionarCofinsCST;
+     NIGrid.Cells[23, NIGrid.Row] := CST_COFINS;
+     FormCSTCOFINS.Free;
+    end;
+end;
+end;
+end;
+
+procedure TFatGeralForm.SBEntidadeClick(Sender: TObject);
+var codigo, nome: string;
+begin
+ CadEntidadeDataModule.FDQuery1.Close;
+ CadEntidadeDataModule.FDQuery1.Open;
+ Application.CreateForm(TConsultarEntidade, ConsultarEntidade);
+
+ codigo := ConsultarEntidade.SelecionarEntidade;
+
+ Nome := ConsultarEntidade.nome;
+ EdtEntidade.Text := Nome;
+end;
+
+procedure TFatGeralForm.SBNaturezaClick(Sender: TObject);
+var natureza, cBenef, cCredPres, cst_icms, csosn, cst_ipi, enq_ipi, cst_pis, cst_cofins, aliq_icms, aliq_ipi, aliq_cofins, aliq_pis: string;
+    i: integer;
+begin
+  CadNaturezaDataModule.QueryNaturezas.Close;
+  CadNaturezaDataModule.QueryNaturezas.Open;
+  Application.CreateForm(TConsultarNatureza, ConsultarNatureza);
+  natureza := ConsultarNatureza.SelecionarNatureza;
+  if natureza <> '' then
+  begin
+    EdtNatureza.Text := natureza;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[8, i] := natureza;
+
+    cBenef := ConsultarNatureza.cBenef;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[29,i] := cBenef;
+
+    cCredPres := ConsultarNatureza.cCredPres;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[30,i] := cCredPres;
+
+    enq_ipi := ConsultarNatureza.enq_ipi;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[15,i] := enq_ipi;
+
+    cst_icms := ConsultarNatureza.cst_icms;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[9,i] := cst_icms;
+
+    csosn := ConsultarNatureza.csosn;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[10,i] := csosn;
+
+    cst_ipi := ConsultarNatureza.cst_ipi;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[14,i] := cst_ipi;
+
+    cst_pis := ConsultarNatureza.cst_pis;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[19,i] := cst_pis;
+
+    cst_cofins := ConsultarNatureza.cst_cofins;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[23,i] := cst_cofins;
+
+    aliq_icms := ConsultarNatureza.Aliq_icms;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[11,i] := aliq_icms;
+
+    aliq_ipi := ConsultarNatureza.aliq_ipi;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[16,i] := aliq_ipi;
+
+    aliq_pis := ConsultarNatureza.aliq_pis;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[20,i] := aliq_pis;
+
+    aliq_cofins := ConsultarNatureza.aliq_cofins;
+    for i := 1 to NIGrid.RowCount - 1 do
+    NIGrid.Cells[24,i] := aliq_cofins;
+  end;
+end;
+
+end.

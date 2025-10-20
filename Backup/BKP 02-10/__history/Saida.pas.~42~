@@ -1,0 +1,453 @@
+unit Saida;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Grids, Vcl.ComCtrls, Vcl.Buttons,
+  SaidaDM,
+  Log, LogDM,
+  GlobalUnit,
+  ProdutoDM, ConsultarProdutoForm, CorDM, ConsultarCorForm, DepositoDM, ConsultarDepositoForm, TamanhoDM, ConsultarTamanhoForm;
+
+type
+  TMovSaida = class(TForm)
+    Panel1: TPanel;
+    btnDesistir: TButton;
+    btnGravar: TButton;
+    btnIncluir: TButton;
+    btnIncluirGrid: TButton;
+    edtLote: TEdit;
+    EdtQtde: TEdit;
+    Grid: TStringGrid;
+    lblCodigoCor: TLabel;
+    lblCodigoDeposito: TLabel;
+    lblCodigoProduto: TLabel;
+    lblCodigoTamanho: TLabel;
+    lblLote: TLabel;
+    lblQtde: TLabel;
+    btnFechar: TButton;
+    EdtCodigoProduto: TEdit;
+    EdtDescricaoProduto: TEdit;
+    SBProduto: TSpeedButton;
+    EdtCodigoCor: TEdit;
+    EdtDescricaoCor: TEdit;
+    SBCor: TSpeedButton;
+    SBTamanho: TSpeedButton;
+    EdtDescricaoTamanho: TEdit;
+    EdtCodigoTamanho: TEdit;
+    EdtCodigoDeposito: TEdit;
+    EdtDescricaoDeposito: TEdit;
+    SBDeposito: TSpeedButton;
+    procedure FormShow(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnIncluirGridClick(Sender: TObject);
+    procedure btnGravarClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure EdtCodigoProdutoChange(Sender: TObject);
+    procedure EdtCodigoCorChange(Sender: TObject);
+    procedure EdtCodigoTamanhoChange(Sender: TObject);
+    procedure EdtCodigoDepositoChange(Sender: TObject);
+    procedure SBProdutoClick(Sender: TObject);
+    procedure SBCorClick(Sender: TObject);
+    procedure SBTamanhoClick(Sender: TObject);
+    procedure SBDepositoClick(Sender: TObject);
+  private
+  public
+  end;
+
+var
+  MovSaida: TMovSaida;
+
+implementation
+
+{$R *.dfm}
+
+procedure TMovSaida.FormShow(Sender: TObject);
+var i: Integer;
+begin
+ Grid.FixedRows := 0;
+ Grid.Cells[0,0] := 'Código';
+ Grid.Cells[1,0] := 'Cor';
+ Grid.Cells[2,0] := 'Tamanho';
+ Grid.Cells[3,0] := 'Lote';
+ Grid.Cells[4,0] := 'Depósito';
+ Grid.Cells[5,0] := 'Qtde';
+end;
+
+procedure TMovSaida.BtnIncluirClick(Sender: TObject);
+begin
+ BtnIncluir.Visible := False;
+
+ BtnGravar.Visible := True;
+ BtnDesistir.Visible := True;
+ BtnIncluirGrid.Visible := True;
+
+ EdtCodigoProduto.Enabled := True;
+ EdtCodigoDeposito.Enabled := True;
+ EdtCodigoTamanho.Enabled := True;
+ EdtCodigoCor.Enabled := True;
+ EdtQtde.Enabled := True;
+ EdtLote.Enabled := True;
+
+ SBProduto.Enabled := True;
+ SBCor.Enabled := True;
+ SBTamanho.Enabled := True;
+ SBDeposito.Enabled := True;
+end;
+
+procedure TMovSaida.BtnIncluirGridClick(Sender: TObject);
+var codigo, cor, tamanho, lote, deposito, qtde: string;
+    novalinha: integer;
+begin
+ if EdtCodigoProduto.Text = '' then begin
+  ShowMessage('Codigo não pode ser vazio');
+  Abort;
+ end;
+
+ if EdtCodigoCor.Text = '' then begin
+  ShowMessage('Cor não pode ser vazia');
+  Abort;
+ end;
+
+ if EdtCodigoTamanho.Text = '' then begin
+  ShowMessage('Tamanho não pode ser vazio');
+  Abort;
+ end;
+
+ if EdtLote.Text = '' then EdtLote.Text := '000000';
+
+ if EdtCodigoDeposito.Text = '' then begin
+  ShowMessage('Deposito não pode ser vazio');
+  Abort;
+ end;
+
+ if EdtQtde.Text = '' then begin
+  ShowMessage('Quantidade não pode ser vazio');
+  Abort;
+ end;
+
+ codigo := EdtCodigoProduto.Text;
+ cor := EdtCodigoCor.Text;
+ tamanho := EdtCodigoTamanho.Text;
+ Lote := EdtLote.Text;
+ Deposito := EdtCodigoDeposito.Text;
+ Qtde := EdtQtde.Text;
+
+ novalinha := Grid.RowCount;
+ Grid.RowCount := novalinha + 1;
+ Grid.Cells[0, novaLinha] := codigo;
+ Grid.Cells[1, novaLinha] := cor;
+ Grid.Cells[2, novaLinha] := tamanho;
+ Grid.Cells[3, novaLinha] := lote;
+ Grid.Cells[4, novaLinha] := deposito;
+ Grid.Cells[5, novaLinha] := qtde;
+
+ EdtCodigoProduto.clear;
+ EdtCodigoCor.clear;
+ EdtCodigoTamanho.clear;
+ EdtLote.clear;
+ EdtCodigoDeposito.clear;
+ EdtQtde.clear
+end;
+
+procedure TMovSaida.BtnGravarClick(Sender: TObject);
+var i: Integer;
+    codigo, tamanho, cor, deposito, lote, qtde: string;
+begin
+ for i := 1 to Grid.RowCount - 1 do
+ begin
+  codigo   := Grid.Cells[0, i];
+  cor      := Grid.Cells[1, i];
+  tamanho  := Grid.Cells[2, i];
+  lote     := Grid.Cells[3, i];
+  deposito := Grid.Cells[4, i];
+  qtde     := Grid.Cells[5, i];
+
+  with MovSaidaDM.SelectQuery do
+  begin
+   SQL.Clear;
+   SQL.Text :=
+     'SELECT * FROM estoque WHERE codigo=:codigo AND tamanho=:tamanho AND cor=:cor AND deposito=:deposito AND lote=:lote';
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('tamanho').AsString := tamanho;
+   ParamByName('cor').AsString := cor;
+   ParamByName('deposito').AsString := deposito;
+   ParamByName('lote').AsString := lote;
+   Open;
+
+   if IsEmpty then begin
+    ShowMessage('Não encontrado no Estoque!');
+   end;
+  end;
+
+  with MovSaidaDM.UpdateQuery do
+  begin
+   SQL.Clear;
+   SQL.Text :=
+    'UPDATE estoque SET qtde = qtde - :qtde ' +
+    'WHERE codigo = :codigo AND tamanho = :tamanho AND cor = :cor AND deposito = :deposito AND lote = :lote';
+   ParamByName('qtde').AsFloat := StrToFloat(qtde);
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('tamanho').AsString := tamanho;
+   ParamByName('cor').AsString := cor;
+   ParamByName('deposito').AsString := deposito;
+   ParamByName('lote').AsString := lote;
+  end;
+
+  with MovSaidaDM.InsertQuery do
+  begin
+   SQL.Clear;
+   SQL.Text :=
+    'insert into prodmov (codigo, cor, tamanho, deposito, lote, qtde, data, tipo, usuario, emp_id) ' +
+    'values ' +
+    '(:codigo, :cor, :tamanho, :deposito, :lote, :qtde, :data, :tipo, :usuario, :emp_id)';
+   ParamByName('qtde').AsFloat := StrToFloat(qtde);
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('tamanho').AsString := tamanho;
+   ParamByName('cor').AsString := cor;
+   ParamByName('deposito').AsString := deposito;
+   ParamByName('lote').AsString := lote;
+   ParamByName('tipo').AsString := 'S';
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Text :=
+    'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+   ParamByName('descricao').AsString :=
+    'Realizou uma saída manual no código ' + codigo + ' na cor ' + cor + ' no tamanho ' + tamanho + ' no depósito ' + deposito + ' no lote ' + lote +
+    ' em ' + qtde + ' quantidade(s)';
+   ParamByName('tela').AsString := 'MovSaida';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+  end;
+
+  try
+   MovSaidaDM.UpdateQuery.ExecSQL;
+   LogsDM.InserirLog.ExecSQL;
+   MovSaidaDM.InsertQuery.ExecSQL;
+   ShowMessage('Gravado com sucesso!');
+   EdtCodigoProduto.clear;
+   EdtCodigoCor.clear;
+   EdtCodigoTamanho.clear;
+   EdtLote.clear;
+   EdtCodigoDeposito.clear;
+   EdtQtde.clear;
+
+   BtnIncluir.visible := True;
+
+   BtnGravar.Visible := False;
+   BtnDesistir.Visible := False;
+   BtnIncluirGrid.Visible := False;
+
+   EdtCodigoProduto.Enabled := False;
+   EdtCodigoDeposito.Enabled := False;
+   EdtCodigoTamanho.Enabled := False;
+   EdtCodigoCor.Enabled := False;
+   EdtQtde.Enabled := False;
+   EdtLote.Enabled := False;
+
+   SBProduto.Enabled := False;
+   SBCor.Enabled := False;
+   SBTamanho.Enabled := False;
+   SBDeposito.Enabled := False;
+
+   Grid.RowCount := 1
+   except
+   ShowMessage('Erro na gravação');
+  end;
+ end;
+end;
+
+procedure TMovSaida.BtnDesistirClick(Sender: TObject);
+begin
+ EdtCodigoProduto.clear;
+ EdtCodigoCor.clear;
+ EdtCodigoTamanho.clear;
+ EdtLote.clear;
+ EdtCodigoDeposito.clear;
+ EdtQtde.clear;
+
+ BtnIncluir.visible := True;
+
+ BtnGravar.Visible := False;
+ BtnDesistir.Visible := False;
+ BtnIncluirGrid.Visible := False;
+
+ EdtCodigoProduto.Enabled := False;
+ EdtCodigoDeposito.Enabled := False;
+ EdtCodigoTamanho.Enabled := False;
+ EdtCodigoCor.Enabled := False;
+ EdtQtde.Enabled := False;
+ EdtLote.Enabled := False;
+
+ SBProduto.Enabled := False;
+ SBCor.Enabled := False;
+ SBTamanho.Enabled := False;
+ SBDeposito.Enabled := False;
+
+ Grid.RowCount := 1
+end;
+
+procedure TMovSaida.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+
+procedure TMovSaida.EdtCodigoCorChange(Sender: TObject);
+var codigo: string;
+begin
+ with CadCorDM.ConsultarCor do
+ begin
+  codigo := EdtCodigoCor.Text;
+  SQL.Clear;
+  SQL.Text :=
+   'select * from cadcor where codigo = :codigo';
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  EdtDescricaoCor.Text := FieldByName('descricao').AsString;
+ end;
+end;
+
+procedure TMovSaida.EdtCodigoDepositoChange(Sender: TObject);
+var codigo: string;
+begin
+ with CadDepositoDM.ConsultarDeposito do
+ begin
+  codigo := EdtCodigoDeposito.Text;
+  SQL.Clear;
+  SQL.Text :=
+   'select * from caddeposito where codigo = :codigo';
+  Parambyname('codigo').AsString := codigo;
+  Open;
+
+  EdtDescricaoDeposito.Text := FieldByName('descricao').AsString;
+ end;
+end;
+
+procedure TMovSaida.EdtCodigoProdutoChange(Sender: TObject);
+var codigo: string;
+begin
+ codigo := EdtCodigoProduto.Text;
+ with CadProdutoDM.ConsultarProduto do
+ begin
+  SQL.Clear;
+  SQL.Text :=
+   'select * from cadproduto where codigo = :codigo';
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  EdtDescricaoProduto.Text := FieldByName('descricao').AsString;
+ end;
+end;
+
+procedure TMovSaida.EdtCodigoTamanhoChange(Sender: TObject);
+var codigo: string;
+begin
+ with CadTamanhoDM.ConsultarTamanho do
+ begin
+  codigo := EdtCodigoTamanho.Text;
+  SQL.Clear;
+  SQL.Text :=
+   'select * from cadtamanho where codigo = :codigo';
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  EdtDescricaoTamanho.Text := FieldByName('descricao').AsString;
+ end;
+end;
+
+procedure TMovSaida.SBCorClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+ with CadCorDM.ConsultarCor do
+ begin
+  SQL.Clear;
+  SQL.Text :=
+   'select * from cadcor where ativo = :ativo';
+  Parambyname('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarCor, ConsultarCor);
+ codigo := ConsultarCor.SelecionarCor;
+ if codigo <> '' then begin
+  descricao := ConsultarCor.Descricao;
+  EdtCodigoCor.Text := codigo;
+  EdtDescricaoCor.Text := descricao;
+ end;
+end;
+
+procedure TMovSaida.SBDepositoClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+ with CadDepositoDM.ConsultarDeposito do
+ begin
+  SQL.Clear;
+  SQL.Text :=
+   'select * from caddeposito where ativo = :ativo';
+  Parambyname('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
+ codigo := ConsultarDeposito.SelecionarDeposito;
+ if codigo <> '' then begin
+  descricao := ConsultarDeposito.Descricao;
+  EdtCodigoDeposito.Text := codigo;
+  EdtDescricaoDeposito.Text := descricao;
+ end;
+end;
+
+procedure TMovSaida.SBProdutoClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+ with CadProdutoDM.ConsultarProduto do
+ begin
+  SQL.Clear;
+  SQL.Text :=
+  'select * from cadproduto where ativo = :ativo';
+  Parambyname('ativo').AsString := 'S';
+  Open;
+ end;
+
+  Application.CreateForm(TConsultarProduto, ConsultarProduto);
+  codigo := ConsultarProduto.SelecionarProduto;
+
+  if codigo <> '' then begin
+   EdtCodigoProduto.text := codigo;
+   descricao := ConsultarProduto.Descricao;
+   EdtDescricaoProduto.Text := descricao;
+  end;
+end;
+
+procedure TMovSaida.SBTamanhoClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+ with CadTamanhoDM.ConsultarTamanho do
+ begin
+  SQL.Clear;
+  SQL.Text :=
+   'select * from cadtamanho where ativo = :ativo';
+  Parambyname('ativo').AsString := 'S';
+  Open;
+ end;
+
+ Application.CreateForm(TConsultarTamanho, ConsultarTamanho);
+ codigo := ConsultarTamanho.SelecionarTamanho;
+ if codigo <> '' then begin
+  EdtCodigoTamanho.Text := codigo;
+  descricao := ConsultarTamanho.Descricao;
+  EdtDescricaoTamanho.Text := descricao;
+ end;
+end;
+end.

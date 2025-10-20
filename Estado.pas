@@ -131,94 +131,107 @@ procedure TCadEstado.btnGravarIncluirClick(Sender: TObject);
 var codigo, estado, pais, ativo, sigla: string;
     I: integer;
 begin
-  codigo := EdtCodigo.Text;
-  Estado := EdtEstado.Text;
-  Pais := EdtPaisSigla.Text;
-  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
-  sigla := EdtSigla.Text;
+ codigo := EdtCodigo.Text;
+ Estado := EdtEstado.Text;
+ Pais := EdtPaisSigla.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+ sigla := EdtSigla.Text;
 
-  if EdtCodigo.Text = '' then begin
-   ShowMessage('Código não pode ser vazio!');
-   Abort;
-  end;
-
-  if EdtEstado.Text = '' then begin
-   ShowMessage('Estado não pode ser vazio!');
-   Abort;
-  end;
-
-  if EdtPais.Text = '' then begin
-   ShowMessage('País não pode ser vazio!');
-   Abort;
-  end;
-
-  if EdtSigla.Text = '' then begin
-   ShowMessage('Sigla não pode ser vazio!');
-   Abort;
-  end;
-
-  CadEstadoDM.SelectQuery.Close;
-  CadEstadoDM.SelectQuery.SQL.Text :=
-  'select * from cadestado where codigo = :codigo';
-  CadEstadoDM.SelectQuery.ParamByName('codigo').AsString := codigo;
-  CadEstadoDM.SelectQuery.Open;
-
-  if not CadEstadoDM.SelectQuery.IsEmpty then begin
-   ShowMessage('Estado já cadastrado!')
-  end
-   else begin
-    CadEstadoDM.InsertQuery.Close;
-    CadEstadoDM.InsertQuery.SQL.Text :=
-    'insert into cadestado (codigo, estado, pais, sigla, ativo) values (:codigo, :estado, :pais, :sigla, :ativo)';
-    CadEstadoDM.InsertQuery.ParamByName('codigo').AsString := codigo;
-    CadEstadoDM.InsertQuery.ParamByName('estado').AsString := estado;
-    CadEstadoDM.InsertQuery.ParamByName('pais').AsString := pais;
-    CadEstadoDM.InsertQuery.ParamByName('sigla').AsString := sigla;
-    CadEstadoDM.InsertQuery.ParamByName('ativo').AsString := ativo;
-
-    LogsDM.InserirLog.SQL.Clear;
-    LogsDM.InserirLog.SQL.Text :=
-    'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
-    LogsDM.InserirLog.ParamByName('descricao').AsString :=
-    'Inseriu o Estado ' + Estado + ' na sigla ' + sigla + ' no país ' + pais + ' no código ' + codigo + ' e ativo ' + ativo;
-    LogsDM.InserirLog.ParamByName('tela').AsString := 'CadEstado';
-    LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
-    LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
-    LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-
-    try
-     CadEstadoDM.InsertQuery.ExecSQL;
-     LogsDM.InserirLog.ExecSQL;
-     ShowMessage('Gravado com sucesso');
-     EdtCodigo.Enabled := False;
-     CBAtivo.Enabled := False;
-     EdtEstado.Enabled := False;
-     EdtPais.Enabled := False;
-     EdtPaisSigla.Enabled := False;
-     EdtSigla.Enabled := False;
-     Grid.Enabled := True;
-
-     btnIncluir.Visible := True;
-     btnExcluir.Visible := True;
-     btnAlterar.Visible := True;
-     SBPais.Enabled := False;
-     btnGravarAlterar.Visible := False;
-     btnGravarIncluir.Visible := False;
-     btnDesistir.Visible := False;
-
-     with CadEstadoDM.qryConsultarEstado do
- begin
-  SQL.Clear;
-  SQL.Add('select * from cadestado');
-  Open;
+ if codigo = '' then begin
+  ShowMessage('Código não pode ser vazio!');
+  Abort;
  end;
 
-     for i := 0 to Grid.Columns.Count - 1 do
-     Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
-     except
-     ShowMessage('Erro na gravação, operação abortada!');
-    end;
-   end;
+ if Estado = '' then begin
+  ShowMessage('Estado não pode ser vazio!');
+  Abort;
+ end;
+
+ if Pais = '' then begin
+  ShowMessage('País não pode ser vazio!');
+  Abort;
+ end;
+
+ if Sigla = '' then begin
+  ShowMessage('Sigla não pode ser vazio!');
+  Abort;
+ end;
+
+ with CadEstadoDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadestado where codigo = :codigo');
+  ParamByName('codigo').AsString := codigo;
+  Open;
+
+  if not IsEmpty then begin
+   ShowMessage('Estado já cadastrado!');
+   Abort;
+  end;
+ end;
+
+ CadEstadoDM.Conexão.StartTransaction;
+ try
+  with CadEstadoDM.qryInsert do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into cadestado (codigo, estado, pais, sigla, ativo)');
+   SQL.Add('values');
+   SQL.Add('(:codigo, :estado, :pais, :sigla, :ativo)');
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('estado').AsString := estado;
+   ParamByName('pais').AsString := pais;
+   ParamByName('sigla').AsString := sigla;
+   ParamByName('ativo').AsString := ativo;
+   ExecSQL
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Inseriu o Estado ' + Estado + ' na sigla ' + sigla + ' no país ' + pais + ' no código ' + codigo + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadEstado';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadEstadoDM.Conexão.Commit;
+  ShowMessage('Gravado com sucesso');
+  EdtCodigo.Enabled := False;
+  CBAtivo.Enabled := False;
+  EdtEstado.Enabled := False;
+  EdtPais.Enabled := False;
+  EdtPaisSigla.Enabled := False;
+  EdtSigla.Enabled := False;
+  Grid.Enabled := True;
+
+  btnIncluir.Visible := True;
+  btnExcluir.Visible := True;
+  btnAlterar.Visible := True;
+  SBPais.Enabled := False;
+  btnGravarAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  with CadEstadoDM.qryConsultarEstado do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadestado');
+   Open;
+  end;
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+  except
+  ShowMessage('Erro na gravação, operação abortada!');
+  CadEstadoDM.Conexão.Rollback;
+ end;
 end;
 
 procedure TCadEstado.btnAlterarClick(Sender: TObject);
@@ -230,13 +243,12 @@ begin
   SQL.Add('select * from cadestado');
   Open;
  end;
-
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
  if EdtCodigo.Text = '' then begin
- ShowMessage('Nenhum estado selecionado!');
- Abort;
+  ShowMessage('Nenhum estado selecionado!');
+  Abort;
  end;
 
  CBAtivo.Enabled := True;
@@ -265,75 +277,85 @@ begin
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
  sigla := EdtSigla.Text;
 
- if EdtCodigo.Text = '' then begin
+ if Codigo = '' then begin
   ShowMessage('Código não pode ser vazio!');
   Abort;
  end;
 
- if EdtEstado.Text = '' then begin
+ if Estado = '' then begin
   ShowMessage('Estado não pode ser vazio!');
   Abort;
  end;
 
- if EdtPais.Text = '' then begin
+ if Pais = '' then begin
   ShowMessage('País não pode ser vazio!');
   Abort;
  end;
 
- if EdtSigla.Text = '' then begin
- ShowMessage('Sigla não pode ser vazio!');
- Abort;
+ if Sigla = '' then begin
+  ShowMessage('Sigla não pode ser vazio!');
+  Abort;
  end;
 
- CadEstadoDM.UpdateQuery.Close;
- CadEstadoDM.UpdateQuery.SQL.Text :=
- 'update cadestado set estado = :estado, sigla = :sigla, pais = :pais, ativo = :ativo where codigo = :codigo';
- CadEstadoDM.UpdateQuery.ParamByName('codigo').AsString := codigo;
- CadEstadoDM.UpdateQuery.ParamByName('estado').AsString := estado;
- CadEstadoDM.UpdateQuery.ParamByName('pais').AsString := pais;
- CadEstadoDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
- CadEstadoDM.UpdateQuery.ParamByName('sigla').AsString := sigla;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
- LogsDM.InserirLog.ParamByName('descricao').AsString :=
- 'Alterou o Estado ' + Estado + ' na sigla ' + sigla + ' no país ' + pais + ' no código ' + codigo + ' e ativo ' + ativo;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadEstado';
- LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  try
-   CadEstadoDM.UpdateQuery.ExecSQL;
-   LogsDM.InserirLog.ExecSQL;
-   ShowMessage('Alterado com sucesso!');
-   EdtCodigo.Enabled := False;
-   CBAtivo.Enabled := False;
-   EdtEstado.Enabled := False;
-   EdtPaisSigla.Enabled := False;
-   EdtSigla.Enabled := False;
-   Grid.Enabled := True;
-
-   btnIncluir.Visible := True;
-   btnExcluir.Visible := True;
-   btnAlterar.Visible := True;
-   SBPais.Enabled := False;
-   btnGravarAlterar.Visible := False;
-   btnGravarIncluir.Visible := False;
-   btnDesistir.Visible := False;
-
-   with CadEstadoDM.qryConsultarEstado do
- begin
-  SQL.Clear;
-  SQL.Add('select * from cadestado');
-  Open;
- end;
-
-   for i := 0 to Grid.Columns.Count - 1 do
-   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
-   except
-    ShowMessage('Erro na gravação, operação abortada!');
+ CadEstadoDM.Conexão.StartTransaction;
+ try
+  with CadEstadoDM.qryUpdate do
+  begin
+   SQL.Clear;
+   SQL.Add('update cadestado set estado = :estado, sigla = :sigla, pais = :pais, ativo = :ativo where codigo = :codigo');
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('estado').AsString := estado;
+   ParamByName('pais').AsString := pais;
+   ParamByName('ativo').AsString := ativo;
+   ParamByName('sigla').AsString := sigla;
+   ExecSQL;
   end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Alterou o Estado ' + Estado + ' na sigla ' + sigla + ' no país ' + pais + ' no código ' + codigo + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadEstado';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadEstadoDM.Conexão.Commit;
+  ShowMessage('Alterado com sucesso!');
+  EdtCodigo.Enabled := False;
+  CBAtivo.Enabled := False;
+  EdtEstado.Enabled := False;
+  EdtPaisSigla.Enabled := False;
+  EdtSigla.Enabled := False;
+  Grid.Enabled := True;
+
+  btnIncluir.Visible := True;
+  btnExcluir.Visible := True;
+  btnAlterar.Visible := True;
+  SBPais.Enabled := False;
+  btnGravarAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  with CadEstadoDM.qryConsultarEstado do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadestado');
+   Open;
+  end;
+
+  for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+  except
+  CadEstadoDM.Conexão.Rollback;
+  ShowMessage('Erro na gravação, operação abortada!');
+ end;
 end;
 
 procedure TCadEstado.btnDesistirClick(Sender: TObject);
@@ -377,91 +399,99 @@ begin
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
  sigla := EdtSigla.Text;
 
- CadEstadoDM.SelectQuery.SQL.Clear;
- CadEstadoDM.SelectQuery.Close;
- CadEstadoDM.SelectQuery.SQL.Text :=
- 'select * from cadcidade where estado = :sigla';
- CadEstadoDM.SelectQuery.ParamByName('sigla').AsString := sigla;
- CadEstadoDM.SelectQuery.Open;
-
- if not CadEstadoDM.SelectQuery.IsEmpty then begin
-  ShowMessage('Estado está sendo usado no cadastro de Cidade! Favor verifique!');
-  Abort;
- end;
-
- CadEstadoDM.SelectQuery.SQL.Clear;
- CadEstadoDM.SelectQuery.Close;
- CadEstadoDM.SelectQuery.SQL.Text :=
- 'select * from cadcep where estado = :sigla';
- CadEstadoDM.SelectQuery.ParamByName('sigla').AsString := sigla;
- CadEstadoDM.SelectQuery.Open;
-
- if not CadEstadoDM.SelectQuery.IsEmpty then begin
-  ShowMessage('Estado está sendo usado no cadastro de CEP! Favor verifique!');
-  Abort;
- end;
-
- CadEstadoDM.SelectQuery.SQL.Clear;
- CadEstadoDM.SelectQuery.Close;
- CadEstadoDM.SelectQuery.SQL.Text :=
- 'select * from cadentidade where estado = :sigla';
- CadEstadoDM.SelectQuery.ParamByName('sigla').AsString := codigo;
-  CadEstadoDM.SelectQuery.Open;
-
- if not CadEstadoDM.SelectQuery.IsEmpty then begin
-  ShowMessage('Estado está sendo usado no cadastro de Entidade! Favor verifique!');
-  Abort;
- end;
-
- CadEstadoDM.DeleteQuery.SQL.Text :=
- 'delete from cadestado where codigo = :codigo';
- CadEstadoDM.DeleteQuery.ParamByName('codigo').AsString := codigo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
- LogsDM.InserirLog.ParamByName('descricao').AsString :=
- 'Deletou o Estado ' + Estado + ' na sigla ' + sigla + ' no país ' + pais + ' no código ' + codigo + ' e ativo ' + ativo;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadEstado';
- LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  try
-   CadEstadoDM.DeleteQuery.ExecSQL;
-   LogsDM.InserirLog.ExecSQL;
-   ShowMessage('Excluído com sucesso');
-   EdtCodigo.Enabled := False;
-   CBAtivo.Enabled := False;
-   EdtEstado.Enabled := False;
-   EdtPais.Enabled := False;
-   EdtSigla.Enabled := False;
-
-   btnIncluir.Visible := True;
-   btnExcluir.Visible := True;
-   btnAlterar.Visible := True;
-   SBPais.Enabled := False;
-   btnGravarAlterar.Visible := False;
-   btnGravarIncluir.Visible := False;
-   btnDesistir.Visible := False;
-
-   EdtCodigo.Clear;
-   EdtEstado.Clear;
-   EdtPais.Clear;
-   EdtPaisSigla.Clear;
-   EdtSigla.Clear;
-
-   with CadEstadoDM.qryConsultarEstado do
+ with CadEstadoDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadestado');
+  SQL.Add('select * from cadcidade where estado = :sigla');
+  ParamByName('sigla').AsString := sigla;
   Open;
+
+  if not IsEmpty then begin
+   ShowMessage('Estado está sendo usado no cadastro de Cidade! Favor verifique!');
+   Abort;
+  end;
+
+  SQL.Clear;
+  SQL.Add('select * from cadcep where estado = :sigla');
+  ParamByName('sigla').AsString := sigla;
+  Open;
+
+  if not IsEmpty then begin
+   ShowMessage('Estado está sendo usado no cadastro de CEP! Favor verifique!');
+   Abort;
+  end;
+
+  SQL.Clear;
+  SQL.Add('select * from cadentidade where estado = :sigla');
+  ParamByName('sigla').AsString := codigo;
+  Open;
+
+  if not IsEmpty then begin
+   ShowMessage('Estado está sendo usado no cadastro de Entidade! Favor verifique!');
+   Abort;
+  end;
  end;
 
-   for i := 0 to Grid.Columns.Count - 1 do
+ CadEstadoDM.Conexão.StartTransaction;
+ try
+  with CadEstadoDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadestado where codigo = :codigo');
+   ParamByName('codigo').AsString := codigo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   ParamByName('descricao').AsString :=
+   'Deletou o Estado ' + Estado + ' na sigla ' + sigla + ' no país ' + pais + ' no código ' + codigo + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadEstado';
+   LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadEstadoDM.Conexão.Commit;
+  ShowMessage('Excluído com sucesso');
+  EdtCodigo.Enabled := False;
+  CBAtivo.Enabled := False;
+  EdtEstado.Enabled := False;
+  EdtPais.Enabled := False;
+  EdtSigla.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnExcluir.Visible := True;
+  btnAlterar.Visible := True;
+  SBPais.Enabled := False;
+  btnGravarAlterar.Visible := False;
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  EdtCodigo.Clear;
+  EdtEstado.Clear;
+  EdtPais.Clear;
+  EdtPaisSigla.Clear;
+  EdtSigla.Clear;
+
+  with CadEstadoDM.qryConsultarEstado do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadestado');
+   Open;
+  end;
+
+  for i := 0 to Grid.Columns.Count - 1 do
    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
   except
   ShowMessage('Erro na gravação!');
-  end;
+  CadEstadoDM.Conexão.Rollback;
+ end;
 end;
 
 procedure TCadEstado.GridCellClick(Column: TColumn);

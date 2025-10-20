@@ -3,7 +3,7 @@
   Width = 640
   object Conexão: TFDConnection
     Params.Strings = (
-	  'server=192.168.1.23'
+      'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
@@ -28,16 +28,16 @@
     Left = 104
     Top = 80
   end
-  object ConsultarCSTICMS: TFDQuery
+  object qryConsultarCSTICMS: TFDQuery
     Connection = Conexão
     SQL.Strings = (
       '')
-    Left = 40
+    Left = 56
     Top = 136
   end
   object dsCSTICMS: TDataSource
-    DataSet = ConsultarCSTICMS
-    Left = 128
+    DataSet = qryConsultarCSTICMS
+    Left = 152
     Top = 136
   end
   object PGLink: TFDPhysPgDriverLink

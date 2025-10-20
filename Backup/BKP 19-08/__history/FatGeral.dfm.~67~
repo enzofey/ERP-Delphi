@@ -1,0 +1,496 @@
+﻿object FatGeralForm: TFatGeralForm
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'Geral'
+  ClientHeight = 966
+  ClientWidth = 1908
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  OnShow = FormShow
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1908
+    Height = 966
+    Align = alClient
+    Locked = True
+    TabOrder = 0
+    object lblCliente: TLabel
+      Left = 24
+      Top = 24
+      Width = 40
+      Height = 15
+      Caption = 'Cliente:'
+    end
+    object lblSerie: TLabel
+      Left = 433
+      Top = 24
+      Width = 28
+      Height = 15
+      Caption = 'S'#233'rie:'
+    end
+    object lblNatureza: TLabel
+      Left = 24
+      Top = 64
+      Width = 50
+      Height = 15
+      Caption = 'Natureza:'
+    end
+    object lbldtEmissão: TLabel
+      Left = 24
+      Top = 104
+      Width = 89
+      Height = 15
+      Caption = 'Data de Emiss'#227'o:'
+    end
+    object lbldtSaida: TLabel
+      Left = 272
+      Top = 104
+      Width = 74
+      Height = 15
+      Caption = 'Data de Sa'#237'da:'
+    end
+    object SBNatureza: TSpeedButton
+      Left = 169
+      Top = 61
+      Width = 23
+      Height = 23
+      Enabled = False
+      OnClick = SBNaturezaClick
+    end
+    object lblValFrete: TLabel
+      Left = 26
+      Top = 144
+      Width = 50
+      Height = 15
+      Caption = 'Val. Frete:'
+    end
+    object lblDesconto: TLabel
+      Left = 24
+      Top = 184
+      Width = 52
+      Height = 15
+      Caption = 'Val. Desc.:'
+    end
+    object SBEntidade: TSpeedButton
+      Left = 399
+      Top = 21
+      Width = 23
+      Height = 23
+      Enabled = False
+      OnClick = SBEntidadeClick
+    end
+    object lblModFrete: TLabel
+      Left = 186
+      Top = 144
+      Width = 29
+      Height = 15
+      Caption = 'Frete:'
+    end
+    object lblPresenca: TLabel
+      Left = 186
+      Top = 64
+      Width = 50
+      Height = 15
+      Caption = 'Presen'#231'a:'
+    end
+    object lblPeso: TLabel
+      Left = 514
+      Top = 24
+      Width = 41
+      Height = 15
+      Caption = 'Peso B.:'
+    end
+    object lblPesoL: TLabel
+      Left = 514
+      Top = 64
+      Width = 40
+      Height = 15
+      Caption = 'Peso L.:'
+    end
+    object lblEspecie: TLabel
+      Left = 514
+      Top = 104
+      Width = 42
+      Height = 15
+      Caption = 'Esp'#233'cie:'
+    end
+    object RBDadosAdicionais: TRadioGroup
+      Left = 23
+      Top = 213
+      Width = 346
+      Height = 143
+      Caption = 'Dados Adicionais:'
+      TabOrder = 14
+    end
+    object EdtEntidade: TEdit
+      Left = 80
+      Top = 21
+      Width = 313
+      Height = 23
+      Enabled = False
+      TabOrder = 0
+    end
+    object DTEmissao: TDateTimePicker
+      Left = 119
+      Top = 101
+      Width = 147
+      Height = 23
+      Date = 45870.000000000000000000
+      Time = 45870.000000000000000000
+      Enabled = False
+      Kind = dtkDateTime
+      TabOrder = 1
+    end
+    object DTSaida: TDateTimePicker
+      Left = 352
+      Top = 101
+      Width = 138
+      Height = 23
+      Date = 45870.000000000000000000
+      Time = 45870.000000000000000000
+      Enabled = False
+      Kind = dtkDateTime
+      TabOrder = 2
+    end
+    object EdtSerie: TEdit
+      Left = 467
+      Top = 21
+      Width = 23
+      Height = 23
+      Enabled = False
+      TabOrder = 3
+    end
+    object EdtNatureza: TEdit
+      Left = 80
+      Top = 61
+      Width = 83
+      Height = 23
+      Enabled = False
+      ReadOnly = True
+      TabOrder = 4
+    end
+    object btnIncluir: TButton
+      Left = 24
+      Top = 888
+      Width = 145
+      Height = 57
+      Caption = 'Incluir'
+      TabOrder = 5
+      OnClick = btnIncluirClick
+    end
+    object btnGravar: TButton
+      Left = 24
+      Top = 888
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 6
+      Visible = False
+      OnClick = btnGravarClick
+    end
+    object btnDesistir: TButton
+      Left = 175
+      Top = 888
+      Width = 145
+      Height = 57
+      Caption = 'Desistir'
+      TabOrder = 7
+      Visible = False
+      OnClick = btnDesistirClick
+    end
+    object btnFechar: TButton
+      Left = 1736
+      Top = 888
+      Width = 145
+      Height = 57
+      Caption = 'Fechar'
+      TabOrder = 8
+      OnClick = btnFecharClick
+    end
+    object EdtValFrete: TEdit
+      Left = 80
+      Top = 141
+      Width = 83
+      Height = 23
+      Enabled = False
+      TabOrder = 9
+      OnExit = EdtValFreteExit
+    end
+    object EdtValDesconto: TEdit
+      Left = 80
+      Top = 181
+      Width = 83
+      Height = 23
+      Enabled = False
+      TabOrder = 10
+      OnExit = EdtValDescontoExit
+    end
+    object NIGrid: TStringGrid
+      Left = 24
+      Top = 409
+      Width = 1857
+      Height = 457
+      ColCount = 31
+      Enabled = False
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing, goFixedRowDefAlign]
+      TabOrder = 11
+      OnKeyDown = NIGridKeyDown
+    end
+    object Totais: TGroupBox
+      Left = 608
+      Top = 181
+      Width = 601
+      Height = 212
+      Caption = 'Totais'
+      TabOrder = 12
+      object lblValor_Total: TLabel
+        Left = 16
+        Top = 24
+        Width = 57
+        Height = 15
+        Caption = 'Valor Total:'
+      end
+      object lblValor_base_icms: TLabel
+        Left = 16
+        Top = 61
+        Width = 58
+        Height = 15
+        Caption = 'Base ICMS:'
+      end
+      object lblValor_ICMS: TLabel
+        Left = 16
+        Top = 96
+        Width = 60
+        Height = 15
+        Caption = 'Valor ICMS:'
+      end
+      object lblValor_Base_IPI: TLabel
+        Left = 16
+        Top = 134
+        Width = 43
+        Height = 15
+        Caption = 'Base IPI:'
+      end
+      object lblValor_IPI: TLabel
+        Left = 16
+        Top = 172
+        Width = 45
+        Height = 15
+        Caption = 'Valor IPI:'
+      end
+      object lblValor_Base_PIS: TLabel
+        Left = 206
+        Top = 24
+        Width = 46
+        Height = 15
+        Caption = 'Base PIS:'
+      end
+      object lblValor_PIS: TLabel
+        Left = 206
+        Top = 61
+        Width = 48
+        Height = 15
+        Caption = 'Valor PIS:'
+      end
+      object lblValor_Base_Cofins: TLabel
+        Left = 206
+        Top = 96
+        Width = 71
+        Height = 15
+        Caption = 'Base COFINS:'
+      end
+      object lblValor_COFINS: TLabel
+        Left = 206
+        Top = 136
+        Width = 73
+        Height = 15
+        Caption = 'Valor COFINS:'
+      end
+      object lblValor_Produtos: TLabel
+        Left = 206
+        Top = 172
+        Width = 80
+        Height = 15
+        Caption = 'Valor Produtos:'
+      end
+      object lblQuantidade: TLabel
+        Left = 391
+        Top = 24
+        Width = 57
+        Height = 15
+        Caption = 'Qtde Total:'
+      end
+      object edtValor_total: TEdit
+        Left = 79
+        Top = 21
+        Width = 121
+        Height = 23
+        ReadOnly = True
+        TabOrder = 0
+      end
+      object EdtValor_Base_ICMS: TEdit
+        Left = 79
+        Top = 58
+        Width = 121
+        Height = 23
+        ReadOnly = True
+        TabOrder = 1
+      end
+      object edtValor_ICMS: TEdit
+        Left = 79
+        Top = 93
+        Width = 121
+        Height = 23
+        ReadOnly = True
+        TabOrder = 2
+      end
+      object edtValor_Base_IPI: TEdit
+        Left = 79
+        Top = 131
+        Width = 121
+        Height = 23
+        ReadOnly = True
+        TabOrder = 3
+      end
+      object EdtValor_IPI: TEdit
+        Left = 79
+        Top = 169
+        Width = 121
+        Height = 23
+        ReadOnly = True
+        TabOrder = 4
+      end
+      object EdtValor_base_PIS: TEdit
+        Left = 258
+        Top = 21
+        Width = 127
+        Height = 23
+        ReadOnly = True
+        TabOrder = 5
+      end
+      object EdtValor_PIS: TEdit
+        Left = 258
+        Top = 58
+        Width = 127
+        Height = 23
+        ReadOnly = True
+        TabOrder = 6
+      end
+      object edtvalor_base_cofins: TEdit
+        Left = 281
+        Top = 93
+        Width = 104
+        Height = 23
+        ReadOnly = True
+        TabOrder = 7
+      end
+      object EdtValor_COFINS: TEdit
+        Left = 281
+        Top = 131
+        Width = 104
+        Height = 23
+        ReadOnly = True
+        TabOrder = 8
+      end
+      object EdtValor_Produtos: TEdit
+        Left = 292
+        Top = 169
+        Width = 93
+        Height = 23
+        ReadOnly = True
+        TabOrder = 9
+      end
+      object EdtQuantidade: TEdit
+        Left = 454
+        Top = 21
+        Width = 127
+        Height = 23
+        ReadOnly = True
+        TabOrder = 10
+      end
+    end
+    object EdtDadosAdicionais: TEdit
+      Left = 33
+      Top = 232
+      Width = 325
+      Height = 114
+      Enabled = False
+      TabOrder = 13
+      OnExit = EdtValDescontoExit
+    end
+    object EdtPresenca: TComboBox
+      Left = 242
+      Top = 61
+      Width = 137
+      Height = 23
+      Style = csDropDownList
+      Enabled = False
+      TabOrder = 15
+      Items.Strings = (
+        '0 - N'#227'o se aplica (por exemplo, emiss'#227'o de NF-e de ajuste)'
+        '1 - Opera'#231#227'o presencial'
+        '2 - Opera'#231#227'o n'#227'o presencial, pela internet'
+        '3 - Opera'#231#227'o n'#227'o presencial, teleatendimento'
+        '5 - Opera'#231#227'o presencial, fora do estabelecimento'
+        '9 - Opera'#231#227'o n'#227'o presencial, outros')
+    end
+    object CBmodFrete: TComboBox
+      Left = 221
+      Top = 141
+      Width = 137
+      Height = 23
+      Style = csDropDownList
+      Enabled = False
+      TabOrder = 16
+      Items.Strings = (
+        '0 - Contrata'#231#227'o do frete por conta do remetente (CIF)'
+        
+          '1 - Contrata'#231#227'o do frete por conta do destinat'#225'rio/remetente (FO' +
+          'B)'
+        '2 - Contrata'#231#227'o do frete por conta de terceiros'
+        '3 - Sem frete'
+        
+          '4 - Contrata'#231#227'o do transporte por conta do remetente (para venda' +
+          ' '#224' ordem/entrega futura)'
+        '9 - Sem ocorr'#234'ncia de transporte')
+    end
+    object EdtEspecie: TEdit
+      Left = 562
+      Top = 101
+      Width = 107
+      Height = 23
+      Enabled = False
+      TabOrder = 17
+      OnExit = EdtValFreteExit
+    end
+    object EdtPesoL: TEdit
+      Left = 562
+      Top = 61
+      Width = 107
+      Height = 23
+      Enabled = False
+      TabOrder = 18
+      OnExit = EdtValFreteExit
+    end
+    object EdtPesoB: TEdit
+      Left = 561
+      Top = 21
+      Width = 107
+      Height = 23
+      Enabled = False
+      TabOrder = 19
+      OnExit = EdtValFreteExit
+    end
+  end
+end

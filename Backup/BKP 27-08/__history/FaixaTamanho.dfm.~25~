@@ -1,0 +1,160 @@
+object CadFaixaTamanho: TCadFaixaTamanho
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'CadFaixaTamanho'
+  ClientHeight = 691
+  ClientWidth = 1116
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  OnShow = FormShow
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1116
+    Height = 691
+    Align = alClient
+    TabOrder = 0
+    ExplicitLeft = 352
+    ExplicitTop = 352
+    ExplicitWidth = 185
+    ExplicitHeight = 41
+    object lblCodigo: TLabel
+      Left = 32
+      Top = 27
+      Width = 42
+      Height = 15
+      Caption = 'C'#243'digo:'
+    end
+    object lblDescricao: TLabel
+      Left = 32
+      Top = 59
+      Width = 54
+      Height = 15
+      Caption = 'Descri'#231#227'o:'
+    end
+    object lblAtivo: TLabel
+      Left = 32
+      Top = 91
+      Width = 31
+      Height = 15
+      Caption = 'Ativo:'
+    end
+    object edtCodigo: TEdit
+      Left = 92
+      Top = 24
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 0
+    end
+    object edtDescricao: TEdit
+      Left = 92
+      Top = 53
+      Width = 121
+      Height = 23
+      Enabled = False
+      TabOrder = 1
+    end
+    object CBAtivo: TCheckBox
+      Left = 69
+      Top = 91
+      Width = 20
+      Height = 17
+      Enabled = False
+      TabOrder = 2
+    end
+    object GridTamanhos: TDBGrid
+      Left = 232
+      Top = 24
+      Width = 697
+      Height = 257
+      DataSource = CadFaixaTamanhoDataModule.dsTamanhos
+      Enabled = False
+      TabOrder = 3
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -12
+      TitleFont.Name = 'Segoe UI'
+      TitleFont.Style = []
+      OnCellClick = GridTamanhosCellClick
+    end
+    object btnIncluir: TButton
+      Left = 32
+      Top = 608
+      Width = 145
+      Height = 57
+      Caption = 'Incluir'
+      TabOrder = 4
+      OnClick = btnIncluirClick
+    end
+    object btnGravarAlterar: TButton
+      Left = 32
+      Top = 608
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 5
+      Visible = False
+      OnClick = btnGravarAlterarClick
+    end
+    object btnGravarIncluir: TButton
+      Left = 32
+      Top = 608
+      Width = 145
+      Height = 57
+      Caption = 'Gravar'
+      TabOrder = 6
+      Visible = False
+      OnClick = btnGravarIncluirClick
+    end
+    object btnDesistir: TButton
+      Left = 183
+      Top = 608
+      Width = 145
+      Height = 57
+      Caption = 'Desistir'
+      TabOrder = 7
+      OnClick = btnDesistirClick
+    end
+    object btnAlterar: TButton
+      Left = 183
+      Top = 608
+      Width = 145
+      Height = 57
+      Caption = 'Alterar'
+      TabOrder = 8
+      OnClick = btnAlterarClick
+    end
+    object btnFechar: TButton
+      Left = 944
+      Top = 608
+      Width = 145
+      Height = 57
+      Caption = 'Fechar'
+      TabOrder = 9
+      OnClick = btnFecharClick
+    end
+    object GridConsultarFaixa: TDBGrid
+      Left = 232
+      Top = 304
+      Width = 697
+      Height = 257
+      DataSource = CadFaixaTamanhoDataModule.dsConsultarFaixa
+      TabOrder = 10
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -12
+      TitleFont.Name = 'Segoe UI'
+      TitleFont.Style = []
+      OnCellClick = GridConsultarFaixaCellClick
+    end
+  end
+end

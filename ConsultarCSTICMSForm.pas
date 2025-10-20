@@ -51,8 +51,8 @@ end;
 
 procedure TConsultarCSTICMS.btnSelecionarCSTICMSClick(Sender: TObject);
 begin
- IcmsCST := CadCSTICMSDM.ConsultarCSTICMS.FieldByName('CST').AsString;
- IcmsCSTDescricao := CadCSTICMSDM.ConsultarCSTICMS.FieldByName('Descricao').AsString;
+ IcmsCST := CadCSTICMSDM.qryConsultarCSTICMS.FieldByName('CST').AsString;
+ IcmsCSTDescricao := CadCSTICMSDM.qryConsultarCSTICMS.FieldByName('Descricao').AsString;
  close;
 end;
 end.

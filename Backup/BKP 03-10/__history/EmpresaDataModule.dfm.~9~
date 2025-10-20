@@ -1,0 +1,27 @@
+﻿object CadEmpresaDataModule: TCadEmpresaDataModule
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Params.Strings = (
+      'Database=estoque'
+      'User_Name=root'
+      'Server=127.0.0.1'
+      'DriverID=MySQL')
+    Connected = True
+    LoginPrompt = False
+    Left = 40
+    Top = 24
+  end
+  object InsertQuery: TFDQuery
+    Connection = Conexão
+    Left = 104
+    Top = 24
+  end
+  object CBEmpresa: TFDQuery
+    Connection = Conexão
+    SQL.Strings = (
+      'select EMP_ID from empresa')
+    Left = 104
+    Top = 88
+  end
+end

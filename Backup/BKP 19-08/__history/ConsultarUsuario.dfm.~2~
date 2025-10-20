@@ -1,0 +1,8 @@
+﻿object ConsultarUsuarioForm: TConsultarUsuarioForm
+  Height = 480
+  Width = 640
+  object Conexão: TFDConnection
+    Left = 48
+    Top = 32
+  end
+end

@@ -1,0 +1,316 @@
+unit ENQIPI;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.ComCtrls,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids,
+  ENQIPIDM,
+  Log, LogDM,
+  GlobalUnit;
+
+type
+  TCadENQIPI = class(TForm)
+    Panel1: TPanel;
+    lblCST: TLabel;
+    lblDescricao: TLabel;
+    btnAlterar: TButton;
+    btnDesistir: TButton;
+    BtnExcluir: TButton;
+    btnFechar: TButton;
+    btnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnIncluir: TButton;
+    EdtCST: TEdit;
+    EdtDescricao: TEdit;
+    Grid: TDBGrid;
+    lblAtivo: TLabel;
+    CBAtivo: TCheckBox;
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure BtnExcluirClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure GridCellClick(Column: TColumn);
+    procedure btnFecharClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadENQIPI: TCadENQIPI;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadENQIPI.btnIncluirClick(Sender: TObject);
+begin
+ CadENQIPIDM.ConsultarENQIPI.SQL.Clear;
+ CadENQIPIDM.ConsultarENQIPI.SQL.Text :=
+ 'select * from cadenqipi';
+ CadENQIPIDM.ConsultarENQIPI.Open;
+
+ EdtCST.Clear;
+ EdtDescricao.Clear;
+
+ EdtCST.Enabled := True;
+ EdtDescricao.Enabled := True;
+
+ CBAtivo.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnFechar.Visible := False;
+ Grid.Enabled := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+end;
+
+procedure TCadENQIPI.btnGravarIncluirClick(Sender: TObject);
+var CST, Descricao, ativo: string;
+begin
+  CST := EdtCST.Text;
+  Descricao := EdtDescricao.Text;
+  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+
+  if EdtCst.Text = '' then begin
+  ShowMessage('Código do Enquadramento do IPI não pode ser vazio!')
+  end
+  else begin
+
+  if EdtDescricao.Text = '' then begin
+  ShowMessage('Descrição não pode ser vazio!')
+  end
+  else begin
+
+  CadENQIPIDM.SelectQuery.Close;
+  CadENQIPIDM.SelectQuery.SQL.Clear;
+  CadENQIPIDM.SelectQuery.SQL.Text :=
+  'select * from cadENQIPI where CST = :CST';
+  CadENQIPIDM.SelectQuery.ParamByName('CST').AsString := CST;
+  CadENQIPIDM.SelectQuery.Open;
+
+  if not CadENQIPIDM.SelectQuery.IsEmpty then begin
+  ShowMessage('Enquadramento de IPI já cadastrado!');
+  end
+  else begin
+
+  CadENQIPIDM.InsertQuery.SQL.CLear;
+  CadENQIPIDM.InsertQuery.SQL.Text :=
+  'insert into cadENQIPI (CST, Descricao, ativo) values (:CST, :Descricao, :ativo)';
+  CadENQIPIDM.InsertQuery.ParamByName('CST').AsString := CST;
+  CadENQIPIDM.InsertQuery.ParamByName('Descricao').AsString := Descricao;
+  CadENQIPIDM.InsertQuery.ParamByName('ativo').AsString := ativo;
+
+  LogsDM.InserirLog.SQL.Clear;
+  LogsDM.InserirLog.SQL.Text :=
+  'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+  LogsDM.InserirLog.ParamByName('Descricao').AsString :=
+  'Inseriu o Enquadramento de IPI ' + CST + ' ' + Descricao;
+  LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadENQIPI';
+  try
+  LogsDM.InserirLog.ExecSQL;
+  CadENQIPIDM.InsertQuery.ExecSQL;
+  ShowMessage('Gravado com sucesso!');
+
+  CadENQIPIDM.ConsultarENQIPI.SQL.Clear;
+  CadENQIPIDM.ConsultarENQIPI.SQL.Text :=
+  'select * from cadenqipi';
+  CadENQIPIDM.ConsultarENQIPI.Open;
+
+  EdtCST.Enabled := False;
+  EdtDescricao.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnFechar.Visible := True;
+  Grid.Enabled := True;
+
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+  except
+  ShowMessage('Erro na inclusão!');
+  end;
+  end;
+end;
+end;
+end;
+
+procedure TCadENQIPI.btnAlterarClick(Sender: TObject);
+begin
+ if EdtCST.Text = '' then begin
+ ShowMessage('Nenhum Enquadramento de IPI selecionado!');
+ end
+ else begin
+
+ CadENQIPIDM.ConsultarENQIPI.SQL.Clear;
+ CadENQIPIDM.ConsultarENQIPI.SQL.Text :=
+ 'select * from cadenqipi';
+ CadENQIPIDM.ConsultarENQIPI.Open;
+
+ EdtDescricao.Enabled := True;
+ CBAtivo.Enabled := True;
+
+ btnIncluir.Visible := False;
+ btnAlterar.Visible := False;
+ btnExcluir.Visible := False;
+ btnFechar.Visible := False;
+ Grid.Enabled := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+end;
+end;
+
+procedure TCadENQIPI.btnGravarAlterarClick(Sender: TObject);
+var CST, Descricao, ativo: string;
+begin
+  CST := EdtCST.Text;
+  Descricao := EdtDescricao.Text;
+  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+
+  if EdtCst.Text = '' then begin
+  ShowMessage('Código do Enquadramento do IPI não pode ser vazio!')
+  end
+  else begin
+
+  if EdtDescricao.Text = '' then begin
+  ShowMessage('Descrição não pode ser vazio!')
+  end
+  else begin
+
+  CadENQIPIDM.UpdateQuery.SQL.CLear;
+  CadENQIPIDM.UpdateQuery.SQL.Text :=
+  'update cadENQIPI set descricao = :descricao, ativo = :ativo where CST = :CST';
+  CadENQIPIDM.UpdateQuery.ParamByName('CST').AsString := CST;
+  CadENQIPIDM.UpdateQuery.ParamByName('Descricao').AsString := Descricao;
+  CadENQIPIDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
+
+  LogsDM.InserirLog.SQL.Clear;
+  LogsDM.InserirLog.SQL.Text :=
+  'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+  LogsDM.InserirLog.ParamByName('Descricao').AsString :=
+  'Alterou o Enquadramento de IPI ' + CST + ' ' + Descricao;
+  LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadENQIPI';
+  try
+  LogsDM.InserirLog.ExecSQL;
+  CadENQIPIDM.UpdateQuery.ExecSQL;
+  ShowMessage('Gravado com sucesso!');
+
+  CadENQIPIDM.ConsultarENQIPI.SQL.Clear;
+  CadENQIPIDM.ConsultarENQIPI.SQL.Text :=
+  'select * from cadenqipi';
+  CadENQIPIDM.ConsultarENQIPI.Open;
+
+  EdtDescricao.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnExcluir.Visible := True;
+  btnFechar.Visible := True;
+  Grid.Enabled := True;
+
+  btnGravarAlterar.Visible := False;
+  btnDesistir.Visible := False;
+  except
+  ShowMessage('Erro na alteração!');
+  end;
+end;
+end;
+end;
+
+procedure TCadENQIPI.btnDesistirClick(Sender: TObject);
+begin
+ CadENQIPIDM.ConsultarENQIPI.SQL.Clear;
+ CadENQIPIDM.ConsultarENQIPI.SQL.Text :=
+ 'select * from cadenqipi';
+ CadENQIPIDM.ConsultarENQIPI.Open;
+
+ EdtCST.Clear;
+ EdtDescricao.Clear;
+
+ EdtCST.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+
+ btnIncluir.Visible := True;
+ btnAlterar.Visible := True;
+ btnExcluir.Visible := True;
+ btnFechar.Visible := True;
+ Grid.Enabled := True;
+
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+end;
+
+procedure TCadENQIPI.BtnExcluirClick(Sender: TObject);
+var CST, Descricao: string;
+begin
+  CST := EdtCST.Text;
+  Descricao := EdtDescricao.Text;
+
+  if EdtCST.Text = '' then begin
+  ShowMessage('Nenhum Enquadramento de IPI selecionado!');
+  end
+  else begin
+
+  CadENQIPIDM.DeleteQuery.SQL.CLear;
+  CadENQIPIDM.DeleteQuery.SQL.Text :=
+  'delete from cadENQIPI where CST = :CST';
+  CadENQIPIDM.DeleteQuery.ParamByName('CST').AsString := CST;
+
+  LogsDM.InserirLog.SQL.Clear;
+  LogsDM.InserirLog.SQL.Text :=
+  'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
+  LogsDM.InserirLog.ParamByName('Descricao').AsString :=
+  'Deletou o Enquadramento de IPI ' + CST + ' ' + Descricao;
+  LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadENQIPI';
+  try
+  LogsDM.InserirLog.ExecSQL;
+  CadENQIPIDM.DeleteQuery.ExecSQL;
+  ShowMessage('Gravado com sucesso!');
+
+  CadENQIPIDM.ConsultarENQIPI.SQL.Clear;
+  CadENQIPIDM.ConsultarENQIPI.SQL.Text :=
+  'select * from cadenqipi';
+  CadENQIPIDM.ConsultarENQIPI.Open;
+
+  EdtCST.Clear;
+  EdtDescricao.Clear;
+  except
+  ShowMessage('Erro na alteração!');
+  end;
+end;
+end;
+
+procedure TCadENQIPI.GridCellClick(Column: TColumn);
+begin
+ CBAtivo.Checked := CadENQIPIDM.ConsultarENQIPI.FieldByName('Ativo').AsString = 'S';
+ EdtCST.Text := CadENQIPIDM.ConsultarENQIPI.FieldByName('CST').AsString;
+ EdtDescricao.Text := CadENQIPIDM.ConsultarENQIPI.FieldByName('Descricao').AsString;
+end;
+
+procedure TCadENQIPI.btnFecharClick(Sender: TObject);
+begin
+ Fechartela(sender);
+end;
+end.

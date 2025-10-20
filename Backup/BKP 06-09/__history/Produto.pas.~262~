@@ -1,0 +1,955 @@
+unit Produto;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls, Vcl.Buttons,
+  ProdutoDM, ConsultarProdutoForm,
+  LogDM,
+  Cor, CorDM, ConsultarCorForm,
+  FaixaTamanho, FaixaTamanhoDM, ConsultarFaixaForm,
+  GlobalUnit,
+  NCMDM, ConsultarNCMForm,
+  UnidadeDM;
+
+type
+  TCadProduto = class(TForm)
+    lblCodigo: TLabel;
+    lblDescricao: TLabel;
+    EdtDescricao: TEdit;
+    edtCodigo: TEdit;
+    LblAtivo: TLabel;
+    CBAtivo: TCheckBox;
+    btnIncluir: TButton;
+    btnGravarIncluir: TButton;
+    btnDesistir: TButton;
+    btnAlterar: TButton;
+    btnConsultar: TButton;
+    btnExcluir: TButton;
+    btnGravarAlterar: TButton;
+    btnFechar: TButton;
+    GridCorEstoque: TDBGrid;
+    lblFaixa: TLabel;
+    EdtFaixaTamanho: TEdit;
+    lblUniCom: TLabel;
+    CBUniCom: TComboBox;
+    lblUniVenda: TLabel;
+    CBUniVenda: TComboBox;
+    lblBrinde: TLabel;
+    CBBrinde: TCheckBox;
+    EdtFaixaDescricao: TEdit;
+    SBFaixa: TSpeedButton;
+    Pages: TPageControl;
+    CadastroPage: TTabSheet;
+    TributacoesPage: TTabSheet;
+    lblNCM: TLabel;
+    EdtNCM: TEdit;
+    EdtNCMNCM: TEdit;
+    SBNCM: TSpeedButton;
+    CBOrigem: TComboBox;
+    lblOrigem: TLabel;
+    AcessoPage: TTabSheet;
+    lblAcessoCodigo: TLabel;
+    lblAcessoUniCom: TLabel;
+    lblAcessoUniVen: TLabel;
+    lblAcessoFaixa: TLabel;
+    EdtAcessoCodigo: TEdit;
+    EdtAcessoDescricao: TEdit;
+    SBAcessoConsProduto: TSpeedButton;
+    CBAcessoUniCom: TComboBox;
+    CBAcessoUniVenda: TComboBox;
+    EdtAcessoFaixa: TEdit;
+    EdtAcessoFaixaDescricao: TEdit;
+    SBAcessoConsFaixa: TSpeedButton;
+    CBAcessoOrigem: TComboBox;
+    lblAcessoOrigem: TLabel;
+    lblAcessoNCM: TLabel;
+    EdtAcessoNCM: TEdit;
+    EdtAcessoNCMNCM: TEdit;
+    SBAcessoConsNCM: TSpeedButton;
+    btnAcessoConsultar: TButton;
+    btnAcessoFechar: TButton;
+    RGAcessoAtivo: TRadioGroup;
+    AcessoGrid: TDBGrid;
+    RGAcessoBrinde: TRadioGroup;
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnConsultarClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure SBFaixaClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure SBNCMClick(Sender: TObject);
+    procedure CBUniComDropDown(Sender: TObject);
+    procedure CBUniVendaDropDown(Sender: TObject);
+    procedure CBOrigemDropDown(Sender: TObject);
+    procedure SBAcessoConsProdutoClick(Sender: TObject);
+    procedure SBAcessoConsFaixaClick(Sender: TObject);
+    procedure SBAcessoConsNCMClick(Sender: TObject);
+    procedure btnAcessoConsultarClick(Sender: TObject);
+    procedure EdtAcessoCodigoChange(Sender: TObject);
+    procedure EdtAcessoFaixaChange(Sender: TObject);
+    procedure EdtAcessoNCMChange(Sender: TObject);
+    procedure EdtNCMExit(Sender: TObject);
+    procedure EdtFaixaTamanhoExit(Sender: TObject);
+  private
+  public
+  end;
+
+var
+  CadProduto: TCadProduto;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadProduto.FormShow(Sender: TObject);
+begin
+ CadCorDM.CorEstoque.SQL.Clear;
+end;
+
+procedure TCadProduto.CBOrigemDropDown(Sender: TObject);
+begin
+ CBOrigem.Items.Clear;
+ CBAcessoOrigem.Items.Clear;
+ CBOrigem.Items.Add('0 – Nacional');
+ CBOrigem.Items.Add('1 – Estrangeira – Importação direta');
+ CBOrigem.Items.Add('2 – Estrangeira – Adquirida no mercado interno');
+ CBOrigem.Items.Add('3 – Nacional, mercadoria ou bem com conteúdo de importação acima de 40%');
+ CBOrigem.Items.Add('4 – Nacional, conforme processos produtivos básicos (PPB)');
+ CBOrigem.Items.Add('5 – Nacional, mercadoria ou bem com conteúdo de importação inferior ou igual a 40%');
+ CBOrigem.Items.Add('6 – Estrangeira – Importação direta, sem similar nacional, conforme Resolução CAMEX');
+ CBOrigem.Items.Add('7 – Estrangeira – Adquirida no mercado interno, sem similar nacional');
+ CBOrigem.Items.Add('8 – Nacional, mercadoria ou bem com conteúdo de importação superior a 70%');
+
+ CBAcessoOrigem.Items.Add('0 – Nacional');
+ CBAcessoOrigem.Items.Add('1 – Estrangeira – Importação direta');
+ CBAcessoOrigem.Items.Add('2 – Estrangeira – Adquirida no mercado interno');
+ CBAcessoOrigem.Items.Add('3 – Nacional, mercadoria ou bem com conteúdo de importação acima de 40%');
+ CBAcessoOrigem.Items.Add('4 – Nacional, conforme processos produtivos básicos (PPB)');
+ CBAcessoOrigem.Items.Add('5 – Nacional, mercadoria ou bem com conteúdo de importação inferior ou igual a 40%');
+ CBAcessoOrigem.Items.Add('6 – Estrangeira – Importação direta, sem similar nacional, conforme Resolução CAMEX');
+ CBAcessoOrigem.Items.Add('7 – Estrangeira – Adquirida no mercado interno, sem similar nacional');
+ CBAcessoOrigem.Items.Add('8 – Nacional, mercadoria ou bem com conteúdo de importação superior a 70%');
+end;
+
+procedure TCadProduto.CBUniComDropDown(Sender: TObject);
+begin
+  CBUniCom.Items.Clear;
+  CBAcessoUniCom.Items.Clear;
+
+  CadUnidadeDM.ConsultarUnidade.SQL.Clear;
+  CadUnidadeDM.ConsultarUnidade.SQL.Text :=
+  'select unidade from cadunidade where ativo = :ativo';
+  CadUnidadeDM.ConsultarUnidade.ParamByName('ativo').AsString := 'S';
+  CadUnidadeDM.ConsultarUnidade.Open;
+
+  CadUnidadeDM.ConsultarUnidade.First;
+  while not CadUnidadeDM.ConsultarUnidade.Eof do
+  begin
+    CBUniCom.Items.Add(CadUnidadeDM.ConsultarUnidade.FieldByName('Unidade').AsString);
+    CBAcessoUniCom.Items.Add(CadUnidadeDM.ConsultarUnidade.FieldByName('Unidade').AsString);
+    CadUnidadeDM.ConsultarUnidade.Next;
+  end;
+end;
+
+procedure TCadProduto.CBUniVendaDropDown(Sender: TObject);
+begin
+  CBUniVenda.Items.Clear;
+  CBAcessoUniVenda.Items.Clear;
+
+  CadUnidadeDM.ConsultarUnidade.SQL.Clear;
+  CadUnidadeDM.ConsultarUnidade.SQL.Text :=
+  'select unidade from cadunidade where ativo = :ativo';
+  CadUnidadeDM.ConsultarUnidade.ParamByName('ativo').AsString := 'S';
+  CadUnidadeDM.ConsultarUnidade.Open;
+
+  CadUnidadeDM.ConsultarUnidade.First;
+  while not CadUnidadeDM.ConsultarUnidade.Eof do
+  begin
+    CBUniVenda.Items.Add(CadUnidadeDM.ConsultarUnidade.FieldByName('Unidade').AsString);
+    CBAcessoUniVenda.Items.Add(CadUnidadeDM.ConsultarUnidade.FieldByName('Unidade').AsString);
+    CadUnidadeDM.ConsultarUnidade.Next;
+  end;
+end;
+
+procedure TCadProduto.btnIncluirClick(Sender: TObject);
+begin
+  EdtCodigo.Clear;
+  EdtDescricao.Clear;
+  EdtFaixaTamanho.Clear;
+  EdtFaixaDescricao.Clear;
+  EdtNCM.Clear;
+  EdtNCMNCM.Clear;
+  CadCorDM.CorEstoque.SQL.Clear;
+
+  EdtCodigo.Enabled := True;
+  EdtDescricao.Enabled := True;
+  EdtFaixaTamanho.Enabled := True;
+  EdtNCM.Enabled := True;
+
+  CBAtivo.Enabled := True;
+  CBUniCom.Enabled := True;
+  CBUniVenda.Enabled := True;
+  CBBrinde.Enabled := True;
+  CBOrigem.Enabled := True;
+
+  SBNCM.Enabled := True;
+  SBFaixa.Enabled := True;
+
+  BtnIncluir.Visible := False;
+  BtnAlterar.Visible := False;
+  BtnGravarAlterar.Visible := False;
+  BtnConsultar.Visible:= False;
+  BtnExcluir.Visible := False;
+
+  BtnGravarIncluir.Visible := True;
+  BtnDesistir.Visible := True;
+end;
+
+procedure TCadProduto.btnGravarIncluirClick(Sender: TObject);
+var codigo, descricao, ativo, faixa, NCM, UniCom, UniVenda, Brinde, Origem: string;
+begin
+ codigo:= EdtCodigo.Text;
+ descricao:= EdtDescricao.Text;
+ faixa := EdtFaixaTamanho.Text;
+ if CBAtivo.Checked then ativo := 'S'
+ else ativo := 'N';
+ NCM := EdtNCM.Text;
+ UniCom := CBUniCom.Text;
+ UniVenda := CBUniVenda.Text;
+ if CBOrigem.Text = '0 – Nacional' then origem := '0'
+ else if CBOrigem.text = '1 – Estrangeira – Importação direta' then origem := '1'
+ else if CBOrigem.text = '2 – Estrangeira – Adquirida no mercado interno' then origem := '2'
+ else if CBOrigem.text = '3 – Nacional, mercadoria ou bem com conteúdo de importação acima de 40%' then origem := '3'
+ else if CBOrigem.text = '4 – Nacional, conforme processos produtivos básicos (PPB)' then origem := '4'
+ else if CBOrigem.text = '5 – Nacional, mercadoria ou bem com conteúdo de importação inferior ou igual a 40%' then origem := '5'
+ else if CBOrigem.text = '6 – Estrangeira – Importação direta, sem similar nacional, conforme Resolução CAMEX' then origem := '6'
+ else if CBOrigem.text = '7 – Estrangeira – Adquirida no mercado interno, sem similar nacional' then origem := '7'
+ else if CBOrigem.text = '8 – Nacional, mercadoria ou bem com conteúdo de importação superior a 70%' then origem := '8';
+ if CBBrinde.Checked then brinde := 'S' else brinde := 'N';
+
+ if EdtCodigo.Text = '' then begin
+ ShowMessage('Código não pode ser vazio!');
+ end
+ else begin
+
+ if EdtDescricao.Text = '' then begin
+ ShowMessage('Descrição não pode ser vazia!');
+ end
+ else begin
+
+ if EdtFaixaTamanho.Text = '' then begin
+ ShowMessage('Faixa de tamanho não pode ser vazia!');
+ end
+ else begin
+
+ if EdtNCM.Text = '' then begin
+ ShowMessage('NCM não pode ser vazia!');
+ end
+ else begin
+
+ if CBOrigem.Text = '' then begin
+ ShowMessage('Origem do produto não pode ser vazio!');
+ end
+ else begin
+
+ if CBUniVenda.Text = '' then begin
+ ShowMessage('Unidade de venda não pode ser vazia!');
+ end
+ else begin
+
+ if CBUniCom.Text = '' then begin
+ ShowMessage('Unidade de compra não pode ser vazia!');
+ end
+ else begin
+
+  CadProdutoDM.SelectQuery.SQL.Clear;
+  CadProdutoDM.SelectQuery.SQL.Text :=
+  'SELECT * FROM cadproduto WHERE codigo=:codigo';
+  CadProdutoDM.SelectQuery.ParamByName('codigo').AsString := codigo;
+  CadProdutoDM.SelectQuery.Open;
+
+  if NOT CadProdutoDM.SelectQuery.IsEmpty then begin
+  showmessage('Produto já cadastrado!');
+  end
+  else begin
+  CadProdutoDM.InsertQuery.SQL.Clear;
+  CadProdutoDM.InsertQuery.SQL.Text :=
+  'insert into cadproduto (codigo, descricao, ativo, faixa, NCM, UniCom, UniVenda, Brinde, Origem) ' +
+  'values (:codigo, :descricao, :ativo, :faixa, :NCM, :UniCom, :UniVenda, :Brinde, :Origem)';
+  CadProdutoDM.InsertQuery.ParamByName('codigo').AsString := codigo;
+  CadProdutoDM.InsertQuery.ParamByName('descricao').AsString := descricao;
+  CadProdutoDM.InsertQuery.ParamByName('ativo').AsString := ativo;
+  CadProdutoDM.InsertQuery.ParamByName('faixa').AsString := faixa;
+  CadProdutoDM.InsertQuery.ParamByName('NCM').AsString := NCM;
+  CadProdutoDM.InsertQuery.ParamByName('UniVenda').AsString := UniVenda;
+  CadProdutoDM.InsertQuery.ParamByName('UniCom').AsString := UniCom;
+  CadProdutoDM.InsertQuery.ParamByName('Brinde').AsString := Brinde;
+  CadProdutoDM.InsertQuery.ParamByName('Origem').AsString := Origem;
+
+  LogsDM.InserirLog.SQL.Clear;
+  LogsDM.InserirLog.SQL.Text :=
+  'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadProduto';
+  LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
+  LogsDM.InserirLog.ParamByName('descricao').AsString :=
+  'Inseriu o produto ' + descricao + ' no código ' + codigo + ' na faixa de tamanho ' + faixa + ' ativo ' + ativo + ' e no NCM ' + NCM;
+  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  try
+  CadProdutoDM.InsertQuery.ExecSQL;
+  LogsDM.InserirLog.ExecSQL;
+  ShowMessage('Incluido com sucesso!');
+  BtnIncluir.Visible := True;
+  BtnAlterar.Visible := True;
+  BtnConsultar.Visible := True;
+  BtnExcluir.Visible := True;
+
+  BtnGravarIncluir.Visible := False;
+  BtnDesistir.Visible := False;
+
+  EdtCodigo.Enabled := False;
+  EdtDescricao.Enabled := False;
+  EdtFaixaTamanho.Enabled := False;
+  EdtNCM.Enabled := False;
+
+  CBAtivo.Enabled := False;
+  CBUniCom.Enabled := False;
+  CBUniVenda.Enabled := False;
+  CBBrinde.Enabled := False;
+  CBOrigem.Enabled := False;
+
+  SBNCM.Enabled := False;
+  SBFaixa.Enabled := False;
+  except
+  ShowMessage('Erro na gravação!');
+  end;
+end;
+end;
+end;
+end;
+end;
+end;
+end;
+end;
+end;
+
+procedure TCadProduto.btnAcessoConsultarClick(Sender: TObject);
+var codigo, faixa, ncm, unicom, univen, origem: string;
+    temwhere: boolean;
+    i: integer;
+begin
+ codigo := EdtAcessoCodigo.Text;
+ Faixa := EdtAcessoFaixa.Text;
+ NCM := EdtAcessoNCM.Text;
+ UniCom := CBAcessoUniCom.Text;
+ UniVen := CBAcessoUniVenda.Text;
+ if CBAcessoOrigem.Text = '0 – Nacional' then origem := '0'
+ else if CBAcessoOrigem.text = '1 – Estrangeira – Importação direta' then origem := '1'
+ else if CBAcessoOrigem.text = '2 – Estrangeira – Adquirida no mercado interno' then origem := '2'
+ else if CBAcessoOrigem.text = '3 – Nacional, mercadoria ou bem com conteúdo de importação acima de 40%' then origem := '3'
+ else if CBAcessoOrigem.text = '4 – Nacional, conforme processos produtivos básicos (PPB)' then origem := '4'
+ else if CBAcessoOrigem.text = '5 – Nacional, mercadoria ou bem com conteúdo de importação inferior ou igual a 40%' then origem := '5'
+ else if CBAcessoOrigem.text = '6 – Estrangeira – Importação direta, sem similar nacional, conforme Resolução CAMEX' then origem := '6'
+ else if CBAcessoOrigem.text = '7 – Estrangeira – Adquirida no mercado interno, sem similar nacional' then origem := '7'
+ else if CBAcessoOrigem.text = '8 – Nacional, mercadoria ou bem com conteúdo de importação superior a 70%' then origem := '8';
+
+ CadProdutoDM.AcessoQuery.SQL.Clear;
+ CadProdutoDM.AcessoQuery.SQL.Text :=
+ 'select * from cadproduto';
+ temwhere := false;
+
+ if RGAcessoBrinde.ItemIndex = 0 then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and brinde = :brinde');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where brinde = :brinde');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('brinde').AsString := 'S';
+ end;
+
+ if RGAcessoBrinde.ItemIndex = 1 then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and brinde = :brinde');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where brinde = :brinde');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('brinde').AsString := 'N';
+ end;
+
+ if RGAcessoAtivo.ItemIndex = 0 then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and ativo = :ativo');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where ativo = :ativo');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('ativo').AsString := 'S';
+ end;
+
+ if RGAcessoAtivo.ItemIndex = 1 then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and ativo = :ativo');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where ativo = :ativo');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('ativo').AsString := 'N';
+ end;
+
+ if codigo <> '' then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and codigo = :codigo');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where codigo = :codigo');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('codigo').AsString := codigo;
+ end;
+
+ if faixa <> '' then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and faixa = :faixa');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where faixa = :faixa');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('faixa').AsString := Faixa;
+ end;
+
+ if NCM <> '' then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and NCM = :NCM');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where NCM = :NCM');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('NCM').AsString := NCM;
+ end;
+
+ if UniCom <> '' then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and UniCom = :UniCom');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where UniCom = :UniCom');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('UniCom').AsString := UniCom;
+ end;
+
+ if UniVen <> '' then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and UniVenda = :UniVenda');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where UniVenda = :UniVenda');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('UniVenda').AsString := UniVen;
+ end;
+
+ if origem <> '' then begin
+  if temwhere then begin
+  CadProdutoDM.AcessoQuery.SQL.Add('and origem = :origem');
+  end
+  else begin
+  CadProdutoDM.AcessoQuery.SQL.Add('where origem = :origem');
+  temwhere := true;
+  end;
+ CadProdutoDM.AcessoQuery.ParamByName('origem').AsString := origem;
+ end;
+ CadProdutoDM.AcessoQuery.Open;
+ begin
+   for i := 0 to AcessoGrid.Columns.Count - 1 do
+   AcessoGrid.Columns[i].Width := AcessoGrid.Canvas.TextWidth(AcessoGrid.Columns[i].Title.Caption + '     ');
+ end;
+end;
+
+procedure TCadProduto.btnAlterarClick(Sender: TObject);
+begin
+  if EdtCodigo.Text = '' then
+  ShowMessage('Nenhum produto selecionado!')
+  else begin
+  BtnIncluir.Visible := False;
+  BtnGravarIncluir.Visible := False;
+  BtnConsultar.Visible := False;
+  BtnAlterar.Visible := False;
+  BtnExcluir.Visible := False;
+
+  BtnDesistir.Visible := True;
+  BtnGravarAlterar.Visible := True;
+
+  EdtDescricao.Enabled := True;
+  EdtFaixaTamanho.Enabled := True;
+  EdtNCM.Enabled := True;
+
+  CBAtivo.Enabled := True;
+  CBUniCom.Enabled := True;
+  CBUniVenda.Enabled := True;
+  CBBrinde.Enabled := True;
+  CBOrigem.Enabled := True;
+
+  SBNCM.Enabled := True;
+  SBFaixa.Enabled := True;
+end;
+end;
+
+procedure TCadProduto.btnGravarAlterarClick(Sender: TObject);
+var codigo, descricao, ativo, NCM, faixa, UniCom, UniVenda, Brinde, Origem: string;
+begin
+ codigo:= EdtCodigo.Text;
+ descricao:= EdtDescricao.Text;
+ faixa := EdtFaixaTamanho.Text;
+ if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+ NCM := EdtNCM.Text;
+ UniCom := CBUniCom.Text;
+ UniVenda := CBUniVenda.Text;
+ if CBOrigem.Text = '0 – Nacional' then origem := '0'
+ else if CBOrigem.text = '1 – Estrangeira – Importação direta' then origem := '1'
+ else if CBOrigem.text = '2 – Estrangeira – Adquirida no mercado interno' then origem := '2'
+ else if CBOrigem.text = '3 – Nacional, mercadoria ou bem com conteúdo de importação acima de 40%' then origem := '3'
+ else if CBOrigem.text = '4 – Nacional, conforme processos produtivos básicos (PPB)' then origem := '4'
+ else if CBOrigem.text = '5 – Nacional, mercadoria ou bem com conteúdo de importação inferior ou igual a 40%' then origem := '5'
+ else if CBOrigem.text = '6 – Estrangeira – Importação direta, sem similar nacional, conforme Resolução CAMEX' then origem := '6'
+ else if CBOrigem.text = '7 – Estrangeira – Adquirida no mercado interno, sem similar nacional' then origem := '7'
+ else if CBOrigem.text = '8 – Nacional, mercadoria ou bem com conteúdo de importação superior a 70%' then origem := '8';
+ if CBBrinde.Checked then brinde := 'S' else brinde := 'N';
+
+ if EdtCodigo.Text = '' then begin
+ ShowMessage('Código não pode ser vazio!');
+ end
+ else begin
+
+ if EdtDescricao.Text = '' then begin
+ ShowMessage('Descrição não pode ser vazia!');
+ end
+ else begin
+
+ if EdtFaixaTamanho.Text = '' then begin
+ ShowMessage('Faixa de tamanho não pode ser vazia!');
+ end
+ else begin
+
+ if EdtNCM.Text = '' then begin
+ ShowMessage('NCM não pode ser vazia!');
+ end
+ else begin
+
+ if CBOrigem.Text = '' then begin
+ ShowMessage('Origem do produto não pode ser vazio!');
+ end
+ else begin
+
+ if CBUniVenda.Text = '' then begin
+ ShowMessage('Unidade de venda não pode ser vazia!');
+ end
+ else begin
+
+ if CBUniCom.Text = '' then begin
+ ShowMessage('Unidade de compra não pode ser vazia!');
+ end
+ else begin
+
+  CadProdutoDM.UpdateQuery.SQL.Clear;
+  CadProdutoDM.UpdateQuery.SQL.Text :=
+  'update cadproduto set NCM = :NCM, faixa = :faixa, descricao = :descricao, ativo = :ativo, unicom = :unicom, univenda = :univenda, brinde = :brinde, ' +
+  'origem = :origem where codigo = :codigo';
+  CadProdutoDM.UpdateQuery.ParamByName('codigo').AsString := codigo;
+  CadProdutoDM.UpdateQuery.ParamByName('descricao').AsString := descricao;
+  CadProdutoDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
+  CadProdutoDM.UpdateQuery.ParamByName('faixa').AsString := faixa;
+  CadProdutoDM.UpdateQuery.ParamByName('NCM').AsString := NCM;
+  CadProdutoDM.UpdateQuery.ParamByName('UniVenda').AsString := UniVenda;
+  CadProdutoDM.UpdateQuery.ParamByName('UniCom').AsString := UniCom;
+  CadProdutoDM.UpdateQuery.ParamByName('Brinde').AsString := Brinde;
+  CadProdutoDM.UpdateQuery.ParamByName('Origem').AsString := Origem;
+
+  LogsDM.InserirLog.SQL.Clear;
+  LogsDM.InserirLog.SQL.Text :=
+  'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadProduto';
+  LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  LogsDM.InserirLog.ParamByName('descricao').AsString :=
+  'Alterou o produto ' + descricao + ' no código ' + codigo + ' na faixa de tamanho ' + faixa + ' ativo ' + ativo + ' e no NCM ' + NCM;
+
+  try
+  CadProdutoDM.UpdateQuery.ExecSQL;
+  LogsDM.InserirLog.ExecSQL;
+  ShowMessage('Alterado com sucesso!');
+  BtnIncluir.Visible := True;
+  BtnAlterar.Visible := True;
+  BtnConsultar.Visible := True;
+  BtnExcluir.Visible := True;
+
+  BtnGravarAlterar.Visible := False;
+  BtnGravarIncluir.Visible := False;
+  BtnDesistir.Visible := False;
+
+  EdtCodigo.Enabled := False;
+  EdtDescricao.Enabled := False;
+  EdtFaixaTamanho.Enabled := False;
+  EdtNCM.Enabled := False;
+
+  CBAtivo.Enabled := False;
+  CBUniCom.Enabled := False;
+  CBUniVenda.Enabled := False;
+  CBBrinde.Enabled := False;
+  CBOrigem.Enabled := False;
+
+  SBFaixa.Enabled := False;
+  SBNCM.Enabled := False;
+  except
+  ShowMessage('Erro na gravação!');
+  end;
+ end;
+end;
+end;
+end;
+end;
+end;
+end;
+end;
+
+procedure TCadProduto.btnDesistirClick(Sender: TObject);
+begin
+  CadCorDM.CorEstoque.SQL.Clear;
+
+  EdtCodigo.Clear;
+  EdtDescricao.Clear;
+  EdtNCM.Clear;
+  EdtNCMNCM.Clear;
+  EdtFaixaTamanho.Clear;
+  EdtFaixaDescricao.Clear;
+
+  EdtCodigo.Enabled := False;
+  EdtDescricao.Enabled := False;
+  EdtFaixaTamanho.Enabled := False;
+  EdtNCM.Enabled := False;
+
+  SBFaixa.Enabled := False;
+  SBNCM.Enabled := False;
+
+  CBUniCom.Enabled := False;
+  CBUniCom.Items.Clear;
+  CBUniVenda.Enabled := False;
+  CBUniVenda.Items.Clear;
+  CBBrinde.Enabled := False;
+  CBOrigem.Enabled := False;
+  CBOrigem.Items.Clear;
+  CBAtivo.Enabled := False;
+
+  BtnGravarIncluir.Visible := False;
+  BtnDesistir.Visible := False;
+  BtnGravarAlterar.Visible := False;
+
+  BtnIncluir.Visible := True;
+  BtnAlterar.Visible := True;
+  BtnConsultar.Visible := True;
+  BtnExcluir.Visible := True;
+end;
+
+procedure TCadProduto.btnExcluirClick(Sender: TObject);
+var codigo, descricao, faixa, ativo, NCM, UniCom, UniVenda, Brinde, Origem: string;
+begin
+ codigo:= EdtCodigo.Text;
+ faixa := EdtFaixaTamanho.text;
+ descricao := EdtDescricao.text;
+ if CBAtivo.Checked then ativo := 'S'
+ else ativo := 'N';
+ NCM := EdtNCM.Text;
+
+ CadProdutoDM.SelectQuery.SQL.Clear;
+ CadProdutoDM.SelectQuery.SQL.Text :=
+ 'SELECT * FROM CADPRODUTO WHERE CODIGO = :codigo';
+ CadProdutoDM.SelectQuery.ParamByName('codigo').AsString := codigo;
+ CadProdutoDM.SelectQuery.Open;
+
+ if CadProdutoDM.SelectQuery.IsEmpty then begin
+ ShowMessage('Produto não encontrado!')
+ end
+ else begin
+  CadProdutoDM.DeleteQuery.SQL.Clear;
+  CadProdutoDM.DeleteQuery.SQL.Text := 'delete from cadproduto where codigo = :codigo';
+  CadProdutoDM.DeleteQuery.ParamByName('codigo').AsString := codigo;
+
+  CadProdutoDM.DeleteProdMovQuery.SQL.CLear;
+  CadProdutoDM.DeleteProdMovQuery.SQL.Text := 'delete from prodmov where codigo = :codigo';
+  CadProdutoDM.DeleteProdMovQuery.ParamByName('codigo').AsString := codigo;
+
+  CadProdutoDM.DeleteEstoqueQuery.SQL.CLear;
+  CadProdutoDM.DeleteEstoqueQuery.SQL.Text := 'delete from estoque where codigo = :codigo';
+  CadProdutoDM.DeleteEstoqueQuery.ParamByName('codigo').AsString := codigo;
+
+  LogsDM.InserirLog.SQL.Clear;
+  LogsDM.InserirLog.SQL.Text :=
+  'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+  LogsDM.InserirLog.ParamByName('descricao').AsString :=
+  'Deletou o produto ' + descricao + ' no código ' + codigo + ' na faixa de tamanho ' + faixa + ' ativo ' + ativo + ' e no NCM ' + NCM;
+  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadProduto';
+  LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+  try
+  CadProdutoDM.DeleteQuery.ExecSQL;
+  CadProdutoDM.DeleteEstoqueQuery.ExecSQL;
+  CadProdutoDM.DeleteProdMovQuery.ExecSQL;
+  LogsDM.InserirLog.ExecSQL;
+  ShowMessage('Excluído com sucesso!');
+  EdtCodigo.Clear;
+  EdtDescricao.Clear;
+  EdtFaixaTamanho.Clear;
+  EdtNCM.Clear;
+  CBUniVenda.Items.Clear;
+  CBUniCom.Items.Clear;
+  CBOrigem.Items.Clear;
+  CadCorDM.CorEstoque.SQL.Clear;
+  except
+  ShowMessage('Erro na gravação!');
+  end;
+ end;
+end;
+
+procedure TCadProduto.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+
+procedure TCadProduto.btnConsultarClick(Sender: TObject);
+var codigo, descricao, ativo, faixa, faixadescricao, NCM, ncmdescricao, UniCom, UniVenda, Brinde, Origem: string;
+    I: integer;
+begin
+  CadProdutoDM.ConsultarProduto.SQL.Clear;
+  CadProdutoDM.ConsultarProduto.SQL.Text :=
+  'select cp.codigo, cp.descricao, cp.ativo, cp.faixa, cf.descricao as faixa_descricao, cp.ncm, cn.ncm as ncm_ncm, cp.unicom, ' +
+  'cp.univenda, cp.brinde, cp.origem ' +
+  'from cadproduto cp ' +
+  'inner join cadncm cn on (cn.codigo = cp.ncm) ' +
+  'inner join cadfaixa cf on (cf.codigo = cp.faixa)';
+  CadProdutoDM.ConsultarProduto.Open;
+
+  Application.CreateForm(TConsultarProduto, ConsultarProduto);
+  codigo := ConsultarProduto.SelecionarProduto;
+    if codigo <> '' then begin
+    EdtCodigo.Text := codigo;
+
+    descricao := ConsultarProduto.Descricao;
+    EdtDescricao.Text := descricao;
+
+    ativo := ConsultarProduto.Ativo;
+    CBAtivo.Checked := ativo = 'S';
+
+    faixa := ConsultarProduto.Faixa;
+    EdtFaixaTamanho.Text := faixa;
+    EdtFaixaDescricao.Text := CadProdutoDM.ConsultarProduto.FieldByName('faixa_descricao').AsString;
+
+    NCM := ConsultarProduto.NCM;
+    EdtNCM.Text := NCM;
+    EdtNCMNCM.Text := CadProdutoDM.ConsultarProduto.FieldByName('ncm_ncm').AsString;
+
+    UniCom := ConsultarProduto.UniCom;
+    CBUniCom.Items.Add(UniCom);
+    CBUniCom.ItemIndex := CBUniCom.Items.IndexOf(UniCom);
+
+    UniVenda := ConsultarProduto.UniVenda;
+    CBUniVenda.Items.Add(UniVenda);
+    CBUniVenda.ItemIndex := CBUniVenda.Items.IndexOf(UniVenda);
+
+    Brinde := ConsultarProduto.Brinde;
+    CBBrinde.Checked := Brinde = 'S';
+
+    if ConsultarProduto.Origem = '0' then origem := '0 – Nacional'
+    else if ConsultarProduto.Origem = '1' then origem := '1 – Estrangeira – Importação direta'
+    else if ConsultarProduto.Origem = '2' then origem := '2 – Estrangeira – Adquirida no mercado interno'
+    else if ConsultarProduto.Origem = '3' then origem := '3 – Nacional, mercadoria ou bem com conteúdo de importação acima de 40%'
+    else if ConsultarProduto.Origem = '4' then origem := '4 – Nacional, conforme processos produtivos básicos (PPB)'
+    else if ConsultarProduto.Origem = '5' then origem := '5 – Nacional, mercadoria ou bem com conteúdo de importação inferior ou igual a 40%'
+    else if ConsultarProduto.Origem = '6' then origem := '6 – Estrangeira – Importação direta, sem similar nacional, conforme Resolução CAMEX'
+    else if ConsultarProduto.Origem = '7' then origem := '7 – Estrangeira – Adquirida no mercado interno, sem similar nacional'
+    else if ConsultarProduto.Origem = '8' then origem := '8 – Nacional, mercadoria ou bem com conteúdo de importação superior a 70%';
+    CBOrigem.Items.Add(Origem);
+    CBOrigem.ItemIndex := CBOrigem.Items.IndexOf(Origem);
+    end;
+
+  begin
+   for i := 0 to GridCorEstoque.Columns.Count - 1 do
+   GridCorEstoque.Columns[i].Width := GridCorEstoque.Canvas.TextWidth(GridCorEstoque.Columns[i].Title.Caption + '     ');
+  end;
+end;
+
+procedure TCadProduto.SBAcessoConsFaixaClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+  CadFaixaTamanhoDM.ConsultarFaixa.SQL.Clear;
+  CadFaixaTamanhoDM.ConsultarFaixa.SQL.Text :=
+  'select * from cadfaixa';
+  CadFaixaTamanhoDM.ConsultarFaixa.Open;
+
+  Application.CreateForm(TConsultarFaixa, ConsultarFaixa);
+  codigo := ConsultarFaixa.SelecionarFaixa;
+  descricao := ConsultarFaixa.descricao;
+  if codigo <> '' then
+  begin
+    EdtAcessoFaixa.Text := codigo;
+    EdtAcessoFaixaDescricao.Text := Descricao;
+  end;
+end;
+
+procedure TCadProduto.SBAcessoConsNCMClick(Sender: TObject);
+var codigo, NCM: String;
+begin
+  CadNCMDM.ConsultarNCM.SQL.Clear;
+  CadNCMDM.ConsultarNCM.SQL.Text :=
+  'select * from cadncm';
+  CadNCMDM.ConsultarNCM.Open;
+
+  Application.CreateForm(TConsultarNCM, ConsultarNCM);
+  codigo := ConsultarNCM.SelecionarNCM;
+  NCM := ConsultarNCM.NCM;
+  if codigo <> '' then
+  begin
+    EdtAcessoNCM.Text := codigo;
+    EdtAcessoNCMNCM.Text := NCM;
+  end;
+end;
+
+procedure TCadProduto.SBAcessoConsProdutoClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+  CadProdutoDM.ConsultarProduto.SQL.Clear;
+  CadProdutoDM.ConsultarProduto.SQL.Text :=
+  'select * from cadproduto';
+  CadProdutoDM.ConsultarProduto.Open;
+
+  Application.CreateForm(TConsultarProduto, ConsultarProduto);
+  codigo := ConsultarProduto.SelecionarProduto;
+  if codigo <> '' then begin
+   EdtAcessoCodigo.Text := codigo;
+   descricao := ConsultarProduto.Descricao;
+   EdtAcessoDescricao.Text := descricao;
+  end;
+end;
+
+procedure TCadProduto.SBFaixaClick(Sender: TObject);
+var codigo, descricao: string;
+begin
+  CadFaixaTamanhoDM.ConsultarFaixa.SQL.Clear;
+  CadFaixaTamanhoDM.ConsultarFaixa.SQL.Text :=
+  'select * from cadfaixa where ativo = :ativo';
+  CadFaixaTamanhoDM.ConsultarFaixa.ParamByName('ativo').AsString := 'S';
+  CadFaixaTamanhoDM.ConsultarFaixa.Open;
+
+  Application.CreateForm(TConsultarFaixa, ConsultarFaixa);
+  codigo := ConsultarFaixa.SelecionarFaixa;
+  descricao := ConsultarFaixa.descricao;
+  if codigo <> '' then
+  begin
+    EdtFaixaTamanho.Text := codigo;
+    EdtFaixaDescricao.Text := Descricao;
+  end;
+end;
+
+procedure TCadProduto.SBNCMClick(Sender: TObject);
+var codigo, NCM: String;
+begin
+  CadNCMDM.ConsultarNCM.SQL.Clear;
+  CadNCMDM.ConsultarNCM.SQL.Text :=
+  'select * from cadncm where ativo = :ativo';
+  CadNCMDM.ConsultarNCM.ParamByName('ativo').AsString := 'S';
+  CadNCMDM.ConsultarNCM.Open;
+
+  Application.CreateForm(TConsultarNCM, ConsultarNCM);
+  codigo := ConsultarNCM.SelecionarNCM;
+  NCM := ConsultarNCM.NCM;
+  if codigo <> '' then
+  begin
+    EdtNCM.Text := codigo;
+    EdtNCMNCM.Text := NCM;
+  end;
+end;
+
+procedure TCadProduto.EdtAcessoCodigoChange(Sender: TObject);
+var codigo, descricao: string;
+begin
+ codigo := EdtAcessoCodigo.Text;
+ CadProdutoDM.ConsultarProduto.SQL.Clear;
+ CadProdutoDM.ConsultarProduto.SQL.Text :=
+ 'select * from cadproduto where codigo = :codigo';
+ CadProdutoDM.ConsultarProduto.ParamByName('codigo').AsString := codigo;
+ CadProdutoDM.ConsultarProduto.Open;
+
+ EdtAcessoDescricao.Text := CadProdutoDM.ConsultarProduto.FieldByName('descricao').AsString;
+end;
+
+procedure TCadProduto.EdtAcessoFaixaChange(Sender: TObject);
+var codigo, descricao: string;
+begin
+ codigo := EdtAcessoFaixa.Text;
+ CadFaixaTamanhoDM.ConsultarFaixa.SQL.Clear;
+ CadFaixaTamanhoDM.ConsultarFaixa.SQL.Text :=
+ 'select * from cadfaixa where codigo = :codigo';
+ CadFaixaTamanhoDM.ConsultarFaixa.ParamByName('codigo').AsString := codigo;
+ CadFaixaTamanhoDM.ConsultarFaixa.Open;
+
+ EdtAcessoFaixaDescricao.Text := CadFaixaTamanhoDM.ConsultarFaixa.FieldByName('descricao').AsString;
+end;
+
+procedure TCadProduto.EdtAcessoNCMChange(Sender: TObject);
+var codigo, descricao: String;
+begin
+  codigo := EdtAcessoNCM.Text;
+
+  CadNCMDM.ConsultarNCM.SQL.Clear;
+  CadNCMDM.ConsultarNCM.SQL.Text :=
+  'select * from cadncm where codigo = :codigo';
+  CadNCMDM.ConsultarNCM.ParamByName('codigo').AsString := codigo;
+  CadNCMDM.ConsultarNCM.Open;
+
+  EdtAcessoNCMNCM.Text := CadNCMDM.ConsultarNCM.FieldByName('NCM').AsString;
+end;
+
+procedure TCadProduto.EdtFaixaTamanhoExit(Sender: TObject);
+var codigo, descricao: string;
+begin
+ codigo := EdtFaixaTamanho.Text;
+ CadFaixaTamanhoDM.ConsultarFaixa.SQL.Clear;
+ CadFaixaTamanhoDM.ConsultarFaixa.SQL.Text :=
+ 'select * from cadfaixa where codigo = :codigo';
+ CadFaixaTamanhoDM.ConsultarFaixa.ParamByName('codigo').AsString := codigo;
+ CadFaixaTamanhoDM.ConsultarFaixa.Open;
+
+ EdtFaixaDescricao.Text := CadFaixaTamanhoDM.ConsultarFaixa.FieldByName('descricao').AsString;
+end;
+
+procedure TCadProduto.EdtNCMExit(Sender: TObject);
+var codigo, descricao: String;
+begin
+  codigo := EdtNCM.Text;
+
+  CadNCMDM.ConsultarNCM.SQL.Clear;
+  CadNCMDM.ConsultarNCM.SQL.Text :=
+  'select * from cadncm where codigo = :codigo';
+  CadNCMDM.ConsultarNCM.ParamByName('codigo').AsString := codigo;
+  CadNCMDM.ConsultarNCM.Open;
+
+  EdtNCMNCM.Text := CadNCMDM.ConsultarNCM.FieldByName('NCM').AsString;
+end;
+end.

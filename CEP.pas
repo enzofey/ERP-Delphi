@@ -524,9 +524,9 @@ begin
  btnExcluir.Visible := True;
  btnConsultar.Visible := True;
 
-  btnGravarIncluir.Visible := False;
-  btnDesistir.Visible := False;
-  btnGravarAlterar.Visible := False;
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+ btnGravarAlterar.Visible := False;
 end;
 
 procedure TCadCEP.btnExcluirClick(Sender: TObject);

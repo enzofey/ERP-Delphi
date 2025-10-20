@@ -14,12 +14,12 @@ type
   TCadPaisDM = class(TDataModule)
     Conexão: TFDConnection;
     qryConsultarPais: TFDQuery;
-    SelectQuery: TFDQuery;
+    qrySelect: TFDQuery;
     ConsultarPais: TDataSource;
     PGLink: TFDPhysPgDriverLink;
-    UpdateQuery: TFDQuery;
-    InsertQuery: TFDQuery;
-    DeleteQuery: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryInsert: TFDQuery;
+    qryDelete: TFDQuery;
     qryAcesso: TFDQuery;
     dsAcesso: TDataSource;
   private

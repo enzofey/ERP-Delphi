@@ -15,11 +15,11 @@ type
     Conexão: TFDConnection;
     ConsultarEstado: TDataSource;
     qryConsultarEstado: TFDQuery;
-    SelectQuery: TFDQuery;
+    qrySelect: TFDQuery;
     PGLink: TFDPhysPgDriverLink;
-    InsertQuery: TFDQuery;
-    UpdateQuery: TFDQuery;
-    DeleteQuery: TFDQuery;
+    qryInsert: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryDelete: TFDQuery;
     AcessoQuery: TFDQuery;
     dsAcessoGrid: TDataSource;
   private

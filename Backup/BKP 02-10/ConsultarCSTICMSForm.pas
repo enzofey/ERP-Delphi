@@ -1,0 +1,58 @@
+unit ConsultarCSTICMSForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  Vcl.StdCtrls, Vcl.ExtCtrls,
+  CSTICMSDM;
+
+type
+  TConsultarCSTICMS = class(TForm)
+    Panel1: TPanel;
+    btnSelecionarCSTICMS: TButton;
+    Grid: TDBGrid;
+    procedure btnSelecionarCSTICMSClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    IcmsCST: string;
+    IcmsCSTDescricao: string;
+  public
+    function SelecionarIcmsCST: string;
+    function Descricao: string;
+  end;
+
+var
+  ConsultarCSTICMS: TConsultarCSTICMS;
+
+implementation
+
+{$R *.dfm}
+
+function TConsultarCSTICMS.SelecionarIcmsCST: string;
+begin
+ IcmsCST := '';
+ ShowModal;
+ Result := IcmsCST;
+end;
+
+function TConsultarCSTICMS.Descricao: string;
+begin
+ Result := IcmsCSTDescricao;
+end;
+
+procedure TConsultarCSTICMS.FormShow(Sender: TObject);
+var i: integer;
+begin
+ for i := 0 to Grid.Columns.Count - 1 do
+  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+end;
+
+procedure TConsultarCSTICMS.btnSelecionarCSTICMSClick(Sender: TObject);
+begin
+ IcmsCST := CadCSTICMSDM.ConsultarCSTICMS.FieldByName('CST').AsString;
+ IcmsCSTDescricao := CadCSTICMSDM.ConsultarCSTICMS.FieldByName('Descricao').AsString;
+ close;
+end;
+end.

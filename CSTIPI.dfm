@@ -22,8 +22,6 @@ object CadCSTIPI: TCadCSTIPI
     Height = 956
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1124
-    ExplicitHeight = 765
     object lblCST: TLabel
       Left = 32
       Top = 32

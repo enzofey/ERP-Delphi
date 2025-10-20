@@ -16,7 +16,7 @@ type
     SelectQuery: TFDQuery;
     UpdateQuery: TFDQuery;
     InsertQuery: TFDQuery;
-    ConsultarCSTCOFINS: TFDQuery;
+    qryConsultarCSTCOFINS: TFDQuery;
     dsCSTCOFINS: TDataSource;
 	PGLink: TFDPhysPgDriverLink;
     DeleteQuery: TFDQuery;

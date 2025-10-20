@@ -53,13 +53,15 @@ implementation
 
 {$R *.dfm}
 
+uses ConsultarCSTPISForm;
+
 procedure TCadCSTPIS.FormShow(Sender: TObject);
 var I: integer;
 begin
- CadCSTPISDM.ConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.ConsultarCSTPIS.SQL.Text :=
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
  'select * from cadcstpis';
- CadCSTPISDM.ConsultarCSTPIS.Open;
+ CadCSTPISDM.qryConsultarCSTPIS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 end;
@@ -67,10 +69,10 @@ end;
 procedure TCadCSTPIS.btnIncluirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTPISDM.ConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.ConsultarCSTPIS.SQL.Text :=
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
  'select * from cadcstpis';
- CadCSTPISDM.ConsultarCSTPIS.Open;
+ CadCSTPISDM.qryConsultarCSTPIS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -159,10 +161,10 @@ begin
   CadCSTPISDM.InsertQuery.ExecSQL;
   ShowMessage('Gravado com sucesso!');
 
-  CadCSTPISDM.ConsultarCSTPIS.SQL.Clear;
-  CadCSTPISDM.ConsultarCSTPIS.SQL.Text :=
+  CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
+  CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
   'select * from cadcstpis';
-  CadCSTPISDM.ConsultarCSTPIS.Open;
+  CadCSTPISDM.qryConsultarCSTPIS.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -196,10 +198,10 @@ begin
   Abort;
  End;
 
- CadCSTPISDM.ConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.ConsultarCSTPIS.SQL.Text :=
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
  'select * from cadcstpis';
- CadCSTPISDM.ConsultarCSTPIS.Open;
+ CadCSTPISDM.qryConsultarCSTPIS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -269,10 +271,10 @@ begin
   CadCSTPISDM.UpdateQuery.ExecSQL;
   ShowMessage('Alterado com sucesso!');
 
-  CadCSTPISDM.ConsultarCSTPIS.SQL.Clear;
-  CadCSTPISDM.ConsultarCSTPIS.SQL.Text :=
+  CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
+  CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
   'select * from cadcstpis';
-  CadCSTPISDM.ConsultarCSTPIS.Open;
+  CadCSTPISDM.qryConsultarCSTPIS.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -300,10 +302,10 @@ end;
 procedure TCadCSTPIS.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTPISDM.ConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.ConsultarCSTPIS.SQL.Text :=
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
+ CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
  'select * from cadcstpis';
- CadCSTPISDM.ConsultarCSTPIS.Open;
+ CadCSTPISDM.qryConsultarCSTPIS.Open;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -368,10 +370,10 @@ begin
   CadCSTPISDM.DeleteQuery.ExecSQL;
   ShowMessage('Excluído com sucesso!');
 
-  CadCSTPISDM.ConsultarCSTPIS.SQL.Clear;
-  CadCSTPISDM.ConsultarCSTPIS.SQL.Text :=
+  CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
+  CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
   'select * from cadcstpis';
-  CadCSTPISDM.ConsultarCSTPIS.Open;
+  CadCSTPISDM.qryConsultarCSTPIS.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -389,10 +391,10 @@ end;
 procedure TCadCSTPIS.GridCellClick(Column: TColumn);
 var CST, Descricao, Modo, Ativo: String;
 begin
- EdtCST.Text := CadCSTPISDM.ConsultarCSTPIS.FieldByName('CST').AsString;
- EdtDescricao.Text := CadCSTPISDM.ConsultarCSTPIS.FieldByName('Descricao').AsString;
- Modo := CadCSTPISDM.ConsultarCSTPIS.FieldByName('Modo').AsString;
- Ativo := CadCSTPISDM.ConsultarCSTPIS.FieldByName('Ativo').AsString;
+ EdtCST.Text := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('CST').AsString;
+ EdtDescricao.Text := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('Descricao').AsString;
+ Modo := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('Modo').AsString;
+ Ativo := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('Ativo').AsString;
  if Modo = 'B' then
  RBBase.Checked := True
  else if Modo = 'I' then

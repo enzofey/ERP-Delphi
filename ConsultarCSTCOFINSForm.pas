@@ -51,8 +51,8 @@ end;
 
 procedure TConsultarCSTCOFINS.btnSelecionarCSTCOFINSClick(Sender: TObject);
 begin
-  CofinsCST := CadCSTCOFINSDM.ConsultarCSTCOFINS.FieldByName('CST').AsString;
-  CofinsCSTDescricao := CadCSTCOFINSDM.ConsultarCSTCOFINS.FieldByName('descricao').AsString;
+  CofinsCST := CadCSTCOFINSDM.qryConsultarCSTCOFINS.FieldByName('CST').AsString;
+  CofinsCSTDescricao := CadCSTCOFINSDM.qryConsultarCSTCOFINS.FieldByName('descricao').AsString;
   Close;
 end;
 end.

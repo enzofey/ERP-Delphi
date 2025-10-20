@@ -22,8 +22,6 @@ object CadCSTICMS: TCadCSTICMS
     Height = 956
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1116
-    ExplicitHeight = 769
     object lblCST: TLabel
       Left = 32
       Top = 32

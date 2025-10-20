@@ -21,8 +21,6 @@ object CadENQIPI: TCadENQIPI
     Height = 956
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1121
-    ExplicitHeight = 768
     object lblCST: TLabel
       Left = 32
       Top = 32

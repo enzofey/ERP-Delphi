@@ -3,7 +3,7 @@
   Width = 640
   object Conexão: TFDConnection
     Params.Strings = (
-	  'server=192.168.1.23'
+      'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
@@ -28,7 +28,7 @@
     Left = 104
     Top = 80
   end
-  object ConsultarCSOSN: TFDQuery
+  object qryConsultarCSOSN: TFDQuery
     Connection = Conexão
     SQL.Strings = (
       '')
@@ -36,7 +36,7 @@
     Top = 136
   end
   object dsCSOSN: TDataSource
-    DataSet = ConsultarCSOSN
+    DataSet = qryConsultarCSOSN
     Left = 32
     Top = 136
   end

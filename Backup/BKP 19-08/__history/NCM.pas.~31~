@@ -1,0 +1,236 @@
+unit NCM;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Data.DB, Vcl.StdCtrls,
+  Vcl.Grids, Vcl.DBGrids,
+  GlobalUnit,
+  NCMDataModule,
+  Log, LogDataModule;
+
+type
+  TCadNCM = class(TForm)
+    Panel1: TPanel;
+    Grid: TDBGrid;
+    lblNCM: TLabel;
+    lblDescricao: TLabel;
+    lblAtivo: TLabel;
+    EdtNCM: TEdit;
+    EdtDescricao: TEdit;
+    CBAtivo: TCheckBox;
+    btnIncluir: TButton;
+    btnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnAlterar: TButton;
+    btnDesistir: TButton;
+    btnFechar: TButton;
+    btnExcluir: TButton;
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnGravarAlterarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure GridCellClick(Column: TColumn);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadNCM: TCadNCM;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadNCM.btnIncluirClick(Sender: TObject);
+begin
+ CadNCMDataModule.GridQuery.Close;
+ CadNCMDataModule.GridQuery.Open;
+
+ btnIncluir.Visible := False;
+ btnExcluir.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarIncluir.Visible := True;
+ btnDesistir.Visible := True;
+
+ EdtNCM.Enabled := True;
+ EdtDescricao.Enabled := True;
+ CBAtivo.Enabled := True;
+
+ EdtNCM.Clear;
+ EdtDescricao.Clear;
+end;
+
+procedure TCadNCM.GridCellClick(Column: TColumn);
+var NCM, Ativo, Descricao: String;
+begin
+ EdtNCM.Text := CadNCMDataModule.GridQuery.FieldByName('NCM').AsString;
+ EdtDescricao.Text := CadNCMDataModule.GridQuery.FieldByName('Descricao').AsString;
+ if CadNCMDataModule.GridQuery.FieldByName('NCM').AsString = 'S' then CBAtivo.Checked;
+end;
+
+procedure TCadNCM.btnGravarIncluirClick(Sender: TObject);
+var descricao, ativo, NCM: String;
+begin
+descricao := EdtDescricao.Text;
+if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+NCM := EdtNCM.Text;
+ try
+ CadNCMDataModule.SelectQuery.SQL.Clear;
+ CadNCMDataModule.SelectQuery.SQL.Text :=
+ 'select * from cadNCM where NCM = :NCM';
+ CadNCMDataModule.SelectQuery.ParamByName('NCM').AsString := NCM;
+ CadNCMDataModule.SelectQuery.Open;
+
+  if not CadNCMDataModule.SelectQuery.IsEmpty then begin
+  ShowMessage('NCM já cadastrado!');
+  end;
+
+ CadNCMDataModule.InsertQuery.SQL.Clear;
+ CadNCMDataModule.InsertQuery.SQL.Text :=
+ 'insert into cadncm (NCM, descricao, ativo) values (:NCM, :descricao, :ativo)';
+ CadNCMDataModule.InsertQuery.ParamByName('NCM').AsString := NCM;
+ CadNCMDataModule.InsertQuery.ParamByName('descricao').AsString := descricao;
+ CadNCMDataModule.InsertQuery.ParamByName('ativo').AsString := ativo;
+
+ CadNCMDataModule.InsertQuery.ExecSQL;
+ ShowMessage('Incluído com sucesso!');
+ btnIncluir.Visible := True;
+ btnExcluir.Visible := True;
+ btnAlterar.Visible := True;
+
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+
+ EdtNCM.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+
+ CadNCMDataModule.GridQuery.Close;
+ CadNCMDataModule.GridQuery.Open;
+ except
+ ShowMessage('Erro na inclusão!');
+ end;
+
+end;
+
+procedure TCadNCM.btnAlterarClick(Sender: TObject);
+begin
+ if EdtNCM.Text = '' then begin
+ ShowMessage('NCM não selecionado!');
+ end
+  else begin
+
+ CadNCMDataModule.GridQuery.Close;
+ CadNCMDataModule.GridQuery.Open;
+
+ btnIncluir.Visible := False;
+ btnExcluir.Visible := False;
+ btnAlterar.Visible := False;
+
+ btnGravarAlterar.Visible := True;
+ btnDesistir.Visible := True;
+
+ EdtDescricao.Enabled := True;
+ CBAtivo.Enabled := True;
+  end;
+end;
+
+procedure TCadNCM.btnGravarAlterarClick(Sender: TObject);
+var descricao, ativo, NCM: String;
+begin
+descricao := EdtDescricao.Text;
+if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
+NCM := EdtNCM.Text;
+ try
+ CadNCMDataModule.UpdateQuery.SQL.Clear;
+ CadNCMDataModule.UpdateQuery.SQL.Text :=
+ 'update cadncm set Descricao = :descricao, ativo = :ativo where NCM = :NCM';
+ CadNCMDataModule.UpdateQuery.ParamByName('descricao').AsString := descricao;
+ CadNCMDataModule.UpdateQuery.ParambyName('ativo').AsString := ativo;
+ CadNCMDataModule.UpdateQuery.Parambyname('NCM').AsString := NCM;
+ CadNCMDataModule.UpdateQuery.ExecSQL;
+ ShowMessage('Alterado com sucesso!');
+ CadNCMDataModule.GridQuery.Close;
+ CadNCMDataModule.GridQuery.Open;
+
+ btnIncluir.Visible := True;
+ btnExcluir.Visible := True;
+ btnAlterar.Visible := True;
+
+ btnGravarAlterar.Visible := False;
+ btnDesistir.Visible := False;
+
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+ except
+ ShowMessage('Erro na alteração');
+ end;
+end;
+
+procedure TCadNCM.btnDesistirClick(Sender: TObject);
+begin
+ CadNCMDataModule.GridQuery.Close;
+ CadNCMDataModule.GridQuery.Open;
+
+ btnIncluir.Visible := True;
+ btnExcluir.Visible := True;
+ btnAlterar.Visible := True;
+
+ btnGravarIncluir.Visible := False;
+ btnDesistir.Visible := False;
+
+ EdtNCM.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+
+ EdtNCM.Clear;
+ EdtDescricao.Clear;
+end;
+
+procedure TCadNCM.btnFecharClick(Sender: TObject);
+begin
+ Fechartela(sender);
+end;
+
+procedure TCadNCM.btnExcluirClick(Sender: TObject);
+var NCM: string;
+begin
+
+ if EdtNCM.Text = '' then begin
+ ShowMessage('NCM não selecionado!');
+ end
+ else begin
+ NCM := EdtNCM.Text;
+ try
+ CadNCMDataModule.UpdateQuery.SQL.Clear;
+ CadNCMDataModule.UpdateQuery.SQL.Text :=
+ 'delete from cadncm where NCM = :NCM';
+ CadNCMDataModule.UpdateQuery.Parambyname('NCM').AsString := NCM;
+ CadNCMDataModule.UpdateQuery.ExecSQL;
+ ShowMessage('Excluído com sucesso!');
+ CadNCMDataModule.GridQuery.Close;
+ CadNCMDataModule.GridQuery.Open;
+
+ EdtNCM.Clear;
+ EdtDescricao.Clear;
+ except
+ ShowMessage('Erro na alteração');
+ end;
+end;
+end;
+
+procedure TCadNCM.FormShow(Sender: TObject);
+begin
+ CadNCMDataModule.GridQuery.Close;
+ CadNCMDataModule.GridQuery.Open;
+end;
+end.

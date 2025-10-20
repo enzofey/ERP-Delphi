@@ -1,0 +1,40 @@
+unit EditorRelatorioForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls;
+
+type
+  TEditorRelatorio = class(TForm)
+    Panel1: TPanel;
+    ListaRelatorios: TListBox;
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  EditorRelatorio: TEditorRelatorio;
+
+implementation
+
+{$R *.dfm}
+
+procedure TEditorRelatorio.FormShow(Sender: TObject);
+var
+  SR: TSearchRec;
+begin
+  if FindFirst('C:\Projetos\Controle de Estoque\FR3\*.fr3', faAnyFile, SR) = 0 then
+  begin
+    repeat
+      ListaRelatorios.Items.Add(SR.Name);
+    until FindNext(SR) <> 0;
+    FindClose(SR);
+  end;
+end;
+
+end.

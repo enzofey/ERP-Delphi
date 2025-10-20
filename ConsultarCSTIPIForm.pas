@@ -51,8 +51,8 @@ end;
 
 procedure TConsultarCSTIPI.btnSelecionarCSTIPIClick(Sender: TObject);
 begin
- CstIPI := CadCSTIPIDM.ConsultarCSTIPI.FieldByName('CST').AsString;
- CstIPIDescricao := CadCSTIPIDM.ConsultarCSTIPI.FieldByName('descricao').AsString;
+ CstIPI := CadCSTIPIDM.qryConsultarCSTIPI.FieldByName('CST').AsString;
+ CstIPIDescricao := CadCSTIPIDM.qryConsultarCSTIPI.FieldByName('descricao').AsString;
  Close;
 end;
 end.

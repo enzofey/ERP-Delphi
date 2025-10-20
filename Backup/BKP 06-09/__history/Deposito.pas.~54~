@@ -1,0 +1,386 @@
+unit Deposito;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
+  DepositoDM, ConsultarDepositoForm,
+  Log, LogDM,
+  GlobalUnit, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.Buttons;
+
+type
+  TCadDeposito = class(TForm)
+    Pages: TPageControl;
+    AcessoPage: TTabSheet;
+    CadastroPage: TTabSheet;
+    btnAlterar: TButton;
+    btnConsultar: TButton;
+    btnDesistir: TButton;
+    btnExcluir: TButton;
+    btnFechar: TButton;
+    BtnGravarAlterar: TButton;
+    btnGravarIncluir: TButton;
+    btnIncluir: TButton;
+    CBAtivo: TCheckBox;
+    EdtCodigo: TEdit;
+    EdtDescricao: TEdit;
+    lblAtivo: TLabel;
+    lblCodigo: TLabel;
+    LblDescricao: TLabel;
+    RGAcessoAtivo: TRadioGroup;
+    lblAcessoCodigo: TLabel;
+    EdtAcessoCodigo: TEdit;
+    EdtAcessoDescricao: TEdit;
+    SBConsDeposito: TSpeedButton;
+    btnAcessoFechar: TButton;
+    btnAcessoConsultar: TButton;
+    AcessoGrid: TDBGrid;
+    procedure btnIncluirClick(Sender: TObject);
+    procedure btnGravarIncluirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure BtnGravarAlterarClick(Sender: TObject);
+    procedure btnDesistirClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnConsultarClick(Sender: TObject);
+    procedure btnFecharClick(Sender: TObject);
+    procedure btnAcessoConsultarClick(Sender: TObject);
+    procedure EdtAcessoCodigoExit(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  CadDeposito: TCadDeposito;
+
+implementation
+
+{$R *.dfm}
+
+procedure TCadDeposito.btnIncluirClick(Sender: TObject);
+begin
+  EdtCodigo.Clear;
+  EdtDescricao.Clear;
+
+  BtnIncluir.Visible := False;
+  BtnAlterar.Visible := False;
+  BtnConsultar.Visible:= False;
+  BtnExcluir.Visible := False;
+
+  BtnGravarIncluir.Visible := True;
+  BtnDesistir.Visible := True;
+
+  EdtCodigo.Enabled := True;
+  EdtDescricao.Enabled := True;
+  CBAtivo.Enabled := True;
+end;
+
+procedure TCadDeposito.btnGravarIncluirClick(Sender: TObject);
+var codigo, descricao, ativo: string;
+begin
+ codigo:= EdtCodigo.Text;
+ descricao:= EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S'
+ else ativo := 'N';
+
+  if EdtCodigo.Text = '' then begin
+  ShowMessage('Código não pode ser vazio!');
+  end
+  else begin
+
+  if EdtDescricao.Text = '' then begin
+  ShowMessage('Descrição não pode ser vazia!');
+  end
+  else begin
+
+ CadDepositoDM.SelectQuery.SQL.Clear;
+ CadDepositoDM.SelectQuery.SQL.Text :=
+ 'SELECT * FROM cadDeposito WHERE codigo=:codigo';
+ CadDepositoDM.SelectQuery.ParamByName('codigo').AsString := codigo;
+ CadDepositoDM.SelectQuery.Open;
+
+ if NOT CadDepositoDM.SelectQuery.IsEmpty then begin
+ showmessage('Deposito já cadastrado!');
+ end
+ else begin
+ CadDepositoDM.InsertQuery.SQL.Clear;
+ CadDepositoDM.InsertQuery.SQL.Text := 'insert into cadDeposito (codigo, descricao, ativo) values (:codigo, :descricao, :ativo)';
+ CadDepositoDM.InsertQuery.ParamByName('codigo').AsString := codigo;
+ CadDepositoDM.InsertQuery.ParamByName('descricao').AsString := descricao;
+ CadDepositoDM.InsertQuery.ParamByName('ativo').AsString := ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Inseriu o depósito ' + descricao + ' no código ' + codigo + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadDeposito';
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ try
+ CadDepositoDM.InsertQuery.ExecSQL;
+ LogsDM.InserirLog.ExecSQL;
+ ShowMessage('Gravado com sucesso!');
+ BtnIncluir.Visible := True;
+ BtnAlterar.Visible := True;
+ BtnConsultar.Visible := True;
+ BtnExcluir.Visible := True;
+
+ BtnGravarIncluir.Visible := False;
+ BtnDesistir.Visible := False;
+
+ EdtCodigo.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+ except
+ ShowMessage('Erro na gravação!');
+ end;
+end;
+end;
+end;
+end;
+
+procedure TCadDeposito.btnAlterarClick(Sender: TObject);
+begin
+  if EdtCodigo.Text = '' then begin
+  ShowMessage('Nenhum deposito selecionado!')
+  end
+  else begin
+  BtnIncluir.Visible := False;
+  BtnGravarIncluir.Visible := False;
+  BtnConsultar.Visible := False;
+  BtnAlterar.Visible := False;
+  BtnExcluir.Visible := False;
+
+  EdtDescricao.Enabled := True;
+  CBAtivo.Enabled := True;
+
+  BtnGravarAlterar.Visible := True;
+  BtnDesistir.Visible := True;
+end;
+end;
+
+procedure TCadDeposito.BtnGravarAlterarClick(Sender: TObject);
+var codigo, descricao, ativo: string;
+begin
+ codigo:= EdtCodigo.Text;
+ descricao:= EdtDescricao.Text;
+ if CBAtivo.Checked then ativo := 'S'
+ else ativo := 'N';
+
+  if EdtCodigo.Text = '' then begin
+  ShowMessage('Código não pode ser vazio!');
+  end
+  else begin
+
+  if EdtDescricao.Text = '' then begin
+  ShowMessage('Descrição não pode ser vazia!');
+  end
+  else begin
+
+ CadDepositoDM.UpdateQuery.SQL.Clear;
+ CadDepositoDM.UpdateQuery.SQL.Text :=
+ 'update cadDeposito set descricao = :descricao, ativo = :ativo where codigo = :codigo';
+ CadDepositoDM.UpdateQuery.ParamByName('codigo').AsString := codigo;
+ CadDepositoDM.UpdateQuery.ParamByName('descricao').AsString := descricao;
+ CadDepositoDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Alterou o depósito ' + descricao + ' no código ' + codigo + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadDeposito';
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ try
+ CadDepositoDM.UpdateQuery.ExecSQL;
+ LogsDM.InserirLog.ExecSQL;
+ ShowMessage('Gravado com sucesso!');
+ BtnIncluir.Visible := True;
+ BtnAlterar.Visible := True;
+ BtnConsultar.Visible := True;
+ BtnExcluir.Visible := True;
+
+ BtnGravarIncluir.Visible := False;
+ BtnDesistir.Visible := False;
+ BtnGravarAlterar.Visible := False;
+
+ EdtCodigo.Enabled := False;
+ EdtDescricao.Enabled := False;
+ CBAtivo.Enabled := False;
+ except
+ ShowMessage('Erro na gravação!');
+ end;
+end;
+end;
+end;
+
+procedure TCadDeposito.btnConsultarClick(Sender: TObject);
+var codigo, descricao, ativo: string;
+begin
+  CadDepositoDM.ConsultarDeposito.SQL.Clear;
+  CadDepositoDM.ConsultarDeposito.SQL.Text :=
+  'select * from caddeposito';
+  CadDepositoDM.ConsultarDeposito.Open;
+
+  Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
+  codigo := ConsultarDeposito.SelecionarDeposito;
+  if codigo <> '' then
+  begin
+    descricao := ConsultarDeposito.Descricao;
+    EdtCodigo.Text := codigo;
+    EdtDescricao.Text := descricao;
+    ativo := ConsultarDeposito.Ativo;
+    CBAtivo.Checked := ativo = 'S';
+  end;
+end;
+
+procedure TCadDeposito.btnDesistirClick(Sender: TObject);
+begin
+  EdtCodigo.Clear;
+  EdtDescricao.Clear;
+
+  EdtCodigo.Enabled := False;
+  EdtDescricao.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  BtnGravarIncluir.Visible := False;
+  BtnDesistir.Visible := False;
+  BtnGravarAlterar.Visible := False;
+
+  BtnIncluir.Visible := True;
+  BtnAlterar.Visible := True;
+  BtnConsultar.Visible := True;
+  BtnExcluir.Visible := True;
+end;
+
+procedure TCadDeposito.btnExcluirClick(Sender: TObject);
+var codigo, descricao, ativo: string;
+begin
+ codigo:= EdtCodigo.Text;
+ descricao := EdtDescricao.text;
+ if CBAtivo.Checked then ativo := 'S'
+ else ativo := 'N';
+
+ CadDepositoDM.SelectQuery.SQL.Clear;
+ CadDepositoDM.SelectQuery.SQL.Text :=
+ 'SELECT * FROM estoque WHERE deposito = :codigo';
+ CadDepositoDM.SelectQuery.ParamByName('codigo').AsString := codigo;
+ CadDepositoDM.SelectQuery.Open;
+
+ if not CadDepositoDM.SelectQuery.IsEmpty then begin
+ ShowMessage('Depósito está sendo usado no estoque, favor verifique!');
+ end
+ else begin
+
+ CadDepositoDM.SelectQuery.SQL.Clear;
+ CadDepositoDM.SelectQuery.SQL.Text :=
+ 'SELECT * FROM CADDEPOSITO WHERE CODIGO = :codigo';
+ CadDepositoDM.SelectQuery.ParamByName('codigo').AsString := codigo;
+ CadDepositoDM.SelectQuery.Open;
+
+ if CadDepositoDM.SelectQuery.IsEmpty then begin
+ ShowMessage('Deposito não encontrado!')
+ end
+ else begin
+ CadDepositoDM.DeleteQuery.SQL.Clear;
+ CadDepositoDM.DeleteQuery.SQL.Text := 'delete from caddeposito where codigo = :codigo';
+ CadDepositoDM.DeleteQuery.ParamByName('codigo').AsString := codigo;
+
+ LogsDM.InserirLog.SQL.Clear;
+ LogsDM.InserirLog.SQL.Text :=
+ 'insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)';
+ LogsDM.InserirLog.ParamByName('descricao').AsString :=
+ 'Deletou o depósito ' + descricao + ' no código ' + codigo + ' e ativo ' + ativo;
+ LogsDM.InserirLog.ParamByName('tela').AsString := 'CadDeposito';
+ LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
+ LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
+ LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
+ try
+ CadDepositoDM.DeleteQuery.ExecSQL;
+ LogsDM.InserirLog.ExecSQL;
+ ShowMessage('Excluído com sucesso!');
+ EdtCodigo.Clear;
+ EdtDescricao.Clear;
+ except
+ ShowMessage('Erro na gravação!');
+ end;
+end;
+end;
+end;
+
+procedure TCadDeposito.btnFecharClick(Sender: TObject);
+begin
+ if Parent is TTabSheet then
+ Parent.Free;
+end;
+
+procedure TCadDeposito.btnAcessoConsultarClick(Sender: TObject);
+var codigo: string;
+    temwhere: boolean;
+    i: integer;
+begin
+ codigo := EdtAcessoCodigo.Text;
+ CadDepositoDM.AcessoQuery.SQL.Clear;
+ CadDepositoDM.AcessoQuery.SQL.Text :=
+ 'select * from caddeposito';
+ temwhere := false;
+
+ if codigo <> '' then begin
+  if temwhere then begin
+   CadDepositoDM.AcessoQuery.SQL.Add('and codigo = :codigo');
+  end
+  else begin
+   CadDepositoDM.AcessoQuery.SQL.Add('where codigo = :codigo');
+   temwhere := true;
+  end;
+ CadDepositoDM.AcessoQuery.Parambyname('codigo').AsString := codigo;
+ end;
+
+ if RGAcessoAtivo.ItemIndex = 0 then begin
+  if temwhere then
+   begin
+    CadDepositoDM.AcessoQuery.SQL.Add('and ativo = :ativo');
+   end
+    else begin
+     CadDepositoDM.AcessoQuery.SQL.Add('where ativo = :ativo');
+     temwhere := true;
+    end;
+ CadDepositoDM.AcessoQuery.ParamByName('ativo').AsString := 'S';
+ end;
+
+ if RGAcessoAtivo.ItemIndex = 1 then begin
+  if temwhere then begin
+   CadDepositoDM.AcessoQuery.SQL.Add('and ativo = :ativo');
+  end
+  else begin
+   CadDepositoDM.AcessoQuery.SQL.Add('where ativo = :ativo');
+   temwhere := true;
+  end;
+ CadDepositoDM.AcessoQuery.ParamByName('ativo').AsString := 'N';
+ end;
+ CadDepositoDM.AcessoQuery.Open;
+ begin
+   for i := 0 to AcessoGrid.Columns.Count - 1 do
+   AcessoGrid.Columns[i].Width := AcessoGrid.Canvas.TextWidth(AcessoGrid.Columns[i].Title.Caption + '     ');
+ end;
+end;
+
+procedure TCadDeposito.EdtAcessoCodigoExit(Sender: TObject);
+var codigo: string;
+begin
+  codigo := EdtAcessoCodigo.Text;
+  CadDepositoDM.ConsultarDeposito.SQL.Clear;
+  CadDepositoDM.ConsultarDeposito.SQL.Text :=
+  'select * from caddeposito where codigo = :codigo';
+  CadDepositoDM.ConsultarDeposito.Parambyname('codigo').AsString := codigo;
+  CadDepositoDM.ConsultarDeposito.Open;
+
+  EdtAcessoDescricao.Text := CadDepositoDM.ConsultarDeposito.FieldByName('descricao').AsString;
+end;
+end.

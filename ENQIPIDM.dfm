@@ -3,7 +3,7 @@
   Width = 640
   object Conexão: TFDConnection
     Params.Strings = (
-	  'server=192.168.1.23'
+      'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
@@ -13,39 +13,39 @@
     Left = 32
     Top = 24
   end
-  object SelectQuery: TFDQuery
+  object qrySelect: TFDQuery
     Connection = Conexão
     Left = 32
     Top = 80
   end
-  object UpdateQuery: TFDQuery
+  object qryUpdate: TFDQuery
     Connection = Conexão
     Left = 176
     Top = 80
   end
-  object InsertQuery: TFDQuery
+  object qryInsert: TFDQuery
     Connection = Conexão
     Left = 104
     Top = 80
   end
-  object ConsultarENQIPI: TFDQuery
+  object qryConsultarENQIPI: TFDQuery
     Connection = Conexão
     SQL.Strings = (
       '')
-    Left = 32
-    Top = 136
+    Left = 56
+    Top = 144
   end
   object dsENQIPI: TDataSource
-    DataSet = ConsultarENQIPI
-    Left = 120
-    Top = 136
+    DataSet = qryConsultarENQIPI
+    Left = 144
+    Top = 144
   end
   object PGLink: TFDPhysPgDriverLink
     VendorLib = 'C:\Program Files (x86)\PostgreSQL\psqlODBC\bin\libpq.dll'
     Left = 88
     Top = 24
   end
-  object DeleteQuery: TFDQuery
+  object qryDelete: TFDQuery
     Connection = Conexão
     Left = 256
     Top = 80

@@ -53,10 +53,12 @@ implementation
 
 {$R *.dfm}
 
+uses ConsultarCSOSNForm;
+
 procedure TCadCSOSN.FormShow(Sender: TObject);
 var I: integer;
 begin
- with CadCSOSNDM.ConsultarCSOSN do
+ with CadCSOSNDM.qryConsultarCSOSN do
  begin
   SQL.Clear;
   SQL.Add('select * from cadcsosn');
@@ -69,10 +71,10 @@ end;
 procedure TCadCSOSN.btnIncluirClick(Sender: TObject);
 var i: integer;
 begin
- CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
- CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+ CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
+ CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
  'select * from cadcsosn';
- CadCSOSNDM.ConsultarCSOSN.Open;
+ CadCSOSNDM.qryConsultarCSOSN.Open;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -161,10 +163,10 @@ begin
   CadCSOSNDM.InsertQuery.ExecSQL;
   ShowMessage('Gravado com sucesso!');
 
-  CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
-  CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+  CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
+  CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
   'select * from cadcsosn';
-  CadCSOSNDM.ConsultarCSOSN.Open;
+  CadCSOSNDM.qryConsultarCSOSN.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -198,10 +200,10 @@ begin
   Abort;
  End;
 
- CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
- CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+ CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
+ CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
  'select * from cadcsosn';
- CadCSOSNDM.ConsultarCSOSN.Open;
+ CadCSOSNDM.qryConsultarCSOSN.Open;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -271,10 +273,10 @@ begin
   CadCSOSNDM.UpdateQuery.ExecSQL;
   ShowMessage('Alterado com sucesso!');
 
-  CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
-  CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+  CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
+  CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
   'select * from cadcsosn';
-  CadCSOSNDM.ConsultarCSOSN.Open;
+  CadCSOSNDM.qryConsultarCSOSN.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -302,10 +304,10 @@ end;
 procedure TCadCSOSN.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
- CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+ CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
+ CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
  'select * from cadcsosn';
- CadCSOSNDM.ConsultarCSOSN.Open;
+ CadCSOSNDM.qryConsultarCSOSN.Open;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -370,10 +372,10 @@ begin
   CadCSOSNDM.UpdateQuery.ExecSQL;
   ShowMessage('Excluído com sucesso!');
 
-  CadCSOSNDM.ConsultarCSOSN.SQL.Clear;
-  CadCSOSNDM.ConsultarCSOSN.SQL.Text :=
+  CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
+  CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
   'select * from cadcsosn';
-  CadCSOSNDM.ConsultarCSOSN.Open;
+  CadCSOSNDM.qryConsultarCSOSN.Open;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -393,10 +395,10 @@ end;
 procedure TCadCSOSN.GridCellClick(Column: TColumn);
 var CSOSN, Descricao, Modo, ativo: String;
 begin
- EdtCSOSN.Text := CadCSOSNDM.ConsultarCSOSN.FieldByName('CSOSN').AsString;
- EdtDescricao.Text := CadCSOSNDM.ConsultarCSOSN.FieldByName('Descricao').AsString;
- Modo := CadCSOSNDM.ConsultarCSOSN.FieldByName('Modo').AsString;
- Ativo := CadCSOSNDM.ConsultarCSOSN.FieldByName('Ativo').AsString;
+ EdtCSOSN.Text := CadCSOSNDM.qryConsultarCSOSN.FieldByName('CSOSN').AsString;
+ EdtDescricao.Text := CadCSOSNDM.qryConsultarCSOSN.FieldByName('Descricao').AsString;
+ Modo := CadCSOSNDM.qryConsultarCSOSN.FieldByName('Modo').AsString;
+ Ativo := CadCSOSNDM.qryConsultarCSOSN.FieldByName('Ativo').AsString;
 
  if Modo = 'B' then
  RBBase.Checked := True
