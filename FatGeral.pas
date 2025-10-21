@@ -1557,30 +1557,37 @@ end;
 procedure TFatGeralForm.SBMoedaClick(Sender: TObject);
 var codigo: string;
 begin
- CadMoedaDM.ConsultarMoeda.SQL.Clear;
- CadMoedaDM.ConsultarMoeda.SQL.Text :=
- 'select * from cadmoeda where ativo = :ativo';
- CadMoedaDM.ConsultarMoeda.ParamByName('ativo').AsString := 'S';
- CadMoedaDM.ConsultarMoeda.Open;
+ with CadMoedaDM.qryConsultarMoeda do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadmoeda where ativo = :ativo');
+  ParamByName('ativo').AsString := 'S';
+  Open;
+ end;
 
  Application.CreateForm(TConsultarMoeda, ConsultarMoeda);
-
  codigo := ConsultarMoeda.SelecionarMoeda;
- EdtMoeda.Text := codigo;
+
+ if codigo <> '' then begin
+  EdtMoeda.Text := codigo;
+ end;
 end;
 
 procedure TFatGeralForm.EdtMoedaChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtMoeda.text;
- CadMoedaDM.ConsultarMoeda.SQL.Clear;
- CadMoedaDM.ConsultarMoeda.SQL.Text :=
- 'select * from cadmoeda where codigo = :codigo and ativo = :ativo';
- CadMoedaDM.ConsultarMoeda.ParamByName('ativo').AsString := 'S';
- CadMoedaDM.ConsultarMoeda.ParamByName('codigo').AsString := codigo;
- CadMoedaDM.ConsultarMoeda.Open;
 
- EdtMoedaDescricao.text := CadMoedaDM.ConsultarMoeda.FieldByName('descricao').AsString;
+ with CadMoedaDM.qryConsultarMoeda do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadmoeda where ativo = :ativo and codigo = :codigo');
+  ParamByName('codigo').AsString := codigo;
+  ParamByName('ativo').AsString := 'S';
+  Open;
+
+  EdtMoedaDescricao.text := FieldByName('descricao').AsString;
+ end;
 end;
 
 procedure TFatGeralForm.EdtNaturezaChange(Sender: TObject);

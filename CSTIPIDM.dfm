@@ -13,17 +13,17 @@
     Left = 32
     Top = 24
   end
-  object SelectQuery: TFDQuery
+  object qrySelect: TFDQuery
     Connection = Conexão
     Left = 32
     Top = 80
   end
-  object UpdateQuery: TFDQuery
+  object qryUpdate: TFDQuery
     Connection = Conexão
     Left = 184
     Top = 80
   end
-  object InsertQuery: TFDQuery
+  object qryInsert: TFDQuery
     Connection = Conexão
     Left = 104
     Top = 80
@@ -37,7 +37,7 @@
   end
   object dsCSTIPI: TDataSource
     DataSet = qryConsultarCSTIPI
-    Left = 120
+    Left = 152
     Top = 136
   end
   object PGLink: TFDPhysPgDriverLink
@@ -45,7 +45,7 @@
     Left = 88
     Top = 24
   end
-  object DeleteQuery: TFDQuery
+  object qryDelete: TFDQuery
     Connection = Conexão
     Left = 264
     Top = 80

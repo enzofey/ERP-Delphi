@@ -3,7 +3,7 @@
   Width = 640
   object Conexão: TFDConnection
     Params.Strings = (
-	  'server=192.168.1.23'
+      'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
@@ -13,21 +13,21 @@
     Left = 32
     Top = 24
   end
-  object ConsultarMoeda: TFDQuery
+  object qryConsultarMoeda: TFDQuery
     Connection = Conexão
     SQL.Strings = (
       '')
-    Left = 32
+    Left = 40
     Top = 144
   end
-  object SelectQuery: TFDQuery
+  object qrySelect: TFDQuery
     Connection = Conexão
     Left = 32
     Top = 80
   end
   object dsCadMoeda: TDataSource
-    DataSet = ConsultarMoeda
-    Left = 120
+    DataSet = qryConsultarMoeda
+    Left = 144
     Top = 144
   end
   object PGLink: TFDPhysPgDriverLink
@@ -35,17 +35,17 @@
     Left = 88
     Top = 24
   end
-  object UpdateQuery: TFDQuery
+  object qryUpdate: TFDQuery
     Connection = Conexão
     Left = 176
     Top = 80
   end
-  object InsertQuery: TFDQuery
+  object qryInsert: TFDQuery
     Connection = Conexão
     Left = 104
     Top = 80
   end
-  object DeleteQuery: TFDQuery
+  object qryDelete: TFDQuery
     Connection = Conexão
     Left = 256
     Top = 80

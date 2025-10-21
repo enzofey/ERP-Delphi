@@ -13,13 +13,13 @@ uses
 type
   TCadNCMDM = class(TDataModule)
     Conexão: TFDConnection;
-    SelectQuery: TFDQuery;
-    UpdateQuery: TFDQuery;
-    InsertQuery: TFDQuery;
-    ConsultarNCM: TFDQuery;
+    qrySelect: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryInsert: TFDQuery;
+    qryConsultarNCM: TFDQuery;
     dsGrid: TDataSource;
     PGLink: TFDPhysPgDriverLink;
-    DeleteQuery: TFDQuery;
+    qryDelete: TFDQuery;
     qryAcesso: TFDQuery;
     dsAcesso: TDataSource;
   private

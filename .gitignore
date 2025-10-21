@@ -14,10 +14,11 @@
 *.dproj.local
 
 # Pastas de build
-\bin\
-\release\
-\debug\
-\__history\
+/bin/
+/release/
+/debug/
+/__history/
+/Backup/
 
 # Pacotes intermediários
 *.dcp

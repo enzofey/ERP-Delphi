@@ -21,8 +21,6 @@ object CadNCM: TCadNCM
     Height = 956
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1117
-    ExplicitHeight = 862
   end
   object Pages: TPageControl
     Left = 0
@@ -32,10 +30,6 @@ object CadNCM: TCadNCM
     ActivePage = AcessoPage
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 1
-    ExplicitTop = 1
-    ExplicitWidth = 1860
-    ExplicitHeight = 954
     object AcessoPage: TTabSheet
       Caption = 'Acesso'
       object lblAcessoNCM: TLabel

@@ -13,13 +13,13 @@ uses
 type
   TCadCSTIPIDM = class(TDataModule)
     Conexão: TFDConnection;
-    SelectQuery: TFDQuery;
-    UpdateQuery: TFDQuery;
-    InsertQuery: TFDQuery;
+    qrySelect: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryInsert: TFDQuery;
     qryConsultarCSTIPI: TFDQuery;
     dsCSTIPI: TDataSource;
     PGLink: TFDPhysPgDriverLink;
-    DeleteQuery: TFDQuery;
+    qryDelete: TFDQuery;
   private
     { Private declarations }
   public

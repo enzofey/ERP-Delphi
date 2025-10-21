@@ -147,7 +147,7 @@ begin
  CBUniCom.Items.Clear;
  CBAcessoUniCom.Items.Clear;
 
- with CadUnidadeDM.ConsultarUnidade do
+ with CadUnidadeDM.qryConsultarUnidade do
  begin
   SQL.Clear;
   SQL.Add('select unidade from cadunidade where ativo = :ativo');
@@ -169,14 +169,14 @@ begin
  CBUniVenda.Items.Clear;
  CBAcessoUniVenda.Items.Clear;
 
- with CadUnidadeDM.ConsultarUnidade do
+ with CadUnidadeDM.qryConsultarUnidade do
  begin
   SQL.Clear;
   SQL.Add('select unidade from cadunidade where ativo = :ativo');
   ParamByName('ativo').AsString := 'S';
   Open;
 
-  CadUnidadeDM.ConsultarUnidade.First;
+  First;
   while not Eof do
   begin
    CBUniVenda.Items.Add(FieldByName('Unidade').AsString);
@@ -900,7 +900,7 @@ end;
 procedure TCadProduto.SBAcessoConsNCMClick(Sender: TObject);
 var codigo, NCM: String;
 begin
- with CadNCMDM.ConsultarNCM do
+ with CadNCMDM.qryConsultarNCM do
  begin
   SQL.Clear;
   SQL.Add('select * from cadncm');
@@ -958,7 +958,7 @@ end;
 procedure TCadProduto.SBNCMClick(Sender: TObject);
 var codigo, NCM: String;
 begin
- with CadNCMDM.ConsultarNCM do
+ with CadNCMDM.qryConsultarNCM do
  begin
   SQL.Clear;
   SQL.Add('select * from cadncm where ativo = :ativo');
@@ -1012,7 +1012,7 @@ var codigo, descricao: String;
 begin
  codigo := EdtAcessoNCM.Text;
 
- with CadNCMDM.ConsultarNCM do
+ with CadNCMDM.qryConsultarNCM do
  begin
   SQL.Clear;
   SQL.Add('select * from cadncm where codigo = :codigo');
@@ -1044,7 +1044,7 @@ var codigo, descricao: String;
 begin
  codigo := EdtNCM.Text;
 
- with CadNCMDM.ConsultarNCM do
+ with CadNCMDM.qryConsultarNCM do
  begin
   SQL.Clear;
   SQL.Add('select * from cadncm where codigo = :codigo');

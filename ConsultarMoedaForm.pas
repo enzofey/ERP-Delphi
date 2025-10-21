@@ -49,8 +49,11 @@ end;
 
 procedure TConsultarMoeda.BtnSelecionarMoedaClick(Sender: TObject);
 begin
-  MoedaCodigo := CadMoedaDM.ConsultarMoeda.FieldByName('codigo').AsString;
-  MoedaDescricao := CadMoedaDM.ConsultarMoeda.FieldByName('descricao').AsString;
-  Close;
+ with CadMoedaDM.qryConsultarMoeda do
+ begin
+  MoedaCodigo := FieldByName('codigo').AsString;
+  MoedaDescricao := FieldByName('descricao').AsString;
+ end;
+ Close;
 end;
 end.

@@ -13,11 +13,11 @@ uses
 type
   TCadUnidadeDM = class(TDataModule)
     Conexão: TFDConnection;
-    SelectQuery: TFDQuery;
-    UpdateQuery: TFDQuery;
-    InsertQuery: TFDQuery;
-    DeleteQuery: TFDQuery;
-    ConsultarUnidade: TFDQuery;
+    qrySelect: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryInsert: TFDQuery;
+    qryDelete: TFDQuery;
+    qryConsultarUnidade: TFDQuery;
     dsGridQuery: TDataSource;
     PGLink: TFDPhysPgDriverLink;
   private

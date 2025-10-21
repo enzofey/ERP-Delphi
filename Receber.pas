@@ -326,7 +326,7 @@ end;
 procedure TReceberForm.SBMoedaClick(Sender: TObject);
 var codigo, descricao: string;
 begin
- with CadMoedaDM.ConsultarMoeda do
+ with CadMoedaDM.qryConsultarMoeda do
  begin
   SQL.Clear;
   SQL.Add('select * from cadmoeda');
@@ -347,7 +347,7 @@ procedure TReceberForm.EdtMoedaChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtMoeda.Text;
- with CadMoedaDM.ConsultarMoeda do
+ with CadMoedaDM.qryConsultarMoeda do
  begin
   SQL.Clear;
   SQL.Add('select * from cadmoeda where codigo = :codigo');
@@ -362,7 +362,7 @@ procedure TReceberForm.EdtMoedaDUPLChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtMoedaDUPL.Text;
- with CadMoedaDM.ConsultarMoeda do
+ with CadMoedaDM.qryConsultarMoeda do
  begin
   SQL.Clear;
   SQL.Add('select * from cadmoeda where codigo = :codigo');

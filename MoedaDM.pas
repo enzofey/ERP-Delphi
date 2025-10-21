@@ -13,13 +13,13 @@ uses
 type
   TCadMoedaDM = class(TDataModule)
     Conexão: TFDConnection;
-    ConsultarMoeda: TFDQuery;
-    SelectQuery: TFDQuery;
+    qryConsultarMoeda: TFDQuery;
+    qrySelect: TFDQuery;
     dsCadMoeda: TDataSource;
     PGLink: TFDPhysPgDriverLink;
-    UpdateQuery: TFDQuery;
-    InsertQuery: TFDQuery;
-    DeleteQuery: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryInsert: TFDQuery;
+    qryDelete: TFDQuery;
   private
     { Private declarations }
   public

@@ -52,10 +52,12 @@ implementation
 procedure TCadUnidade.FormShow(Sender: TObject);
 var I: integer;
 begin
- CadUnidadeDM.ConsultarUnidade.SQL.Clear;
- CadUnidadeDM.ConsultarUnidade.SQL.Text :=
- 'select * from cadunidade';
- CadUnidadeDM.ConsultarUnidade.Open;
+ with CadUnidadeDM.qryConsultarUnidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadunidade');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 end;
@@ -63,10 +65,12 @@ end;
 procedure TCadUnidade.btnIncluirClick(Sender: TObject);
 var I: integer;
 begin
- CadUnidadeDM.ConsultarUnidade.SQL.Clear;
- CadUnidadeDM.ConsultarUnidade.SQL.Text :=
- 'select * from cadunidade';
- CadUnidadeDM.ConsultarUnidade.Open;
+ with CadUnidadeDM.qryConsultarUnidade do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadunidade');
+   Open;
+  end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -95,35 +99,47 @@ begin
  descricao := EdtDescricao.Text;
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- CadUnidadeDM.SelectQuery.SQL.Clear;
- CadUnidadeDM.SelectQuery.SQL.Text :=
- 'select * from cadunidade where unidade = :unidade';
- CadUnidadeDM.SelectQuery.Parambyname('unidade').AsString := unidade;
+ with CadUnidadeDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadunidade where unidade = :unidade');
+  Parambyname('unidade').AsString := unidade;
 
- if not CadUnidadeDM.SelectQuery.IsEmpty then begin
-  ShowMessage('Unidade já cadastrada!');
-  Abort;
- End;
+  if not IsEmpty then begin
+   ShowMessage('Unidade já cadastrada!');
+   Abort;
+  End;
+ end;
 
- CadUnidadeDM.InsertQuery.SQL.Clear;
- CadUnidadeDM.InsertQuery.SQL.Text :=
- 'insert into cadunidade (unidade, descricao, ativo) values (:unidade, :descricao, :ativo)';
- CadUnidadeDM.InsertQuery.ParamByName('unidade').AsString := unidade;
- CadUnidadeDM.InsertQuery.ParamByName('descricao').AsString := descricao;
- CadUnidadeDM.InsertQuery.ParamByName('ativo').AsString := ativo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
- LogsDM.InserirLog.Parambyname('descricao').AsString :=
- 'Inseriu a unidade ' + unidade + ' na descrição ' + descricao + ' e ativo = ' + ativo;
- LogsDM.InserirLog.Parambyname('tela').AsString := 'CadUnidade';
- LogsDM.InserirLog.Parambyname('data').AsDateTime := Now;
- LogsDM.InserirLog.Parambyname('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.Parambyname('emp_id').AsString := EmpresaLogada;
+ CadUnidadeDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadUnidadeDM.InsertQuery.ExecSQL;
+  with CadUnidadeDM.qryInsert do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into cadunidade (unidade, descricao, ativo)');
+   SQL.Add('values');
+   SQL.Add('(:unidade, :descricao, :ativo)');
+   ParamByName('unidade').AsString := unidade;
+   ParamByName('descricao').AsString := descricao;
+   ParamByName('ativo').AsString := ativo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   Parambyname('descricao').AsString :=
+   'Inseriu a unidade ' + unidade + ' na descrição ' + descricao + ' e ativo = ' + ativo;
+   Parambyname('tela').AsString := 'CadUnidade';
+   Parambyname('data').AsDateTime := Now;
+   Parambyname('usuario').AsString := UsuarioLogado;
+   Parambyname('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
   EdtUnidade.Enabled := False;
   EdtDescricao.Enabled := False;
   CBAtivo.Enabled := False;
@@ -137,15 +153,19 @@ begin
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
 
-  CadUnidadeDM.ConsultarUnidade.SQL.Clear;
-  CadUnidadeDM.ConsultarUnidade.SQL.Text :=
-  'select * from cadunidade';
-  CadUnidadeDM.ConsultarUnidade.Open;
+  with CadUnidadeDM.qryConsultarUnidade do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadunidade');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
+  CadUnidadeDM.Conexão.Commit;
   ShowMessage('Gravado com sucesso!');
   except
+  CadUnidadeDM.Conexão.Rollback;
   ShowMessage('Erro na gravação!');
  end;
 end;
@@ -153,10 +173,12 @@ end;
 procedure TCadUnidade.btnAlterarClick(Sender: TObject);
 var I: integer;
 begin
- CadUnidadeDM.ConsultarUnidade.SQL.Clear;
- CadUnidadeDM.ConsultarUnidade.SQL.Text :=
- 'select * from cadunidade';
- CadUnidadeDM.ConsultarUnidade.Open;
+ with CadUnidadeDM.qryConsultarUnidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadunidade');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -180,25 +202,33 @@ begin
  descricao := EdtDescricao.Text;
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- CadUnidadeDM.UpdateQuery.SQL.Clear;
- CadUnidadeDM.UpdateQuery.SQL.Text :=
- 'update cadunidade set descricao = :descricao, ativo = :ativo where unidade = :unidade';
- CadUnidadeDM.UpdateQuery.ParamByName('unidade').AsString := unidade;
- CadUnidadeDM.UpdateQuery.ParamByName('descricao').AsString := descricao;
- CadUnidadeDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
- LogsDM.InserirLog.Parambyname('descricao').AsString :=
- 'Alterou a unidade ' + unidade + ' na descrição ' + descricao + ' e ativo = ' + ativo;
- LogsDM.InserirLog.Parambyname('tela').AsString := 'CadUnidade';
- LogsDM.InserirLog.Parambyname('data').AsDateTime := Now;
- LogsDM.InserirLog.Parambyname('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.Parambyname('emp_id').AsString := EmpresaLogada;
+ CadUnidadeDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadUnidadeDM.UpdateQuery.ExecSQL;
+  with CadUnidadeDM.qryUpdate do
+  begin
+   SQL.Clear;
+   SQL.Add('update cadunidade set descricao = :descricao, ativo = :ativo where unidade = :unidade');
+   ParamByName('unidade').AsString := unidade;
+   ParamByName('descricao').AsString := descricao;
+   ParamByName('ativo').AsString := ativo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   Parambyname('descricao').AsString :=
+   'Alterou a unidade ' + unidade + ' na descrição ' + descricao + ' e ativo = ' + ativo;
+   Parambyname('tela').AsString := 'CadUnidade';
+   Parambyname('data').AsDateTime := Now;
+   Parambyname('usuario').AsString := UsuarioLogado;
+   Parambyname('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
   EdtUnidade.Enabled := False;
   EdtDescricao.Enabled := False;
   CBAtivo.Enabled := False;
@@ -212,14 +242,19 @@ begin
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
 
-  CadUnidadeDM.ConsultarUnidade.SQL.Clear;
-  CadUnidadeDM.ConsultarUnidade.SQL.Text :=
-  'select * from cadunidade';
-  CadUnidadeDM.ConsultarUnidade.Open;
+  with CadUnidadeDM.qryConsultarUnidade do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadunidade');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+
+  CadUnidadeDM.Conexão.Commit;
   ShowMessage('Alterado com sucesso!');
   except
+  CadUnidadeDM.Conexão.Rollback;
   ShowMessage('Erro na gravação!');
  end;
 end;
@@ -227,10 +262,12 @@ end;
 procedure TCadUnidade.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadUnidadeDM.ConsultarUnidade.SQL.Clear;
- CadUnidadeDM.ConsultarUnidade.SQL.Text :=
- 'select * from cadunidade';
- CadUnidadeDM.ConsultarUnidade.Open;
+ with CadUnidadeDM.qryConsultarUnidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadunidade');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -265,34 +302,44 @@ begin
   Abort;
  end;
 
- CadUnidadeDM.SelectQuery.SQL.Clear;
- CadUnidadeDM.SelectQuery.SQL.Text :=
- 'select * from cadunidade where unidade = :unidade';
- CadUnidadeDM.SelectQuery.ParamByName('unidade').AsString := unidade;
- CadUnidadeDM.SelectQuery.Open;
+ with CadUnidadeDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadunidade where unidade = :unidade');
+  ParamByName('unidade').AsString := unidade;
+  Open;
 
- if not CadUnidadeDM.SelectQuery.IsEmpty then begin
-  ShowMessage('Unidade não encontrada!');
-  Abort;
+  if not IsEmpty then begin
+   ShowMessage('Unidade não encontrada!');
+   Abort;
+  end;
  end;
 
- CadUnidadeDM.DeleteQuery.SQL.Clear;
- CadUnidadeDM.DeleteQuery.SQL.Text :=
- 'delete from cadunidade where unidade = :unidade';
- CadUnidadeDM.DeleteQuery.ParamByName('unidade').AsString := unidade;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
- LogsDM.InserirLog.Parambyname('descricao').AsString :=
- 'Excluiu a unidade ' + unidade + ' na descrição ' + descricao + ' e ativo = ' + ativo;
- LogsDM.InserirLog.Parambyname('tela').AsString := 'CadUnidade';
- LogsDM.InserirLog.Parambyname('data').AsDateTime := Now;
- LogsDM.InserirLog.Parambyname('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.Parambyname('emp_id').AsString := EmpresaLogada;
+ CadUnidadeDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadUnidadeDM.DeleteQuery.ExecSQL;
+  with CadUnidadeDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadunidade where unidade = :unidade');
+   ParamByName('unidade').AsString := unidade;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   Parambyname('descricao').AsString :=
+   'Excluiu a unidade ' + unidade + ' na descrição ' + descricao + ' e ativo = ' + ativo;
+   Parambyname('tela').AsString := 'CadUnidade';
+   Parambyname('data').AsDateTime := Now;
+   Parambyname('usuario').AsString := UsuarioLogado;
+   Parambyname('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
   EdtUnidade.Enabled := False;
   EdtDescricao.Enabled := False;
   CBAtivo.Enabled := False;
@@ -310,15 +357,19 @@ begin
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
 
-  CadUnidadeDM.ConsultarUnidade.SQL.Clear;
-  CadUnidadeDM.ConsultarUnidade.SQL.Text :=
-  'select * from cadunidade';
-  CadUnidadeDM.ConsultarUnidade.Open;
+  with CadUnidadeDM.qryConsultarUnidade do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadunidade');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
+  CadUnidadeDM.Conexão.Commit;
   ShowMessage('Excluido com sucesso!');
   except
+  CadUnidadeDM.Conexão.Rollback;
   ShowMessage('Erro na gravação!');
  end;
 end;
@@ -331,8 +382,11 @@ end;
 
 procedure TCadUnidade.GridCellClick(Column: TColumn);
 begin
- EdtUnidade.Text := CadUnidadeDM.ConsultarUnidade.FieldByName('unidade').AsString;
- CBAtivo.Checked := CadUnidadeDM.ConsultarUnidade.FieldByName('Ativo').AsString = 'S';
- EdtDescricao.Text := CadUnidadeDM.ConsultarUnidade.FieldByName('Descricao').AsString;
+ with CadUnidadeDM.qryConsultarUnidade do
+ begin
+  EdtUnidade.Text := FieldByName('unidade').AsString;
+  CBAtivo.Checked := FieldByName('Ativo').AsString = 'S';
+  EdtDescricao.Text := FieldByName('Descricao').AsString;
+ end;
 end;
 end.

@@ -35,9 +35,12 @@ implementation
 
 procedure TConsultarNCM.btnSelecionarNCMClick(Sender: TObject);
 begin
-  NCMCodigo := CadNCMDM.ConsultarNCM.FieldByName('Codigo').AsString;
-  NCMNCM := CadNCMDM.ConsultarNCM.FieldByName('NCM').AsString;
-  Close;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  NCMCodigo := FieldByName('Codigo').AsString;
+  NCMNCM := FieldByName('NCM').AsString;
+ end;
+ Close;
 end;
 
 function TConsultarNCM.SelecionarNCM: string;

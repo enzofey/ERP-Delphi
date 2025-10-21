@@ -3,7 +3,7 @@
   Width = 640
   object Conexão: TFDConnection
     Params.Strings = (
-	  'server=192.168.1.23'
+      'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
@@ -13,27 +13,27 @@
     Left = 32
     Top = 24
   end
-  object SelectQuery: TFDQuery
+  object qrySelect: TFDQuery
     Connection = Conexão
     Left = 32
     Top = 80
   end
-  object UpdateQuery: TFDQuery
+  object qryUpdate: TFDQuery
     Connection = Conexão
     Left = 184
     Top = 80
   end
-  object InsertQuery: TFDQuery
+  object qryInsert: TFDQuery
     Connection = Conexão
     Left = 104
     Top = 80
   end
-  object DeleteQuery: TFDQuery
+  object qryDelete: TFDQuery
     Connection = Conexão
     Left = 264
     Top = 80
   end
-  object ConsultarUnidade: TFDQuery
+  object qryConsultarUnidade: TFDQuery
     Connection = Conexão
     SQL.Strings = (
       '')
@@ -41,7 +41,7 @@
     Top = 136
   end
   object dsGridQuery: TDataSource
-    DataSet = ConsultarUnidade
+    DataSet = qryConsultarUnidade
     Left = 136
     Top = 136
   end

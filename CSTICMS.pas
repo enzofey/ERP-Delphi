@@ -58,10 +58,12 @@ uses ConsultarCSTICMSForm;
 procedure TCadCSTICMS.FormShow(Sender: TObject);
 var I: integer;
 begin
-CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
- CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
- 'select * from cadcsticms';
- CadCSTICMSDM.qryConsultarCSTICMS.Open;
+ with CadCSTICMSDM.qryConsultarCSTICMS do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcsticms');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 end;
@@ -69,10 +71,12 @@ end;
 procedure TCadCSTICMS.btnIncluirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
- CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
- 'select * from cadcsticms';
- CadCSTICMSDM.qryConsultarCSTICMS.Open;
+ with CadCSTICMSDM.qryConsultarCSTICMS do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcsticms');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -113,58 +117,74 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCST.Text = '' then begin
+ if CST = '' then begin
   ShowMessage('CST ICMS não pode ser vazio!');
   Abort;
- End;
+ end;
 
- if EdtDescricao.Text = '' then begin
+ if Descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
   Abort;
- End;
+ end;
 
  if not RBBase.Checked and not RBIsento.Checked and not RBOutros.Checked then begin
   ShowMessage('Selecione um modo de cálculo!');
   Abort;
- End;
+ end;
 
- CadCSTICMSDM.SelectQuery.SQL.Clear;
- CadCSTICMSDM.SelectQuery.SQL.Text :=
- 'select * from cadCSTICMS where CST = :CST';
- CadCSTICMSDM.SelectQuery.ParamByName('CST').AsString := CST;
- CadCSTICMSDM.SelectQuery.Open;
+ with CadCSTICMSDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadCSTICMS where CST = :CST');
+  ParamByName('CST').AsString := CST;
+  Open;
 
- if not CadCSTICMSDM.SelectQuery.IsEmpty then begin
-  ShowMessage('CST ICMS já cadastrado!');
-  Abort;
- End;
 
- CadCSTICMSDM.InsertQuery.SQL.CLear;
- CadCSTICMSDM.InsertQuery.SQL.Text :=
- 'insert into cadCSTICMS (CST, Descricao, Modo, ativo) values (:CST, :Descricao, :Modo, :ativo)';
- CadCSTICMSDM.InsertQuery.ParamByName('CST').AsString := CST;
- CadCSTICMSDM.InsertQuery.ParamByName('Descricao').AsString := Descricao;
- CadCSTICMSDM.InsertQuery.ParamByName('Modo').AsString := Modo;
- CadCSTICMSDM.InsertQuery.Parambyname('ativo').AsString := ativo;
+  if not IsEmpty then begin
+   ShowMessage('CST ICMS já cadastrado!');
+   Abort;
+  end;
+ end;
 
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Inseriu o CST ICMS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSTICMS';
+ CadCSTICMSDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSTICMSDM.InsertQuery.ExecSQL;
+  with CadCSTICMSDM.qryInsert do
+  begin
+   SQL.CLear;
+   SQL.Add('insert into cadCSTICMS (CST, Descricao, Modo, ativo)');
+   SQL.Add('values');
+   SQL.Add('(:CST, :Descricao, :Modo, :ativo)');
+   ParamByName('CST').AsString := CST;
+   ParamByName('Descricao').AsString := Descricao;
+   ParamByName('Modo').AsString := Modo;
+   Parambyname('ativo').AsString := ativo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Inseriu o CST ICMS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSTICMS';
+   ExecSQL;
+  end;
+
+  CadCSTICMSDM.Conexão.Commit;
   ShowMessage('Incluído com sucesso!');
 
-  CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
-  CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
-  'select * from cadcsticms';
-  CadCSTICMSDM.qryConsultarCSTICMS.Open;
+  with CadCSTICMSDM.qryConsultarCSTICMS do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcsticms');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -186,6 +206,7 @@ begin
   btnGravarIncluir.Visible := False;
   btnDesistir.Visible := False;
   except
+  CadCSTICMSDM.Conexão.Rollback;
   ShowMessage('Erro na inclusão!');
  end;
 end;
@@ -196,12 +217,14 @@ begin
  if EdtCST.Text = '' then begin
   ShowMessage('Nenhum CST ICMS selecionado!');
   Abort;
- End;
+ end;
 
- CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
- CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
- 'select * from cadcsticms';
- CadCSTICMSDM.qryConsultarCSTICMS.Open;
+ with CadCSTICMSDM.qryConsultarCSTICMS do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcsticms');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -232,47 +255,58 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCST.Text = '' then begin
+ if CST = '' then begin
   ShowMessage('CST ICMS não pode ser vazio!');
   Abort;
- End;
+ end;
 
- if EdtDescricao.Text = '' then begin
+ if Descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
   Abort;
- End;
+ end;
 
  if not RBBase.Checked and not RBIsento.Checked and not RBOutros.Checked then begin
   ShowMessage('Selecione um modo de cálculo!');
   Abort;
- End;
+ end;
 
- CadCSTICMSDM.UpdateQuery.SQL.CLear;
- CadCSTICMSDM.UpdateQuery.SQL.Text :=
- 'update cadCSTICMS set descricao = :descricao, modo = :modo, Ativo = :Ativo where CST = :CST';
- CadCSTICMSDM.UpdateQuery.ParamByName('CST').AsString := CST;
- CadCSTICMSDM.UpdateQuery.ParamByName('Descricao').AsString := Descricao;
- CadCSTICMSDM.UpdateQuery.ParamByName('Modo').AsString := Modo;
- CadCSTICMSDM.UpdateQuery.ParamByName('Ativo').AsString := Ativo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Alterou o CST ICMS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSTICMS';
+ CadCSTICMSDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSTICMSDM.UpdateQuery.ExecSQL;
+  with CadCSTICMSDM.qryUpdate do
+  begin
+   SQL.CLear;
+   SQL.Add('update cadCSTICMS set descricao = :descricao, modo = :modo, Ativo = :Ativo where CST = :CST');
+   ParamByName('CST').AsString := CST;
+   ParamByName('Descricao').AsString := Descricao;
+   ParamByName('Modo').AsString := Modo;
+   ParamByName('Ativo').AsString := Ativo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Alterou o CST ICMS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSTICMS';
+   ExecSQL;
+  end;
+
+  CadCSTICMSDM.Conexão.Commit;
   ShowMessage('Alterado com sucesso!');
 
-  CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
-  CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
-  'select * from cadcsticms';
-  CadCSTICMSDM.qryConsultarCSTICMS.Open;
+  with CadCSTICMSDM.qryConsultarCSTICMS do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcsticms');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -293,6 +327,7 @@ begin
   btnGravarAlterar.Visible := False;
   btnDesistir.Visible := False;
   except
+  CadCSTICMSDM.Conexão.Rollback;
   ShowMessage('Erro na alteração!');
   end;
 end;
@@ -300,10 +335,12 @@ end;
 procedure TCadCSTICMS.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
- CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
- 'select * from cadcsticms';
- CadCSTICMSDM.qryConsultarCSTICMS.Open;
+ with CadCSTICMSDM.qryConsultarCSTICMS do
+ begin
+   SQL.Clear;
+   SQL.Add('select * from cadcsticms');
+   Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -344,34 +381,45 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCST.Text = '' then begin
+ if CST = '' then begin
   ShowMessage('Nenhum CST ICMS selecionado!');
   Abort;
- End;
+ end;
 
- CadCSTICMSDM.DeleteQuery.SQL.CLear;
- CadCSTICMSDM.DeleteQuery.SQL.Text :=
- 'delete from cadCSTICMS where CST = :CST';
- CadCSTICMSDM.DeleteQuery.ParamByName('CST').AsString := CST;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Deletou o CST ICMS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSTICMS';
+ CadCSTICMSDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSTICMSDM.DeleteQuery.ExecSQL;
+  with CadCSTICMSDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadCSTICMS where CST = :CST');
+   ParamByName('CST').AsString := CST;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Deletou o CST ICMS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSTICMS';
+   ExecSQL;
+  end;
+
+  CadCSTICMSDM.Conexão.Commit;
   ShowMessage('Excluído com sucesso!');
 
-  CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
-  CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
-  'select * from cadcsticms';
-  CadCSTICMSDM.qryConsultarCSTICMS.Open;
+  with CadCSTICMSDM.qryConsultarCSTICMS do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcsticms');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -382,17 +430,22 @@ begin
   RBIsento.Checked := False;
   RBOutros.Checked := False;
   except
+  CadCSTICMSDM.Conexão.Rollback;
   ShowMessage('Erro na exclusão!');
-  end;
+ end;
 end;
 
 procedure TCadCSTICMS.GridCellClick(Column: TColumn);
 var CST, Descricao, Modo, ativo: String;
 begin
- EdtCST.Text := CadCSTICMSDM.qryConsultarCSTICMS.FieldByName('CST').AsString;
- EdtDescricao.Text := CadCSTICMSDM.qryConsultarCSTICMS.FieldByName('Descricao').AsString;
- Modo := CadCSTICMSDM.qryConsultarCSTICMS.FieldByName('Modo').AsString;
- Ativo := CadCSTICMSDM.qryConsultarCSTICMS.FieldByName('Ativo').AsString;
+ with CadCSTICMSDM.qryConsultarCSTICMS do
+ begin
+  EdtCST.Text := FieldByName('CST').AsString;
+  EdtDescricao.Text := FieldByName('Descricao').AsString;
+  Modo := FieldByName('Modo').AsString;
+  Ativo := FieldByName('Ativo').AsString;
+ end;
+
  if Modo = 'B' then
  RBBase.Checked := True
  else if Modo = 'I' then

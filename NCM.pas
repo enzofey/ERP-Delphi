@@ -68,10 +68,12 @@ implementation
 procedure TCadNCM.FormShow(Sender: TObject);
 var I: integer;
 begin
- CadNCMDM.ConsultarNCM.SQL.Clear;
- CadNCMDM.ConsultarNCM.SQL.Text :=
- 'select * from cadncm';
- CadNCMDM.ConsultarNCM.Open;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadncm');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 end;
@@ -79,10 +81,12 @@ end;
 procedure TCadNCM.btnIncluirClick(Sender: TObject);
 var I: integer;
 begin
- CadNCMDM.ConsultarNCM.SQL.Clear;
- CadNCMDM.ConsultarNCM.SQL.Text :=
- 'select * from cadncm';
- CadNCMDM.ConsultarNCM.Open;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadncm');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -106,22 +110,28 @@ end;
 procedure TCadNCM.GridCellClick(Column: TColumn);
 var codigo, NCM, Ativo, Descricao: String;
 begin
- EdtCodigo.Text := CadNCMDM.ConsultarNCM.FieldByName('codigo').AsString;
- EdtNCM.Text := CadNCMDM.ConsultarNCM.FieldByName('NCM').AsString;
- EdtDescricao.Text := CadNCMDM.ConsultarNCM.FieldByName('Descricao').AsString;
- if CadNCMDM.ConsultarNCM.FieldByName('Ativo').AsString = 'S' then CBAtivo.Checked;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  EdtCodigo.Text := FieldByName('codigo').AsString;
+  EdtNCM.Text := FieldByName('NCM').AsString;
+  EdtDescricao.Text := FieldByName('Descricao').AsString;
+  if FieldByName('Ativo').AsString = 'S' then CBAtivo.Checked;
+ end;
 end;
 
 procedure TCadNCM.SBConsNCMClick(Sender: TObject);
 var codigo, NCM: String;
 begin
- CadNCMDM.ConsultarNCM.SQL.Clear;
- CadNCMDM.ConsultarNCM.SQL.Text :=
- 'select * from cadncm';
- CadNCMDM.ConsultarNCM.Open;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadncm');
+  Open;
+ end;
 
  Application.CreateForm(TConsultarNCM, ConsultarNCM);
  codigo := ConsultarNCM.SelecionarNCM;
+
  if codigo <> '' then begin
   EdtAcessoNCM.Text := codigo;
   NCM := ConsultarNCM.NCM;
@@ -133,13 +143,16 @@ procedure TCadNCM.EdtAcessoNCMChange(Sender: TObject);
 var codigo, NCM: String;
 begin
  codigo := EdtAcessoNCM.text;
- CadNCMDM.ConsultarNCM.SQL.Clear;
- CadNCMDM.ConsultarNCM.SQL.Text :=
- 'select * from cadncm where codigo = :codigo';
- CadNCMDM.ConsultarNCM.ParamByName('codigo').AsString := Codigo;
- CadNCMDM.ConsultarNCM.Open;
 
- EdtAcessoDescricao.Text := CadNCMDM.ConsultarNCM.FieldByName('NCM').AsString;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadncm where codigo = :codigo');
+  ParamByName('codigo').AsString := Codigo;
+  Open;
+
+  EdtAcessoDescricao.Text := FieldByName('NCM').AsString;
+ end;
 end;
 
 procedure TCadNCM.btnGravarIncluirClick(Sender: TObject);
@@ -153,51 +166,63 @@ begin
 
  if codigo = '' then begin
   ShowMessage('Código não pode ser vazio!');
-  Exit;
+  Abort;
  end;
 
  if descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
-  Exit;
+  Abort;
  end;
 
  if NCM = '' then begin
   ShowMessage('NCM não pode ser vazio!');
-  Exit;
+  Abort;
  end;
 
- try
-  CadNCMDM.SelectQuery.SQL.Clear;
-  CadNCMDM.SelectQuery.SQL.Text :=
-  'select * from cadNCM where NCM = :NCM';
-  CadNCMDM.SelectQuery.ParamByName('NCM').AsString := NCM;
-  CadNCMDM.SelectQuery.Open;
+ with CadNCMDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadNCM where NCM = :NCM');
+  ParamByName('NCM').AsString := NCM;
+  Open;
 
-  if not CadNCMDM.SelectQuery.IsEmpty then begin
+  if not IsEmpty then begin
    ShowMessage('NCM já cadastrado!');
-   Exit;
+   Abort;
+  end;
+ end;
+
+ CadNCMDM.Conexão.StartTransaction;
+ try
+  with CadNCMDM.qryInsert do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into cadncm (codigo, NCM, descricao, ativo)');
+   SQL.Add('values');
+   SQL.Add('(:codigo, :NCM, :descricao, :ativo)');
+   ParamByName('NCM').AsString := NCM;
+   ParamByName('descricao').AsString := descricao;
+   ParamByName('ativo').AsString := ativo;
+   ParamByName('codigo').AsString := codigo;
+   ExecSQL;
   end;
 
-  CadNCMDM.InsertQuery.SQL.Clear;
-  CadNCMDM.InsertQuery.SQL.Text :=
-  'insert into cadncm (codigo, NCM, descricao, ativo) values (:codigo, :NCM, :descricao, :ativo)';
-  CadNCMDM.InsertQuery.ParamByName('NCM').AsString := NCM;
-  CadNCMDM.InsertQuery.ParamByName('descricao').AsString := descricao;
-  CadNCMDM.InsertQuery.ParamByName('ativo').AsString := ativo;
-  CadNCMDM.InsertQuery.ParamByName('codigo').AsString := codigo;
-  CadNCMDM.InsertQuery.ExecSQL;
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   ParamByName('descricao').AsString :=
+   'Inseriu o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
+   ParamByName('tela').AsString := 'CadNCM';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
 
-  LogsDM.InserirLog.SQL.Clear;
-  LogsDM.InserirLog.SQL.Text :=
-  'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
-  LogsDM.InserirLog.ParamByName('descricao').AsString :=
-  'Inseriu o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
-  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadNCM';
-  LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
-  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
-  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  LogsDM.InserirLog.ExecSQL;
-
+  CadNCMDM.Conexão.Commit;
   ShowMessage('Incluído com sucesso!');
   btnIncluir.Visible := True;
   btnExcluir.Visible := True;
@@ -211,13 +236,16 @@ begin
   EdtDescricao.Enabled := False;
   CBAtivo.Enabled := False;
 
-  CadNCMDM.ConsultarNCM.SQL.Clear;
-  CadNCMDM.ConsultarNCM.SQL.Text :=
-  'select * from cadncm';
-  CadNCMDM.ConsultarNCM.Open;
+  with CadNCMDM.qryConsultarNCM do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadncm');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
   except
+  CadNCMDM.Conexão.Rollback;
   ShowMessage('Erro na inclusão!');
  end;
 end;
@@ -227,13 +255,15 @@ var I: integer;
 begin
  if EdtCodigo.Text = '' then begin
   ShowMessage('NCM não selecionado!');
-  Exit;
+  Abort;
  end;
 
- CadNCMDM.ConsultarNCM.SQL.Clear;
- CadNCMDM.ConsultarNCM.SQL.Text :=
- 'select * from cadncm';
- CadNCMDM.ConsultarNCM.Open;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadncm');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -260,40 +290,51 @@ begin
 
  if descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
-  Exit;
+  Abort;
  end;
 
  if NCM = '' then begin
   ShowMessage('NCM não pode ser vazio!');
-  Exit;
+  Abort;
  end;
 
+ CadNCMDM.Conexão.StartTransaction;
  try
-  CadNCMDM.UpdateQuery.SQL.Clear;
-  CadNCMDM.UpdateQuery.SQL.Text :=
-  'update cadncm set Descricao = :descricao, ativo = :ativo, NCM = :NCM where codigo = :codigo';
-  CadNCMDM.UpdateQuery.ParamByName('codigo').AsString := codigo;
-  CadNCMDM.UpdateQuery.ParamByName('descricao').AsString := descricao;
-  CadNCMDM.UpdateQuery.ParambyName('ativo').AsString := ativo;
-  CadNCMDM.UpdateQuery.Parambyname('NCM').AsString := NCM;
-  CadNCMDM.UpdateQuery.ExecSQL;
+  with CadNCMDM.qryUpdate do
+  begin
+   SQL.Clear;
+   SQL.Add('update cadncm set Descricao = :descricao, ativo = :ativo, NCM = :NCM where codigo = :codigo');
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('descricao').AsString := descricao;
+   ParambyName('ativo').AsString := ativo;
+   Parambyname('NCM').AsString := NCM;
+   ExecSQL;
+  end;
 
-  LogsDM.InserirLog.SQL.Clear;
-  LogsDM.InserirLog.SQL.Text :=
-  'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
-  LogsDM.InserirLog.ParamByName('descricao').AsString :=
-  'Alterou o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
-  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadNCM';
-  LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
-  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
-  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  LogsDM.InserirLog.ExecSQL;
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   ParamByName('descricao').AsString :=
+   'Alterou o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
+   ParamByName('tela').AsString := 'CadNCM';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadNCMDM.Conexão.Commit;
   ShowMessage('Alterado com sucesso!');
 
-  CadNCMDM.ConsultarNCM.SQL.Clear;
-  CadNCMDM.ConsultarNCM.SQL.Text :=
-  'select * from cadncm';
-  CadNCMDM.ConsultarNCM.Open;
+  with CadNCMDM.qryConsultarNCM do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadncm');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -308,6 +349,7 @@ begin
   EdtDescricao.Enabled := False;
   CBAtivo.Enabled := False;
   except
+  CadNCMDM.Conexão.Rollback;
   ShowMessage('Erro na alteração');
  end;
 end;
@@ -315,10 +357,12 @@ end;
 procedure TCadNCM.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadNCMDM.ConsultarNCM.SQL.Clear;
- CadNCMDM.ConsultarNCM.SQL.Text :=
- 'select * from cadncm';
- CadNCMDM.ConsultarNCM.Open;
+ with CadNCMDM.qryConsultarNCM do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadncm');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -350,32 +394,43 @@ begin
 
  if codigo = '' then begin
   ShowMessage('NCM não selecionado!');
-  Exit;
+  Abort;
  end;
 
+ CadNCMDM.Conexão.StartTransaction;
  try
-  CadNCMDM.DeleteQuery.SQL.Clear;
-  CadNCMDM.DeleteQuery.SQL.Text :=
-  'delete from cadncm where codigo = :codigo';
-  CadNCMDM.DeleteQuery.Parambyname('codigo').AsString := codigo;
-  CadNCMDM.DeleteQuery.ExecSQL;
+  with CadNCMDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadncm where codigo = :codigo');
+   Parambyname('codigo').AsString := codigo;
+   ExecSQL;
+  end;
 
-  LogsDM.InserirLog.SQL.Clear;
-  LogsDM.InserirLog.SQL.Text :=
-  'insert into logs (descricao, tela, data, usuario, emp_id) values (:descricao, :tela, :data, :usuario, :emp_id)';
-  LogsDM.InserirLog.ParamByName('descricao').AsString :=
-  'Excluiu o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
-  LogsDM.InserirLog.ParamByName('tela').AsString := 'CadNCM';;
-  LogsDM.InserirLog.ParamByName('data').AsDatetime := Now;
-  LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
-  LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
-  LogsDM.InserirLog.ExecSQL;
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
+   ParamByName('descricao').AsString :=
+   'Excluiu o NCM ' + NCM + ' no código ' + codigo + ' na descrição ' + descricao + ' ativo = ' + Ativo;
+   ParamByName('tela').AsString := 'CadNCM';;
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadNCMDM.Conexão.Commit;
   ShowMessage('Excluído com sucesso!');
 
-  CadNCMDM.ConsultarNCM.SQL.Clear;
-  CadNCMDM.ConsultarNCM.SQL.Text :=
-  'select * from cadncm';
-  CadNCMDM.ConsultarNCM.Open;
+  with CadNCMDM.qryConsultarNCM do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadncm');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -383,6 +438,7 @@ begin
   EdtNCM.Clear;
   EdtDescricao.Clear;
   except
+  CadNCMDM.Conexão.Rollback;
   ShowMessage('Erro na alteração');
  end;
 end;
@@ -399,45 +455,46 @@ var NCM: string;
     temwhere: boolean;
 begin
  NCM := EdtAcessoNCM.text;
- CadNCMDM.qryAcesso.SQL.Clear;
- CadNCMDM.qryAcesso.SQL.Text :=
- 'select * from cadncm';
- temwhere := false;
 
- if NCM <> '' then begin
-  if temwhere then begin
-   CadNCMDM.qryAcesso.SQL.Add('and codigo = :codigo');
-  end
-  else begin
-   CadNCMDM.qryAcesso.SQL.Add('where codigo = :codigo');
+ with CadNCMDM.qryAcesso do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadncm');
+  temwhere := false;
+
+  if NCM <> '' then begin
+   if temwhere then begin
+    SQL.Add('and codigo = :codigo');
+   end
+   else begin
+    SQL.Add('where codigo = :codigo');
+   end;
+   Parambyname('codigo').AsString := NCM;
   end;
-  CadNCMDM.qryAcesso.Parambyname('codigo').AsString := NCM;
- end;
 
- if RGAcessoAtivo.ItemIndex = 0 then begin
-  if temwhere then
-   begin
-    CadNCMDM.qryAcesso.SQL.Add('and ativo = :ativo');
+  if RGAcessoAtivo.ItemIndex = 0 then begin
+   if temwhere then begin
+    SQL.Add('and ativo = :ativo');
    end
-    else begin
-     CadNCMDM.qryAcesso.SQL.Add('where ativo = :ativo');
-     temwhere := true;
-    end;
- CadNCMDM.qryAcesso.ParamByName('ativo').AsString := 'S';
- end;
+   else begin
+    SQL.Add('where ativo = :ativo');
+    temwhere := true;
+   end;
+  ParamByName('ativo').AsString := 'S';
+  end;
 
- if RGAcessoAtivo.ItemIndex = 1 then begin
-  if temwhere then
-   begin
-    CadNCMDM.qryAcesso.SQL.Add('and ativo = :ativo');
+  if RGAcessoAtivo.ItemIndex = 1 then begin
+   if temwhere then begin
+    SQL.Add('and ativo = :ativo');
    end
-    else begin
-     CadNCMDM.qryAcesso.SQL.Add('where ativo = :ativo');
-     temwhere := true;
-    end;
- CadNCMDM.qryAcesso.ParamByName('ativo').AsString := 'N';
+   else begin
+    SQL.Add('where ativo = :ativo');
+    temwhere := true;
+   end;
+  ParamByName('ativo').AsString := 'N';
+  end;
+  Open;
  end;
- CadNCMDM.qryAcesso.Open;
  for i := 0 to AcessoGrid.Columns.Count - 1 do
  AcessoGrid.Columns[i].Width := AcessoGrid.Canvas.TextWidth(AcessoGrid.Columns[i].Title.Caption + '     ');
 end;

@@ -58,10 +58,12 @@ uses ConsultarCSTPISForm;
 procedure TCadCSTPIS.FormShow(Sender: TObject);
 var I: integer;
 begin
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
- 'select * from cadcstpis';
- CadCSTPISDM.qryConsultarCSTPIS.Open;
+ with CadCSTPISDM.qryConsultarCSTPIS do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcstpis');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 end;
@@ -69,10 +71,12 @@ end;
 procedure TCadCSTPIS.btnIncluirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
- 'select * from cadcstpis';
- CadCSTPISDM.qryConsultarCSTPIS.Open;
+ with CadCSTPISDM.qryConsultarCSTPIS do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcstpis');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -113,12 +117,12 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCST.Text = '' then begin
+ if CST = '' then begin
   ShowMessage('CST PIS não pode ser vazio!');
   Abort;
  End;
 
- if EdtDescricao.Text = '' then begin
+ if Descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
   Abort;
  End;
@@ -128,37 +132,51 @@ begin
   Abort;
  End;
 
- CadCSTPISDM.SelectQuery.SQL.Clear;
- CadCSTPISDM.SelectQuery.SQL.Text :=
- 'select * from cadCSTPIS where CST = :CST';
- CadCSTPISDM.SelectQuery.ParamByName('CST').AsString := CST;
- CadCSTPISDM.SelectQuery.Open;
+ with CadCSTPISDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadCSTPIS where CST = :CST');
+  ParamByName('CST').AsString := CST;
+  Open;
 
- if not CadCSTPISDM.SelectQuery.IsEmpty then begin
-  ShowMessage('CST PIS já cadastrado!');
-  Abort;
- End;
 
- CadCSTPISDM.InsertQuery.SQL.CLear;
- CadCSTPISDM.InsertQuery.SQL.Text :=
- 'insert into CadCSTPIS (CST, Descricao, Modo, ativo) values (:CST, :Descricao, :Modo, :ativo)';
- CadCSTPISDM.InsertQuery.ParamByName('CST').AsString := CST;
- CadCSTPISDM.InsertQuery.ParamByName('Descricao').AsString := Descricao;
- CadCSTPISDM.InsertQuery.ParamByName('Modo').AsString := Modo;
- CadCSTPISDM.InsertQuery.ParamByName('ativo').AsString := ativo;
+  if not IsEmpty then begin
+   ShowMessage('CST PIS já cadastrado!');
+   Abort;
+  End;
+ end;
 
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Inseriu o CST PIS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSTPIS';
+ CadCSTPISDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSTPISDM.InsertQuery.ExecSQL;
+  with CadCSTPISDM.qryInsert do
+  begin
+   SQL.CLear;
+   SQL.Add('insert into CadCSTPIS (CST, Descricao, Modo, ativo)');
+   SQL.Add('values');
+   SQL.Add('(:CST, :Descricao, :Modo, :ativo)');
+   ParamByName('CST').AsString := CST;
+   ParamByName('Descricao').AsString := Descricao;
+   ParamByName('Modo').AsString := Modo;
+   ParamByName('ativo').AsString := ativo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Inseriu o CST PIS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSTPIS';
+   ExecSQL;
+  end;
+
+  CadCSTPISDM.Conexão.Commit;
   ShowMessage('Gravado com sucesso!');
 
   CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
@@ -186,6 +204,7 @@ begin
   btnGravarIncluir.Visible := False;
   btnDesistir.Visible := False;
   except
+  CadCSTPISDM.Conexão.Rollback;
   ShowMessage('Erro na inclusão!');
  end;
 end;
@@ -198,10 +217,12 @@ begin
   Abort;
  End;
 
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
- 'select * from cadcstpis';
- CadCSTPISDM.qryConsultarCSTPIS.Open;
+ with CadCSTPISDM.qryConsultarCSTPIS do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcstpis');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -234,12 +255,12 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCST.Text = '' then begin
+ if CST = '' then begin
   ShowMessage('CST PIS não pode ser vazio!');
   Abort;
  End;
 
- if EdtDescricao.Text = '' then begin
+ if Descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
   Abort;
  End;
@@ -249,32 +270,43 @@ begin
   Abort;
  End;
 
- CadCSTPISDM.UpdateQuery.SQL.CLear;
- CadCSTPISDM.UpdateQuery.SQL.Text :=
- 'update cadCSTPIS set descricao = :descricao, modo = :modo, ativo = :ativo where CST = :CST';
- CadCSTPISDM.UpdateQuery.ParamByName('CST').AsString := CST;
- CadCSTPISDM.UpdateQuery.ParamByName('Descricao').AsString := Descricao;
- CadCSTPISDM.UpdateQuery.ParamByName('Modo').AsString := Modo;
- CadCSTPISDM.UpdateQuery.ParamByName('ativo').AsString := ativo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Alterou o CST PIS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSTPIS';
+ CadCSTPISDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSTPISDM.UpdateQuery.ExecSQL;
+  with CadCSTPISDM.qryUpdate do
+  begin
+   SQL.CLear;
+   SQL.Add('update cadCSTPIS set descricao = :descricao, modo = :modo, ativo = :ativo where CST = :CST');
+   ParamByName('CST').AsString := CST;
+   ParamByName('Descricao').AsString := Descricao;
+   ParamByName('Modo').AsString := Modo;
+   ParamByName('ativo').AsString := ativo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Alterou o CST PIS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSTPIS';
+   ExecSQL;
+  end;
+
+  CadCSTPISDM.Conexão.Commit;
   ShowMessage('Alterado com sucesso!');
 
-  CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
-  CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
-  'select * from cadcstpis';
-  CadCSTPISDM.qryConsultarCSTPIS.Open;
+  with CadCSTPISDM.qryConsultarCSTPIS do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcstpis');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -295,6 +327,7 @@ begin
   btnGravarAlterar.Visible := False;
   btnDesistir.Visible := False;
   except
+  CadCSTPISDM.Conexão.Rollback;
   ShowMessage('Erro na alteração!');
   end;
 end;
@@ -302,10 +335,12 @@ end;
 procedure TCadCSTPIS.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
- CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
- 'select * from cadcstpis';
- CadCSTPISDM.qryConsultarCSTPIS.Open;
+ with CadCSTPISDM.qryConsultarCSTPIS do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcstpis');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
  Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -346,34 +381,45 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCST.Text = '' then begin
+ if CST = '' then begin
   ShowMessage('Nenhum CST PIS selecionado!');
   Abort;
  End;
 
- CadCSTPISDM.DeleteQuery.SQL.CLear;
- CadCSTPISDM.DeleteQuery.SQL.Text :=
- 'delete from cadCSTPIS where CST = :CST';
- CadCSTPISDM.DeleteQuery.ParamByName('CST').AsString := CST;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Deletou o CST PIS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSTPIS';
+ CadCSTPISDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSTPISDM.DeleteQuery.ExecSQL;
+  with CadCSTPISDM.qryDelete do
+  begin
+   SQL.CLear;
+   SQL.Add('delete from cadCSTPIS where CST = :CST');
+   ParamByName('CST').AsString := CST;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Deletou o CST PIS ' + CST + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSTPIS';
+   ExecSQL;
+  end;
+
+  CadCSTPISDM.Conexão.Commit;
   ShowMessage('Excluído com sucesso!');
 
-  CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
-  CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
-  'select * from cadcstpis';
-  CadCSTPISDM.qryConsultarCSTPIS.Open;
+  with CadCSTPISDM.qryConsultarCSTPIS do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcstpis');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -384,6 +430,7 @@ begin
   RBIsento.Checked := False;
   RBOutros.Checked := False;
   except
+  CadCSTPISDM.Conexão.Rollback;
   ShowMessage('Erro na exclusão!');
  end;
 end;
@@ -391,10 +438,14 @@ end;
 procedure TCadCSTPIS.GridCellClick(Column: TColumn);
 var CST, Descricao, Modo, Ativo: String;
 begin
- EdtCST.Text := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('CST').AsString;
- EdtDescricao.Text := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('Descricao').AsString;
- Modo := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('Modo').AsString;
- Ativo := CadCSTPISDM.qryConsultarCSTPIS.FieldByName('Ativo').AsString;
+ with CadCSTPISDM.qryConsultarCSTPIS do
+ begin
+  EdtCST.Text := FieldByName('CST').AsString;
+  EdtDescricao.Text := FieldByName('Descricao').AsString;
+  Modo := FieldByName('Modo').AsString;
+  Ativo := FieldByName('Ativo').AsString;
+ end;
+
  if Modo = 'B' then
  RBBase.Checked := True
  else if Modo = 'I' then

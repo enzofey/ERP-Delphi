@@ -71,10 +71,12 @@ end;
 procedure TCadCSOSN.btnIncluirClick(Sender: TObject);
 var i: integer;
 begin
- CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
- CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
- 'select * from cadcsosn';
- CadCSOSNDM.qryConsultarCSOSN.Open;
+ with CadCSOSNDM.qryConsultarCSOSN do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcsosn');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -115,58 +117,73 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
   
- if EdtCSOSN.Text = '' then begin
+ if CSOSN = '' then begin
   ShowMessage('CSOSN não pode ser vazio!');
   Abort;
- End;
+ end;
 
- if EdtDescricao.Text = '' then begin
+ if Descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
   Abort;
- End;
+ end;
 
  if not RBBase.Checked and not RBIsento.Checked and not RBOutros.Checked then begin
   ShowMessage('Selecione um modo de cálculo!');
   Abort;
- End;
+ end;
 
- CadCSOSNDM.SelectQuery.SQL.Clear;
- CadCSOSNDM.SelectQuery.SQL.Text :=
- 'select * from cadcsosn where csosn = :csosn';
- CadCSOSNDM.SelectQuery.ParamByName('csosn').AsString := csosn;
- CadCSOSNDM.SelectQuery.Open;
+ with CadCSOSNDM.qrySelect do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcsosn where csosn = :csosn');
+  ParamByName('csosn').AsString := csosn;
+  Open;
 
- if not CadCSOSNDM.SelectQuery.IsEmpty then begin
-  ShowMessage('CSOSN já cadastrado!');
-  Abort;
- End;
+  if not IsEmpty then begin
+   ShowMessage('CSOSN já cadastrado!');
+   Abort;
+  end;
+ end;
 
- CadCSOSNDM.InsertQuery.SQL.CLear;
- CadCSOSNDM.InsertQuery.SQL.Text :=
- 'insert into cadcsosn (CSOSN, Descricao, Modo, ativo) values (:CSOSN, :Descricao, :Modo, :ativo)';
- CadCSOSNDM.InsertQuery.ParamByName('CSOSN').AsString := CSOSN;
- CadCSOSNDM.InsertQuery.ParamByName('Descricao').AsString := Descricao;
- CadCSOSNDM.InsertQuery.ParamByName('Modo').AsString := Modo;
- CadCSOSNDM.InsertQuery.ParamByName('Ativo').AsString := Ativo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Inseriu o CSOSN ' + CSOSN + '' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSOSN';
+ CadCSOSNDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSOSNDM.InsertQuery.ExecSQL;
+  with CadCSOSNDM.qryInsert do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into cadcsosn (CSOSN, Descricao, Modo, ativo)');
+   SQL.Add('values');
+   SQL.Add('(:CSOSN, :Descricao, :Modo, :ativo)');
+   ParamByName('CSOSN').AsString := CSOSN;
+   ParamByName('Descricao').AsString := Descricao;
+   ParamByName('Modo').AsString := Modo;
+   ParamByName('Ativo').AsString := Ativo;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Inseriu o CSOSN ' + CSOSN + '' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSOSN';
+   ExecSQL;
+  end;
+
+  CadCSOSNDM.Conexão.Commit;
   ShowMessage('Gravado com sucesso!');
 
-  CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
-  CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
-  'select * from cadcsosn';
-  CadCSOSNDM.qryConsultarCSOSN.Open;
+  with CadCSOSNDM.qryConsultarCSOSN do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcsosn');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -188,6 +205,7 @@ begin
   btnGravarIncluir.Visible := False;
   btnDesistir.Visible := False;
   except
+  CadCSOSNDM.Conexão.Rollback;
   ShowMessage('Erro na inclusão!');
  end;
 end;
@@ -198,12 +216,14 @@ begin
  if EdtCSOSN.Text = '' then begin
   ShowMessage('Nenhum CSOSN selecionado!');
   Abort;
- End;
+ end;
 
- CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
- CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
- 'select * from cadcsosn';
- CadCSOSNDM.qryConsultarCSOSN.Open;
+ with CadCSOSNDM.qryConsultarCSOSN do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcsosn');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -236,47 +256,57 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCSOSN.Text = '' then begin
+ if CSOSN = '' then begin
   ShowMessage('CSOSN não pode ser vazio!');
   Abort;
- End;
+ end;
 
- if EdtDescricao.Text = '' then begin
+ if Descricao = '' then begin
   ShowMessage('Descrição não pode ser vazio!');
   Abort;
- End;
+ end;
 
  if not RBBase.Checked and not RBIsento.Checked and not RBOutros.Checked then begin
   ShowMessage('Selecione um modo de cálculo!');
   Abort;
- End;
+ end;
 
- CadCSOSNDM.UpdateQuery.SQL.CLear;
- CadCSOSNDM.UpdateQuery.SQL.Text :=
- 'update cadCSOSN set descricao = :descricao, modo = :modo, ativo = :ativo where CSOSN = :CSOSN';
- CadCSOSNDM.UpdateQuery.ParamByName('CSOSN').AsString := CSOSN;
- CadCSOSNDM.UpdateQuery.ParamByName('Descricao').AsString := Descricao;
- CadCSOSNDM.UpdateQuery.ParamByName('Modo').AsString := Modo;
- CadCSOSNDM.UpdateQuery.ParamByName('Ativo').AsString := Ativo;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Alterou o CSOSN ' + CSOSN + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSOSN';
+ CadCSOSNDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSOSNDM.UpdateQuery.ExecSQL;
+  with CadCSOSNDM.qryUpdate do
+  begin
+   SQL.CLear;
+   SQL.Add('update cadCSOSN set descricao = :descricao, modo = :modo, ativo = :ativo where CSOSN = :CSOSN');
+   ParamByName('CSOSN').AsString := CSOSN;
+   ParamByName('Descricao').AsString := Descricao;
+   ParamByName('Modo').AsString := Modo;
+   ParamByName('Ativo').AsString := Ativo;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Alterou o CSOSN ' + CSOSN + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSOSN';
+   ExecSQL;
+  end;
+
+  CadCSOSNDM.Conexão.Commit;
   ShowMessage('Alterado com sucesso!');
 
-  CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
-  CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
-  'select * from cadcsosn';
-  CadCSOSNDM.qryConsultarCSOSN.Open;
+  with CadCSOSNDM.qryConsultarCSOSN do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcsosn');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -297,6 +327,7 @@ begin
   btnGravarAlterar.Visible := False;
   btnDesistir.Visible := False;
   except
+  CadCSOSNDM.Conexão.Rollback;
   ShowMessage('Erro na alteração!');
  end;
 end;
@@ -304,10 +335,12 @@ end;
 procedure TCadCSOSN.btnDesistirClick(Sender: TObject);
 var I: integer;
 begin
- CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
- CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
- 'select * from cadcsosn';
- CadCSOSNDM.qryConsultarCSOSN.Open;
+ with CadCSOSNDM.qryConsultarCSOSN do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcsosn');
+  Open;
+ end;
  for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -348,34 +381,45 @@ begin
  else if RBOutros.Checked then modo := 'O';
  if CBAtivo.Checked then ativo := 'S' else ativo := 'N';
 
- if EdtCSOSN.Text = '' then begin
+ if CSOSN = '' then begin
   ShowMessage('Nenhum CSOSN selecionado!');
   Abort;
- End;
+ end;
 
- CadCSOSNDM.UpdateQuery.SQL.CLear;
- CadCSOSNDM.UpdateQuery.SQL.Text :=
- 'delete from cadCSOSN where CSOSN = :CSOSN';
- CadCSOSNDM.UpdateQuery.ParamByName('CSOSN').AsString := CSOSN;
-
- LogsDM.InserirLog.SQL.Clear;
- LogsDM.InserirLog.SQL.Text :=
- 'insert into logs (Descricao, data, emp_id, usuario, tela) values (:Descricao, :data, :emp_id, :usuario, :tela)';
- LogsDM.InserirLog.ParamByName('Descricao').AsString :=
- 'Deletou o CSOSN ' + CSOSN + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
- LogsDM.InserirLog.ParamByName('data').AsDateTime := Now;
- LogsDM.InserirLog.ParamByName('emp_id').AsString := EmpresaLogada;
- LogsDM.InserirLog.ParamByName('usuario').AsString := UsuarioLogado;
- LogsDM.InserirLog.ParamByName('tela').AsString := 'CadCSOSN';
+ CadCSOSNDM.Conexão.StartTransaction;
  try
-  LogsDM.InserirLog.ExecSQL;
-  CadCSOSNDM.UpdateQuery.ExecSQL;
+  with CadCSOSNDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from cadCSOSN where CSOSN = :CSOSN');
+   ParamByName('CSOSN').AsString := CSOSN;
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (Descricao, data, emp_id, usuario, tela)');
+   SQL.Add('values');
+   SQL.Add('(:Descricao, :data, :emp_id, :usuario, :tela)');
+   ParamByName('Descricao').AsString :=
+   'Deletou o CSOSN ' + CSOSN + ' ' + Descricao + ' para o modo de cálculo ' + Modo;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('tela').AsString := 'CadCSOSN';
+   ExecSQL;
+  end;
+
+  CadCSOSNDM.Conexão.Commit;
   ShowMessage('Excluído com sucesso!');
 
-  CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
-  CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
-  'select * from cadcsosn';
-  CadCSOSNDM.qryConsultarCSOSN.Open;
+  with CadCSOSNDM.qryConsultarCSOSN do
+  begin
+   SQL.Clear;
+   SQL.Add('select * from cadcsosn');
+   Open;
+  end;
   for i := 0 to Grid.Columns.Count - 1 do
   Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
 
@@ -395,10 +439,13 @@ end;
 procedure TCadCSOSN.GridCellClick(Column: TColumn);
 var CSOSN, Descricao, Modo, ativo: String;
 begin
- EdtCSOSN.Text := CadCSOSNDM.qryConsultarCSOSN.FieldByName('CSOSN').AsString;
- EdtDescricao.Text := CadCSOSNDM.qryConsultarCSOSN.FieldByName('Descricao').AsString;
- Modo := CadCSOSNDM.qryConsultarCSOSN.FieldByName('Modo').AsString;
- Ativo := CadCSOSNDM.qryConsultarCSOSN.FieldByName('Ativo').AsString;
+ with CadCSOSNDM.qryConsultarCSOSN do
+ begin
+  EdtCSOSN.Text := FieldByName('CSOSN').AsString;
+  EdtDescricao.Text := FieldByName('Descricao').AsString;
+  Modo := FieldByName('Modo').AsString;
+  Ativo := FieldByName('Ativo').AsString;
+ end;
 
  if Modo = 'B' then
  RBBase.Checked := True

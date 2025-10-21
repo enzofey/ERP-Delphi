@@ -56,9 +56,12 @@ end;
 
 procedure TConsultarUnidade.btnSelecionarUnidadeClick(Sender: TObject);
 begin
- UnUnidade := CadUnidadeDM.SelectQuery.FieldByName('unidade').AsString;
- UnAtivo := CadUnidadeDM.SelectQuery.FieldByName('Ativo').AsString;
- UnDescricao := CadUnidadeDM.SelectQuery.FieldByName('Descricao').AsString;
+ with CadUnidadeDM.qrySelect do
+ begin
+  UnUnidade := FieldByName('unidade').AsString;
+  UnAtivo := FieldByName('Ativo').AsString;
+  UnDescricao := FieldByName('Descricao').AsString;
+ end;
  Close;
 end;
 end.
