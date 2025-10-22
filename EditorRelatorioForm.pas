@@ -36,31 +36,25 @@ begin
 end;
 
 procedure TEditorRelatorioFM.FormShow(Sender: TObject);
-var
-  SR: TSearchRec;
+var SR: TSearchRec;
 begin
-  ListaRelatorios.Items.Clear;
-  if FindFirst('C:\Projetos\Controle de Estoque\FR3\*.fr3', faAnyFile, SR) = 0 then
-  begin
-    repeat
-      ListaRelatorios.Items.Add(SR.Name);
-    until FindNext(SR) <> 0;
-    FindClose(SR);
-  end;
+ ListaRelatorios.Items.Clear;
+ if FindFirst('C:\Projetos\Controle de Estoque\FR3\*.fr3', faAnyFile, SR) = 0 then begin
+  repeat
+   ListaRelatorios.Items.Add(SR.Name);
+  until FindNext(SR) <> 0;
+  FindClose(SR);
+ end;
 end;
 
 procedure TEditorRelatorioFM.ListaRelatoriosDblClick(Sender: TObject);
-var
-  RelPath: string;
+var RelPath: string;
 begin
-  if ListaRelatorios.ItemIndex >= 0 then
-  begin
-    RelPath := 'C:\Projetos\Controle de Estoque\FR3\' +
-               ListaRelatorios.Items[ListaRelatorios.ItemIndex];
-
-    frxReport.LoadFromFile(RelPath);
-    frxReport.DesignReport;
-  end;
+ if ListaRelatorios.ItemIndex >= 0 then begin
+  RelPath := 'C:\Projetos\Controle de Estoque\FR3\' +
+  ListaRelatorios.Items[ListaRelatorios.ItemIndex];
+  frxReport.LoadFromFile(RelPath);
+  frxReport.DesignReport;
+ end;
 end;
-
 end.

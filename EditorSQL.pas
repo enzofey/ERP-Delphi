@@ -51,7 +51,7 @@ begin
   Abort;
  end;
 
- with EditorSQLDM.SelectQuery do
+ with EditorSQLDM.qrySelect do
  begin
   SQL.Clear;
   SQL.Text := EdtSQL.Text;
@@ -89,32 +89,35 @@ begin
   Abort;
  end;
 
- with EditorSQLDM.SelectQuery do
+ with EditorSQLDM.qryExec do
  begin
   SQL.Clear;
   SQL.Add(EdtSQL.Text);
+  ExecSQL;
  end;
 
- with LogsDM.InserirLog do
- begin
-  SQL.Clear;
-  SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
-  SQL.Add('values');
-  SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
-  ParamByName('descricao').AsString :=
-  'Rodou o comando ' + EdtSQL.Text;
-  ParamByName('tela').AsString := 'EditorSQL';
-  ParamByName('data').AsDatetime := Now;
-  ParamByName('usuario').AsString := UsuarioLogado;
-  ParamByName('emp_id').AsString := EmpresaLogada;
- end;
-
+ EditorSQLDM.Conexão.StartTransaction;
  try
- EditorSQLDM.SelectQuery.ExecSQL;
- LogsDM.InserirLog.ExecSQL;
- ShowMessage('Executado com sucesso!');
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Rodou o comando ' + EdtSQL.Text;
+   ParamByName('tela').AsString := 'EditorSQL';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  EditorSQLDM.Conexão.Commit;
+  ShowMessage('Executado com sucesso!');
  except
- ShowMessage('Erro no SQL, verifique!');
+  EditorSQLDM.Conexão.Rollback;
+  ShowMessage('Erro no SQL, verifique!');
  end;
 
  for i := 0 to Grid.Columns.Count - 1 do

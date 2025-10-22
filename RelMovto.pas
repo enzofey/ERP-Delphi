@@ -158,7 +158,7 @@ begin
    end;
   ParamByName('tipo').AsString := tipo;
   end;
-  RelMovtoDM.ConsultarProdMov.Open;
+  Open;
   for i := 0 to Grid.Columns.Count - 1 do
    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
  end;
@@ -173,10 +173,10 @@ end;
 procedure TRelMovtoForm.EdtCodigoCorChange(Sender: TObject);
 var codigo: string;
 begin
+ codigo := EdtCodigoCor.Text;
+
  with CadCorDM.qryConsultarCor do
  begin
-  codigo := EdtCodigoCor.Text;
-
   SQL.Clear;
   SQL.Add('select * from cadcor where codigo = :codigo');
   ParamByName('codigo').AsString := codigo;
@@ -190,6 +190,7 @@ procedure TRelMovtoForm.EdtCodigoDepositoChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtCodigoDeposito.Text;
+
  with CadDepositoDM.qryConsultarDeposito do
  begin
   SQL.Clear;
@@ -205,6 +206,7 @@ procedure TRelMovtoForm.EdtCodigoProdutoChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtCodigoProduto.Text;
+
  with CadProdutoDM.qryConsultarProduto do
  begin
   SQL.Clear;
@@ -219,10 +221,9 @@ end;
 procedure TRelMovtoForm.EdtCodigoTamanhoChange(Sender: TObject);
 var codigo: string;
 begin
+ codigo := EdtCodigoTamanho.Text;
  with CadTamanhoDM.qryConsultarTamanho do
  begin
-  codigo := EdtCodigoTamanho.Text;
-
   SQL.Clear;
   SQL.Add('select * from cadtamanho where codigo = :codigo');
   ParamByName('codigo').AsString := codigo;
@@ -242,13 +243,14 @@ begin
   Open;
  end;
 
-  Application.CreateForm(TConsultarCor, ConsultarCor);
-  codigo := ConsultarCor.SelecionarCor;
-  if codigo <> '' then begin
-   EdtCodigoCor.Text := codigo;
-   descricao := ConsultarCor.Descricao;
-   EdtDescricaoCor.Text := descricao;
-  end;
+ Application.CreateForm(TConsultarCor, ConsultarCor);
+ codigo := ConsultarCor.SelecionarCor;
+
+ if codigo <> '' then begin
+  EdtCodigoCor.Text := codigo;
+  descricao := ConsultarCor.Descricao;
+  EdtDescricaoCor.Text := descricao;
+ end;
 end;
 
 procedure TRelMovtoForm.SBDepositoClick(Sender: TObject);
@@ -261,13 +263,14 @@ begin
   Open;
  end;
 
-  Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
-  codigo := ConsultarDeposito.SelecionarDeposito;
-  if codigo <> '' then begin
-   EdtCodigoDeposito.Text := codigo;
-   descricao := ConsultarDeposito.Descricao;
-   EdtDescricaoDeposito.Text := descricao;
-  end;
+ Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
+ codigo := ConsultarDeposito.SelecionarDeposito;
+
+ if codigo <> '' then begin
+  EdtCodigoDeposito.Text := codigo;
+  descricao := ConsultarDeposito.Descricao;
+  EdtDescricaoDeposito.Text := descricao;
+ end;
 end;
 
 procedure TRelMovtoForm.SBProdutoClick(Sender: TObject);
@@ -280,13 +283,14 @@ begin
   Open;
  end;
 
-  Application.CreateForm(TConsultarProduto, ConsultarProduto);
-  codigo := ConsultarProduto.SelecionarProduto;
-  if codigo <> '' then begin
-   EdtCodigoProduto.Text := codigo;
-   descricao := ConsultarProduto.Descricao;
-   EdtDescricaoProduto.Text := descricao;
-  end;
+ Application.CreateForm(TConsultarProduto, ConsultarProduto);
+ codigo := ConsultarProduto.SelecionarProduto;
+
+ if codigo <> '' then begin
+  EdtCodigoProduto.Text := codigo;
+  descricao := ConsultarProduto.Descricao;
+  EdtDescricaoProduto.Text := descricao;
+ end;
 end;
 
 procedure TRelMovtoForm.SBTamanhoClick(Sender: TObject);
@@ -301,6 +305,7 @@ begin
 
  Application.CreateForm(TConsultarTamanho, ConsultarTamanho);
  codigo := ConsultarTamanho.SelecionarTamanho;
+
  if codigo <> '' then begin
   EdtCodigoTamanho.Text := codigo;
   descricao := ConsultarTamanho.Descricao;
@@ -363,6 +368,7 @@ begin
    ParamByName('lote').AsString := lote;
    ExecSQL;
   end;
+
   RelMovtoDM.Conexão.Commit;
   ShowMessage('Estornado com sucesso!');
   EdtID.Clear;

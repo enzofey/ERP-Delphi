@@ -22,8 +22,6 @@ object EditorRelatorioFM: TEditorRelatorioFM
     Height = 977
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1862
-    ExplicitHeight = 956
     object ListaRelatorios: TListBox
       Left = 24
       Top = 24

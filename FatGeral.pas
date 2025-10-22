@@ -1230,8 +1230,8 @@ begin
    ShowMessage('NF-e gravada com sucesso!');
    end;
   except
-  FatGeralDM.Conexão.Rollback;
-  ShowMessage('Erro na gravação!');
+   FatGeralDM.Conexão.Rollback;
+   ShowMessage('Erro na gravação!');
   end;
 end;
 
@@ -1432,11 +1432,13 @@ begin
 
     9:
     begin
-     CadCSTICMSDM.qryConsultarCSTICMS.SQL.Clear;
-     CadCSTICMSDM.qryConsultarCSTICMS.SQL.Text :=
-     'select * from cadcsticms where ativo = :ativo';
-     CadCSTICMSDM.qryConsultarCSTICMS.ParamByName('ativo').AsString := 'S';
-     CadCSTICMSDM.qryConsultarCSTICMS.Open;
+     with CadCSTICMSDM.qryConsultarCSTICMS do
+     begin
+      SQL.Clear;
+      SQL.Add('select * from cadcsticms where ativo = :ativo');
+      ParamByName('ativo').AsString := 'S';
+      Open;
+     end;
 
      FormCSTICMS := TConsultarCSTICMS.Create(Self);
      CST_ICMS := FormCSTICMS.SelecionarICMSCST;
@@ -1446,11 +1448,13 @@ begin
 
     10:
     begin
-     CadCSOSNDM.qryConsultarCSOSN.SQL.Clear;
-     CadCSOSNDM.qryConsultarCSOSN.SQL.Text :=
-     'select * from cadcsosn where ativo = :ativo';
-     CadCSOSNDM.qryConsultarCSOSN.ParamByName('ativo').AsString := 'S';
-     CadCSOSNDM.qryConsultarCSOSN.Open;
+     with CadCSOSNDM.qryConsultarCSOSN do
+     begin
+      SQL.Clear;
+      SQL.Add('select * from cadcsosn where ativo = :ativo');
+      ParamByName('ativo').AsString := 'S';
+      Open;
+     end;
 
      FormCSOSN := TConsultarCSOSN.Create(Self);
      CSOSN := FormCSOSN.SelecionarCSOSN;
@@ -1460,11 +1464,13 @@ begin
 
     14:
     begin
-     CadCSTIPIDM.qryConsultarCSTIPI.SQL.Clear;
-     CadCSTIPIDM.qryConsultarCSTIPI.SQL.Text :=
-     'select * from cadcstipi where ativo = :ativo';
-     CadCSTIPIDM.qryConsultarCSTIPI.ParamByName('ativo').AsString := 'S';
-     CadCSTIPIDM.qryConsultarCSTIPI.Open;
+     with CadCSTIPIDM.qryConsultarCSTIPI do
+     begin
+      SQL.Clear;
+      SQL.Add('select * from cadcstipi where ativo = :ativo');
+      ParamByName('ativo').AsString := 'S';
+      Open;
+     end;
 
      FormCSTIPI := TConsultarCSTIPI.Create(Self);
      CST_IPI := FormCSTIPI.SelecionarCstIPI;
@@ -1474,11 +1480,13 @@ begin
 
     15:
     begin
-     CadENQIPIDM.qryConsultarENQIPI.SQL.Clear;
-     CadENQIPIDM.qryConsultarENQIPI.SQL.Text :=
-     'select * from cadenqipi where ativo = :ativo';
-     CadENQIPIDM.qryConsultarENQIPI.ParamByName('ativo').AsString := 'S';
-     CadENQIPIDM.qryConsultarENQIPI.Open;
+     with CadENQIPIDM.qryConsultarENQIPI do
+     begin
+      SQL.Clear;
+      SQL.Add('select * from cadenqipi where ativo = :ativo');
+      ParamByName('ativo').AsString := 'S';
+      Open;
+     end;
 
      FormENQIPI := TConsultarENQIPI.Create(Self);
      ENQ_IPI := FormENQIPI.SelecionarENQIPI;
@@ -1488,11 +1496,13 @@ begin
 
     19:
     begin
-     CadCSTPISDM.qryConsultarCSTPIS.SQL.Clear;
-     CadCSTPISDM.qryConsultarCSTPIS.SQL.Text :=
-     'select * from cadcstpis where ativo = :ativo';
-     CadCSTPISDM.qryConsultarCSTPIS.ParamByName('ativo').AsString := 'S';
-     CadCSTPISDM.qryConsultarCSTPIS.Open;
+     with CadCSTPISDM.qryConsultarCSTPIS do
+     begin
+      SQL.Clear;
+      SQL.Add('select * from cadcstpis where ativo = :ativo');
+      ParamByName('ativo').AsString := 'S';
+      Open;
+     end;
 
      FormCSTPIS := TConsultarCSTPIS.Create(Self);
      CST_PIS := FormCSTPIS.SelecionarPisCST;
@@ -1502,11 +1512,13 @@ begin
 
     23:
     begin
-     CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Clear;
-     CadCSTCOFINSDM.qryConsultarCSTCOFINS.SQL.Text :=
-     'select * from cadcstcofins where ativo = :ativo';
-     CadCSTCOFINSDM.qryConsultarCSTCOFINS.ParamByName('ativo').AsString := 'S';
-     CadCSTCOFINSDM.qryConsultarCSTCOFINS.Open;
+     with CadCSTCOFINSDM.qryConsultarCSTCOFINS do
+     begin
+      SQL.Clear;
+      SQL.Add('select * from cadcstcofins where ativo = :ativo');
+      ParamByName('ativo').AsString := 'S';
+      Open;
+     end;
 
      FormCSTCOFINS := TConsultarCSTCOFINS.Create(Self);
      CST_COFINS := FormCSTCOFINS.SelecionarCofinsCST;

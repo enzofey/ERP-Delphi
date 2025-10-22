@@ -22,8 +22,6 @@ object RelEstoqueForm: TRelEstoqueForm
     Height = 956
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = -64
     object SBProduto: TSpeedButton
       Left = 390
       Top = 13

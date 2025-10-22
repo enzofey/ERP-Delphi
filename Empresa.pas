@@ -76,7 +76,7 @@ implementation
 procedure TCadEmpresa.FormShow(Sender: TObject);
 var nome, cnpj, IE, rua, numero, estado, bairro, cidade, pais, complemento, cep, serie, EMP_ID, CRT, Telefone, Fantasia: string;
 begin
- With CadEmpresaDM.SelectQuery do
+ With CadEmpresaDM.qrySelect do
  begin
   SQL.Clear;
   SQL.Add('select * from empresa where emp_id = :emp_id');
@@ -97,28 +97,28 @@ begin
   serie := FieldByName('serie').AsString;
   EMP_ID := FieldByName('EMP_ID').AsString;
   CRT := FieldByName('CRT').AsString;
-  Fantasia := CadEmpresaDM.SelectQuery.FieldByName('Fantasia').AsString;
+  Fantasia := FieldByName('Fantasia').AsString;
   Telefone := FieldByName('Telefone').AsString;
  end;
 
-  EdtTelefone.Text := telefone;
-  EdtRazaoSocial.text := nome;
-  EdtFantasia.Text := Fantasia;
-  EdtCNPJ.Text := CNPJ;
-  EdtIE.Text := IE;
-  EdtRua.Text := Rua;
-  EdtNumero.text := Numero;
-  EdtEstado.Text := Estado;
-  EdtBairro.text := Bairro;
-  EdtCidade.Text := Cidade;
-  EdtPais.Text := Pais;
-  edtcomplemento.text := Complemento;
-  edtcep.text := Cep;
-  edtserie.text := Serie;
-  EdtEMP_ID.Text := EmpresaLogada;
-  if CRT = '1' then CBRegime.ItemIndex := CBRegime.Items.IndexOf('1 - Simples Nacional')
-  else if CRT = '2' then CBRegime.ItemIndex := CBRegime.Items.IndexOf('2 - Simples Nacional, excesso sublimite')
-  else if CRT = '3' then CBRegime.ItemIndex := CBRegime.Items.IndexOf('3 - Regime Normal');
+ EdtTelefone.Text := telefone;
+ EdtRazaoSocial.text := nome;
+ EdtFantasia.Text := Fantasia;
+ EdtCNPJ.Text := CNPJ;
+ EdtIE.Text := IE;
+ EdtRua.Text := Rua;
+ EdtNumero.text := Numero;
+ EdtEstado.Text := Estado;
+ EdtBairro.text := Bairro;
+ EdtCidade.Text := Cidade;
+ EdtPais.Text := Pais;
+ edtcomplemento.text := Complemento;
+ edtcep.text := Cep;
+ edtserie.text := Serie;
+ EdtEMP_ID.Text := EmpresaLogada;
+ if CRT = '1' then CBRegime.ItemIndex := CBRegime.Items.IndexOf('1 - Simples Nacional')
+ else if CRT = '2' then CBRegime.ItemIndex := CBRegime.Items.IndexOf('2 - Simples Nacional, excesso sublimite')
+ else if CRT = '3' then CBRegime.ItemIndex := CBRegime.Items.IndexOf('3 - Regime Normal');
 end;
 
 procedure TCadEmpresa.btnIncluirClick(Sender: TObject);
@@ -164,102 +164,104 @@ end;
 procedure TCadEmpresa.BtnGravarIncluirClick(Sender: TObject);
 var nome, cnpj, IE, rua, numero, estado, bairro, cidade, pais, complemento, cep, serie, EMP_ID, CRT, Fantasia, telefone: string;
 begin
-  nome := EdtRazaoSocial.text;
-  fantasia := EdtFantasia.Text;
-  CNPJ := EdtCNPJ.Text;
-  IE := EdtIE.Text;
-  Rua := EdtRua.Text;
-  Numero := EdtNumero.text;
-  Estado := EdtEstado.Text;
-  Bairro := EdtBairro.text;
-  Cidade := EdtCidade.Text;
-  Pais := EdtPais.Text;
-  complemento := edtcomplemento.text;
-  cep := edtcep.text;
-  serie := edtserie.text;
-  EMP_ID := EdtEMP_ID.Text;
-  telefone := EdtTelefone.Text;
+ nome := EdtRazaoSocial.text;
+ fantasia := EdtFantasia.Text;
+ CNPJ := EdtCNPJ.Text;
+ IE := EdtIE.Text;
+ Rua := EdtRua.Text;
+ Numero := EdtNumero.text;
+ Estado := EdtEstado.Text;
+ Bairro := EdtBairro.text;
+ Cidade := EdtCidade.Text;
+ Pais := EdtPais.Text;
+ complemento := edtcomplemento.text;
+ cep := edtcep.text;
+ serie := edtserie.text;
+ EMP_ID := EdtEMP_ID.Text;
+ telefone := EdtTelefone.Text;
 
-  if CBRegime.Text = '1 - Simples Nacional' then CRT := '1'
-  else if CBRegime.Text = '2 - Simples Nacional, excesso sublimite' then CRT := '2'
-  else if CBRegime.Text = '3 - Regime Normal' then CRT := '3';
+ if CBRegime.Text = '1 - Simples Nacional' then CRT := '1'
+ else if CBRegime.Text = '2 - Simples Nacional, excesso sublimite' then CRT := '2'
+ else if CBRegime.Text = '3 - Regime Normal' then CRT := '3';
 
-  if EdtRazaoSocial.Text = '' then begin
-   ShowMessage('Nome não pode ficar em branco!');
-   Abort;
-  end;
+ if Nome = '' then begin
+  ShowMessage('Nome não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtFantasia.Text = '' then begin
-   ShowMessage('Fantasia não pode ficar em branco!');
-   Abort;
-  end;
+ if Fantasia = '' then begin
+  ShowMessage('Fantasia não pode ficar em branco!');
+  Abort;
+ end;
 
-  if StringReplace(StringReplace(StringReplace(StringReplace(StringReplace(EdtCNPJ.Text, '.', '', [rfReplaceAll]), '/', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
-   ShowMessage('CNPJ não pode ficar em branco!');
-   Abort;
-  end;
+ if StringReplace(StringReplace(StringReplace(StringReplace(StringReplace(EdtCNPJ.Text, '.', '', [rfReplaceAll]), '/', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
+  ShowMessage('CNPJ não pode ficar em branco!');
+  Abort;
+ end;
 
-  if StringReplace(StringReplace(StringReplace(StringReplace(EdtIE.Text, '.', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
-   ShowMessage('IE não pode ficar em branco!');
-   Abort;
-  end;
+ if StringReplace(StringReplace(StringReplace(StringReplace(EdtIE.Text, '.', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
+  ShowMessage('IE não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtEMP_ID.Text = '' then begin
-   ShowMessage('EMP_ID não pode ficar em branco!');
-   Abort;
-  end;
+ if EMP_ID = '' then begin
+  ShowMessage('EMP_ID não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtRua.Text = '' then begin
-   ShowMessage('Rua não pode ficar em branco!');
-   Abort;
-  end;
+ if Rua = '' then begin
+  ShowMessage('Rua não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtNumero.Text = '' then begin
-   ShowMessage('Numero não pode ficar em branco!');
-   Abort;
-  end;
+ if Numero = '' then begin
+  ShowMessage('Numero não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtEstado.Text = '' then begin
-   ShowMessage('Estado não pode ficar em branco!');
-   Abort;
-  end;
+ if Estado = '' then begin
+  ShowMessage('Estado não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtBairro.Text = '' then begin
-   ShowMessage('Bairro não pode ficar em branco!');
-   Abort;
-  end;
+ if Bairro = '' then begin
+  ShowMessage('Bairro não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtCidade.Text = '' then begin
-   ShowMessage('Cidade não pode ficar em branco!');
-   Abort;
-  end;
+ if Cidade = '' then begin
+  ShowMessage('Cidade não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtPais.Text = '' then begin
-   ShowMessage('País não pode ficar em branco!');
-   Abort;
-  end;
+ if Pais = '' then begin
+  ShowMessage('País não pode ficar em branco!');
+  Abort;
+ end;
 
-  if Edtcomplemento.Text = '' then begin
+ if Complemento = '' then begin
    ShowMessage('Complemento não pode ficar em branco!');
    Abort;
-  end;
+ end;
 
-  if EdtSerie.Text = '' then begin
-   ShowMessage('Série não pode ficar em branco!');
+ if Serie = '' then begin
+  ShowMessage('Série não pode ficar em branco!');
    Abort;
-  end;
+ end;
 
-  if EdtTelefone.Text = '' then begin
+ if Telefone = '' then begin
    ShowMessage('Telefone não pode ficar em branco!');
-   Abort;
-  end;
+  Abort;
+ end;
 
-  if CBRegime.Text = '' then begin
-   ShowMessage('Regime não selecionado!');
-   Abort;
-  end;
+ if CBRegime.Text = '' then begin
+  ShowMessage('Regime não selecionado!');
+  Abort;
+ end;
 
-  with CadEmpresaDM.InsertQuery do
+ CadEmpresaDM.Conexão.StartTransaction;
+ try
+  with CadEmpresaDM.qryInsert do
   begin
    SQL.Clear;
    SQL.Add('insert into empresa (nome, Fantasia, cnpj, IE, rua, numero, estado, bairro, cidade, pais, complemento, cep, serie, EMP_ID, CRT, Telefone)');
@@ -281,26 +283,26 @@ begin
    ParamByName('CRT').AsString := CRT;
    ParamByName('Fantasia').AsString := Fantasia;
    ParamByName('Telefone').AsString := Telefone;
+   ExecSQL;
   end;
 
   with LogsDM.InserirLog do
   begin
-  SQL.Clear;
-  SQL.Add('insert into logs (descricao, data, tela, usuario, emp_id)');
-  SQL.Add('values');
-  SQL.Add('(:descricao, :data, :tela, :usuario, :emp_id)');
-  ParamByName('descricao').AsString :=
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, data, tela, usuario, emp_id)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :data, :tela, :usuario, :emp_id)');
+   ParamByName('descricao').AsString :=
    'Inseriu a empresa ' + nome + ' no CNPJ ' + CNPJ + ' na IE ' + IE + ' no CEP ' + CEP + ' na série ' + serie + ' e CRT ' + CRT;
-  ParamByName('data').AsDateTime := Now;
-  ParamByName('tela').AsString := 'CadEmpresa';;
-  ParamByName('usuario').AsString := UsuarioLogado;
-  ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('tela').AsString := 'CadEmpresa';;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
   end;
 
-  try
-  LogsDM.InserirLog.ExecSQL;
-  CadEmpresaDM.InsertQuery.ExecSQL;
-  showmessage('Gravado com sucesso');
+  CadEmpresaDM.Conexão.Commit;
+  ShowMessage('Gravado com sucesso');
   EdtRazaoSocial.Enabled := False;
   EdtFantasia.Enabled := False;
   EdtCNPJ.Enabled := False;
@@ -322,7 +324,8 @@ begin
   btnGravarIncluir.Visible := False;
   btnDesistir.Visible := False;
   except
-  showmessage('Erro na gravação');
+  CadEmpresaDM.Conexão.Rollback;
+  ShowMessage('Erro na gravação');
   end;
 end;
 
@@ -357,102 +360,104 @@ end;
 procedure TCadEmpresa.BtnGravarAlterarClick(Sender: TObject);
 var nome, cnpj, IE, rua, numero, estado, bairro, cidade, pais, complemento, cep, serie, EMP_ID, CRT, Fantasia, telefone: string;
 begin
-  nome := EdtRazaoSocial.text;
-  CNPJ := EdtCNPJ.Text;
-  IE := EdtIE.Text;
-  Rua := EdtRua.Text;
-  Numero := EdtNumero.text;
-  Estado := EdtEstado.Text;
-  Bairro := EdtBairro.text;
-  Cidade := EdtCidade.Text;
-  Pais := EdtPais.Text;
-  complemento := edtcomplemento.text;
-  cep := edtcep.text;
-  serie := edtserie.text;
-  EMP_ID := EdtEMP_ID.Text;
-  Fantasia := EdtFantasia.Text;
-  telefone := EdtTelefone.Text;
+ nome := EdtRazaoSocial.text;
+ CNPJ := EdtCNPJ.Text;
+ IE := EdtIE.Text;
+ Rua := EdtRua.Text;
+ Numero := EdtNumero.text;
+ Estado := EdtEstado.Text;
+ Bairro := EdtBairro.text;
+ Cidade := EdtCidade.Text;
+ Pais := EdtPais.Text;
+ complemento := edtcomplemento.text;
+ cep := edtcep.text;
+ serie := edtserie.text;
+ EMP_ID := EdtEMP_ID.Text;
+ Fantasia := EdtFantasia.Text;
+ telefone := EdtTelefone.Text;
 
-  if CBRegime.Text = '1 - Simples Nacional' then CRT := '1'
-  else if CBRegime.Text = '2 - Simples Nacional, excesso sublimite' then CRT := '2'
-  else if CBRegime.Text = '3 - Regime Normal' then CRT := '3';
+ if CBRegime.Text = '1 - Simples Nacional' then CRT := '1'
+ else if CBRegime.Text = '2 - Simples Nacional, excesso sublimite' then CRT := '2'
+ else if CBRegime.Text = '3 - Regime Normal' then CRT := '3';
 
-  if EdtRazaoSocial.Text = '' then begin
-   ShowMessage('Nome não pode ficar em branco!');
-   Abort;
-  end;
+ if Nome = '' then begin
+  ShowMessage('Nome não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtFantasia.Text = '' then begin
-   ShowMessage('Fantasia não pode ficar em branco!');
-   Abort;
-  end;
+ if Fantasia = '' then begin
+  ShowMessage('Fantasia não pode ficar em branco!');
+  Abort;
+ end;
 
-  if StringReplace(StringReplace(StringReplace(StringReplace(StringReplace(EdtCNPJ.Text, '.', '', [rfReplaceAll]), '/', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
-   ShowMessage('CNPJ não pode ficar em branco!');
-   Abort;
-  end;
+ if StringReplace(StringReplace(StringReplace(StringReplace(StringReplace(EdtCNPJ.Text, '.', '', [rfReplaceAll]), '/', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
+  ShowMessage('CNPJ não pode ficar em branco!');
+  Abort;
+ end;
 
-  if StringReplace(StringReplace(StringReplace(StringReplace(EdtIE.Text, '.', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
-   ShowMessage('IE não pode ficar em branco!');
-   Abort;
-  end;
+ if StringReplace(StringReplace(StringReplace(StringReplace(EdtIE.Text, '.', '', [rfReplaceAll]), '-', '', [rfReplaceAll]), '_', '', [rfReplaceAll]), ' ', '', [rfReplaceAll]) = '' then begin
+  ShowMessage('IE não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtEMP_ID.Text = '' then begin
-   ShowMessage('EMP_ID não pode ficar em branco!');
-   Abort;
-  end;
+ if EMP_ID = '' then begin
+  ShowMessage('EMP_ID não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtRua.Text = '' then begin
-   ShowMessage('Rua não pode ficar em branco!');
-   Abort;
-  end;
+ if Rua = '' then begin
+  ShowMessage('Rua não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtNumero.Text = '' then begin
-   ShowMessage('Numero não pode ficar em branco!');
-   Abort;
-  end;
+ if Numero = '' then begin
+  ShowMessage('Numero não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtEstado.Text = '' then begin
-   ShowMessage('Estado não pode ficar em branco!');
-   Abort;
-  end;
+ if Estado = '' then begin
+  ShowMessage('Estado não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtBairro.Text = '' then begin
-   ShowMessage('Bairro não pode ficar em branco!');
-   Abort;
-  end;
+ if Bairro = '' then begin
+  ShowMessage('Bairro não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtCidade.Text = '' then begin
-   ShowMessage('Cidade não pode ficar em branco!');
-   Abort;
-  end;
+ if Cidade = '' then begin
+  ShowMessage('Cidade não pode ficar em branco!');
+  Abort;
+ end;
 
-  if EdtPais.Text = '' then begin
-   ShowMessage('País não pode ficar em branco!');
-   Abort;
-  end;
+ if Pais = '' then begin
+  ShowMessage('País não pode ficar em branco!');
+  Abort;
+ end;
 
-  if Edtcomplemento.Text = '' then begin
+ if Complemento = '' then begin
    ShowMessage('Complemento não pode ficar em branco!');
    Abort;
-  end;
+ end;
 
-  if EdtSerie.Text = '' then begin
-   ShowMessage('Série não pode ficar em branco!');
+ if Serie = '' then begin
+  ShowMessage('Série não pode ficar em branco!');
    Abort;
-  end;
+ end;
 
-  if EdtTelefone.Text = '' then begin
+ if Telefone = '' then begin
    ShowMessage('Telefone não pode ficar em branco!');
-   Abort;
-  end;
+  Abort;
+ end;
 
-  if CBRegime.Text = '' then begin
-   ShowMessage('Regime não selecionado!');
-   Abort;
-  end;
+ if CBRegime.Text = '' then begin
+  ShowMessage('Regime não selecionado!');
+  Abort;
+ end;
 
-  with CadEmpresaDM.InsertQuery do
+ CadEmpresaDM.Conexão.StartTransaction;
+ try
+  with CadEmpresaDM.qryInsert do
   begin
    SQL.Clear;
    SQL.Add('update empresa set telefone = :telefone, nome = :nome, cnpj = :cnpj, IE = :IE, Rua = :rua, numero = :numero, estado = :estado,');
@@ -474,6 +479,7 @@ begin
    ParamByName('CRT').AsString := CRT;
    ParamByName('Fantasia').AsString := Fantasia;
    ParamByName('Telefone').AsString := Telefone;
+   ExecSQL;
   end;
 
   with LogsDM.InserirLog do
@@ -488,12 +494,11 @@ begin
    ParamByName('tela').AsString := 'CadEmpresa';;
    ParamByName('usuario').AsString := UsuarioLogado;
    ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
   end;
 
-  try
-  LogsDM.InserirLog.ExecSQL;
-  CadEmpresaDM.InsertQuery.ExecSQL;
-  showmessage('Gravado com sucesso');
+  CadEmpresaDM.Conexão.Commit;
+  ShowMessage('Gravado com sucesso');
   EdtRazaoSocial.Enabled := False;
   EdtCNPJ.Enabled := False;
   EdtIE.Enabled := False;
@@ -515,7 +520,8 @@ begin
   btnGravarIncluir.Visible := False;
   btnDesistir.Visible := False;
   except
-  showmessage('Erro na gravação');
+  CadEmpresaDM.Conexão.Rollback;
+  ShowMessage('Erro na gravação');
   end;
 end;
 

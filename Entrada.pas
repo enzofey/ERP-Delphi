@@ -82,14 +82,14 @@ begin
  with CadCorDM.qryConsultarCor do
  begin
   SQL.Clear;
-  SQL.Text :=
-   'select * from cadcor where ativo = :ativo';
+  SQL.Add('select * from cadcor where ativo = :ativo');
   Parambyname('ativo').AsString := 'S';
   Open;
  end;
 
  Application.CreateForm(TConsultarCor, ConsultarCor);
  codigo := ConsultarCor.SelecionarCor;
+
  if codigo <> '' then begin
   descricao := ConsultarCor.Descricao;
   EdtCodigoCor.Text := codigo;
@@ -103,14 +103,14 @@ begin
  with CadDepositoDM.qryConsultarDeposito do
  begin
   SQL.Clear;
-  SQL.Text :=
-   'select * from caddeposito where ativo = :ativo';
+  SQL.Add('select * from caddeposito where ativo = :ativo');
   Parambyname('ativo').AsString := 'S';
   Open;
  end;
 
  Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
  codigo := ConsultarDeposito.SelecionarDeposito;
+
  if codigo <> '' then begin
   descricao := ConsultarDeposito.Descricao;
   EdtCodigoDeposito.Text := codigo;
@@ -124,20 +124,19 @@ begin
  with CadProdutoDM.qryConsultarProduto do
  begin
   SQL.Clear;
-  SQL.Text :=
-  'select * from cadproduto where ativo = :ativo';
+  SQL.Add('select * from cadproduto where ativo = :ativo');
   Parambyname('ativo').AsString := 'S';
   Open;
  end;
 
-  Application.CreateForm(TConsultarProduto, ConsultarProduto);
-  codigo := ConsultarProduto.SelecionarProduto;
+ Application.CreateForm(TConsultarProduto, ConsultarProduto);
+ codigo := ConsultarProduto.SelecionarProduto;
 
-  if codigo <> '' then begin
-   EdtCodigoProduto.text := codigo;
-   descricao := ConsultarProduto.Descricao;
-   EdtDescricaoProduto.Text := descricao;
-  end;
+ if codigo <> '' then begin
+  EdtCodigoProduto.text := codigo;
+  descricao := ConsultarProduto.Descricao;
+  EdtDescricaoProduto.Text := descricao;
+ end;
 end;
 
 procedure TMovEntrada.SBTamanhoClick(Sender: TObject);
@@ -153,6 +152,7 @@ begin
 
  Application.CreateForm(TConsultarTamanho, ConsultarTamanho);
  codigo := ConsultarTamanho.SelecionarTamanho;
+
  if codigo <> '' then begin
   EdtCodigoTamanho.Text := codigo;
   descricao := ConsultarTamanho.Descricao;
@@ -250,114 +250,116 @@ begin
   qtde     := Grid.Cells[5, i];
 
  with MovEntradaDM.SelectQuery do
-  begin
-   SQL.Clear;
-   SQL.Text :=
-   'SELECT * FROM estoque WHERE codigo=:codigo AND tamanho=:tamanho AND cor=:cor AND deposito=:deposito AND lote=:lote';
-   ParamByName('codigo').AsString := codigo;
-   ParamByName('tamanho').AsString := tamanho;
-   ParamByName('cor').AsString := cor;
-   ParamByName('deposito').AsString := deposito;
-   ParamByName('lote').AsString := lote;
-   Open;
-  end;
+ begin
+  SQL.Clear;
+  SQL.Add('SELECT * FROM estoque WHERE codigo=:codigo AND tamanho=:tamanho AND cor=:cor AND deposito=:deposito AND lote=:lote');
+  ParamByName('codigo').AsString := codigo;
+  ParamByName('tamanho').AsString := tamanho;
+  ParamByName('cor').AsString := cor;
+  ParamByName('deposito').AsString := deposito;
+  ParamByName('lote').AsString := lote;
+  Open;
+ end;
 
+ MovEntradaDM.Conexão.StartTransaction;
+ try
   if MovEntradaDM.SelectQuery.IsEmpty then begin
    with MovEntradaDM.InsertQuery do
    begin
+    SQL.Clear;
+    SQL.Add('INSERT INTO estoque (codigo, tamanho, cor, deposito, lote, qtde)');
+    SQL.Add('VALUES');
+    SQL.Add('(:codigo, :tamanho, :cor, :deposito, :lote, :qtde)');
+    ParamByName('codigo').AsString := codigo;
+    ParamByName('tamanho').AsString := tamanho;
+    ParamByName('cor').AsString := cor;
+    ParamByName('deposito').AsString := deposito;
+    ParamByName('lote').AsString := lote;
+    ParamByName('qtde').AsFloat := StrToFloat(qtde);
+    ExecSQL;
+   end;
+  end
+  else begin
+   with MovEntradaDM.UpdateQuery do
+   begin
+    SQL.Clear;
+    SQL.Add('UPDATE estoque SET qtde = qtde + :qtde');
+    SQL.Add('WHERE codigo = :codigo AND tamanho = :tamanho AND cor = :cor AND deposito = :deposito AND lote = :lote');
+    ParamByName('codigo').AsString := codigo;
+    ParamByName('tamanho').AsString := tamanho;
+    ParamByName('cor').AsString := cor;
+    ParamByName('deposito').AsString := deposito;
+    ParamByName('lote').AsString := lote;
+    ParamByName('qtde').AsFloat := StrToFloat(qtde);
+    ExecSQL;
+   end;
+  end;
+
+  with MovEntradaDM.InsertProdMov do
+  begin
    SQL.Clear;
-   SQL.Text :=
-   'INSERT INTO estoque (codigo, tamanho, cor, deposito, lote, qtde) ' +
-   'VALUES (:codigo, :tamanho, :cor, :deposito, :lote, :qtde)';
+   SQL.Add('insert into prodmov (codigo, cor, tamanho, deposito, lote, qtde, data, tipo, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:codigo, :cor, :tamanho, :deposito, :lote, :qtde, :data, :tipo, :usuario)');
    ParamByName('codigo').AsString := codigo;
-   ParamByName('tamanho').AsString := tamanho;
    ParamByName('cor').AsString := cor;
+   ParamByName('tamanho').AsString := tamanho;
    ParamByName('deposito').AsString := deposito;
    ParamByName('lote').AsString := lote;
    ParamByName('qtde').AsFloat := StrToFloat(qtde);
+   ParamByName('data').AsDateTime := Now;
+   ParamByName('tipo').AsString := 'E';
+   ParamByName('usuario').AsString := UsuarioLogado;
    ExecSQL;
-   end;
-  end
-   else begin
-    with MovEntradaDM.UpdateQuery do
-    begin
-     SQL.Clear;
-     SQL.Text :=
-      'UPDATE estoque SET qtde = qtde + :qtde ' +
-      'WHERE codigo = :codigo AND tamanho = :tamanho AND cor = :cor AND deposito = :deposito AND lote = :lote';
-     ParamByName('codigo').AsString := codigo;
-     ParamByName('tamanho').AsString := tamanho;
-     ParamByName('cor').AsString := cor;
-     ParamByName('deposito').AsString := deposito;
-     ParamByName('lote').AsString := lote;
-     ParamByName('qtde').AsFloat := StrToFloat(qtde);
-     ExecSQL;
-    end;
-   end;
+  end;
 
- with MovEntradaDM.InsertProdMov do
- begin
-  SQL.Clear;
-  SQL.Add('insert into prodmov (codigo, cor, tamanho, deposito, lote, qtde, data, tipo, usuario)');
-  SQL.Add('values');
-  SQL.Add('(:codigo, :cor, :tamanho, :deposito, :lote, :qtde, :data, :tipo, :usuario)');
-  ParamByName('codigo').AsString := codigo;
-  ParamByName('cor').AsString := cor;
-  ParamByName('tamanho').AsString := tamanho;
-  ParamByName('deposito').AsString := deposito;
-  ParamByName('lote').AsString := lote;
-  ParamByName('qtde').AsFloat := StrToFloat(qtde);
-  ParamByName('data').AsDateTime := Now;
-  ParamByName('tipo').AsString := 'E';
-  ParamByName('usuario').AsString := UsuarioLogado;
-  ExecSQL;
- end;
-
- with LogsDM.InserirLog do
+  with LogsDM.InserirLog do
   begin
    SQL.Add('insert into logs (descricao, tela, data, usuario, emp_id)');
    SQL.Add('values');
    SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
    ParamByName('descricao').AsString :=
-    'Realizou entrada manual no código ' + codigo + ' na cor ' + cor +
-    ' no tamanho ' + tamanho + ' no depósito ' + deposito +
-    ' no lote ' + lote + ' em ' + qtde + ' quantidade(s)';
+   'Realizou entrada manual no código ' + codigo + ' na cor ' + cor +
+   ' no tamanho ' + tamanho + ' no depósito ' + deposito +
+   ' no lote ' + lote + ' em ' + qtde + ' quantidade(s)';
    ParamByName('tela').AsString := 'MovEntrada';
    ParamByName('data').AsDateTime := Now;
    ParamByName('usuario').AsString := UsuarioLogado;
    ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
   end;
- try
- LogsDM.InserirLog.ExecSQL;
- ShowMessage('Gravado com sucesso!');
- EdtCodigoProduto.clear;
- EdtCodigoCor.clear;
- EdtCodigoTamanho.clear;
- EdtLote.clear;
- EdtCodigoDeposito.clear;
- EdtQtde.clear;
 
- BtnIncluir.visible := True;
+  MovEntradaDM.Conexão.Commit;
+  ShowMessage('Gravado com sucesso!');
+  EdtCodigoProduto.clear;
+  EdtCodigoCor.clear;
+  EdtCodigoTamanho.clear;
+  EdtLote.clear;
+  EdtCodigoDeposito.clear;
+  EdtQtde.clear;
 
- BtnGravar.Visible := False;
- BtnDesistir.Visible := False;
- BtnIncluirGrid.Visible := False;
+  BtnIncluir.visible := True;
 
- EdtCodigoProduto.Enabled := False;
- EdtCodigoDeposito.Enabled := False;
- EdtCodigoTamanho.Enabled := False;
- EdtCodigoCor.Enabled := False;
- EdtQtde.Enabled := False;
- EdtLote.Enabled := False;
+  BtnGravar.Visible := False;
+  BtnDesistir.Visible := False;
+  BtnIncluirGrid.Visible := False;
 
- SBProduto.Enabled := False;
- SBCor.Enabled := False;
- SBTamanho.Enabled := False;
- SBDeposito.Enabled := False;
+  EdtCodigoProduto.Enabled := False;
+  EdtCodigoDeposito.Enabled := False;
+  EdtCodigoTamanho.Enabled := False;
+  EdtCodigoCor.Enabled := False;
+  EdtQtde.Enabled := False;
+  EdtLote.Enabled := False;
 
- Grid.RowCount := 1
+  SBProduto.Enabled := False;
+  SBCor.Enabled := False;
+  SBTamanho.Enabled := False;
+  SBDeposito.Enabled := False;
+
+  Grid.RowCount := 1
  except
- ShowMessage('Erro na gravação');
+  MovEntradaDM.Conexão.Commit;
+  ShowMessage('Erro na gravação');
  end;
 end;
 end;
@@ -417,6 +419,7 @@ procedure TMovEntrada.EdtCodigoDepositoChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtCodigoDeposito.Text;
+
  with CadDepositoDM.qryConsultarDeposito do
  begin
   SQL.Clear;
@@ -432,6 +435,7 @@ procedure TMovEntrada.EdtCodigoProdutoChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtCodigoProduto.Text;
+
  with CadProdutoDM.qryConsultarProduto do
  begin
   SQL.Clear;
@@ -446,10 +450,10 @@ end;
 procedure TMovEntrada.EdtCodigoTamanhoChange(Sender: TObject);
 var codigo: string;
 begin
+ codigo := EdtCodigoTamanho.Text;
+
  with CadTamanhoDM.qryConsultarTamanho do
  begin
-  codigo := EdtCodigoTamanho.Text;
-
   SQL.Clear;
   SQL.Add('select * from cadtamanho where codigo = :codigo');
   ParamByName('codigo').AsString := codigo;

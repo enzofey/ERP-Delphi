@@ -55,36 +55,37 @@ begin
  senha := edtsenha.Text;
  empresa := CBEmpresa.text;
 
- CadUsuarioDM.LoginQuery.SQL.Clear;
- CadUsuarioDM.LoginQuery.SQL.Text :=
- 'select * from usuario where usuario = :usuario';
- CadUsuarioDM.LoginQuery.ParamByName('usuario').AsString := usuario;
- CadUsuarioDM.LoginQuery.Open;
+ with CadUsuarioDM.qryLogin do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from usuario where usuario = :usuario');
+  ParamByName('usuario').AsString := usuario;
+  Open;
 
- if CadUsuarioDM.LoginQuery.IsEmpty then begin
-  ShowMessage('Usuário não encontrado!');
-  Abort;
- end;
+  if IsEmpty then begin
+   ShowMessage('Usuário não encontrado!');
+   Abort;
+  end;
 
- CadUsuarioDM.LoginQuery.SQL.Clear;
- CadUsuarioDM.LoginQuery.SQL.Text :=
- 'select * from usuario where usuario = :usuario and senha = :senha';
- CadUsuarioDM.LoginQuery.ParamByName('usuario').AsString := usuario;
- CadUsuarioDM.LoginQuery.ParamByName('senha').AsString := GerarHashMD5(senha);
- CadUsuarioDM.LoginQuery.Open;
+  SQL.Clear;
+  SQL.Add('select * from usuario where usuario = :usuario and senha = :senha');
+  ParamByName('usuario').AsString := usuario;
+  ParamByName('senha').AsString := GerarHashMD5(senha);
+  Open;
 
- if CBEmpresa.Text = '' then begin
-  ShowMessage('Nenhuma empresa selecionada!');
-  Abort;
- end;
+  if CBEmpresa.Text = '' then begin
+   ShowMessage('Nenhuma empresa selecionada!');
+   Abort;
+  end;
 
- if not CadUsuarioDM.LoginQuery.IsEmpty then begin
- UsuarioLogado := usuario;
- EmpresaLogada := COPY(CBEmpresa.text,1,1);
- ModalResult := mrOk;
- end
- else begin
- ShowMessage('Usuário ou senha incorretos!');
+  if not IsEmpty then begin
+   UsuarioLogado := usuario;
+   EmpresaLogada := COPY(CBEmpresa.text,1,1);
+   ModalResult := mrOk;
+  end
+  else begin
+   ShowMessage('Usuário ou senha incorretos!');
+  end;
  end;
 end;
 
@@ -107,5 +108,4 @@ begin
   end;
   CadEmpresaDM.CBEmpresa.Close;
 end;
-
 end.

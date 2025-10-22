@@ -235,7 +235,9 @@ begin
  with LogsDM.InserirLog do
  begin
   SQL.Clear;
-  SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario) values (:descricao, :tela, :data, :emp_id, :usuario)');
+  SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+  SQL.Add('values');
+  SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
   ParamByName('descricao').AsString :=
   'Cancelou a nota: ' + ImpressaoNFEDM.qryGridNota.FieldByName('fatura').AsString +
   ' no emp_id: ' + ImpressaoNFEDM.qryGridNota.FieldByName('emp_id').AsString +
@@ -1100,8 +1102,7 @@ begin
    ExecSQL;
   end;
   except
-  on E: Exception do
-   ShowMessage('Erro ao gerar XML! ' + E.Message);
+  ShowMessage('Erro ao gerar XML!');
  end;
 end;
 

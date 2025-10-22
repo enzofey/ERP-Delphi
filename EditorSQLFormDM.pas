@@ -13,11 +13,12 @@ uses
 type
   TEditorSQLDM = class(TDataModule)
     Conexão: TFDConnection;
-    SelectQuery: TFDQuery;
+    qrySelect: TFDQuery;
     dsEditorSQL: TDataSource;
     TablesBanco: TFDQuery;
     dsTablesBanco: TDataSource;
     PGLink: TFDPhysPgDriverLink;
+    qryExec: TFDQuery;
   private
     { Private declarations }
   public

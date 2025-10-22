@@ -3,7 +3,7 @@
   Width = 640
   object Conexão: TFDConnection
     Params.Strings = (
-	  'server=192.168.1.23'
+      'server=192.168.1.23'
       'Database=00001P'
       'User_Name=postgres'
       'Password=evf'
@@ -13,13 +13,13 @@
     Left = 32
     Top = 24
   end
-  object SelectQuery: TFDQuery
+  object qrySelect: TFDQuery
     Connection = Conexão
     Left = 112
     Top = 120
   end
   object dsEditorSQL: TDataSource
-    DataSet = SelectQuery
+    DataSet = qrySelect
     Left = 40
     Top = 120
   end
@@ -43,5 +43,10 @@
     VendorLib = 'C:\Program Files (x86)\PostgreSQL\psqlODBC\bin\libpq.dll'
     Left = 88
     Top = 24
+  end
+  object qryExec: TFDQuery
+    Connection = Conexão
+    Left = 184
+    Top = 120
   end
 end

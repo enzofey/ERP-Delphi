@@ -68,9 +68,10 @@ end;
 procedure TRelEstoqueForm.EdtCodigoCorChange(Sender: TObject);
 var codigo: string;
 begin
+ codigo := EdtCodigoCor.Text;
+
  with CadCorDM.qryConsultarCor do
  begin
-  codigo := EdtCodigoCor.Text;
   SQL.Clear;
   SQL.Add('select * from cadcor where codigo = :codigo');
   ParamByName('codigo').AsString := codigo;
@@ -83,9 +84,10 @@ end;
 procedure TRelEstoqueForm.EdtCodigoDepositoChange(Sender: TObject);
 var codigo: string;
 begin
+ codigo := EdtCodigoDeposito.Text;
+
  with CadDepositoDM.qryConsultarDeposito do
  begin
-  codigo := EdtCodigoDeposito.Text;
   SQL.Clear;
   SQL.Add('select * from caddeposito where codigo = :codigo');
   Parambyname('codigo').AsString := codigo;
@@ -99,6 +101,7 @@ procedure TRelEstoqueForm.EdtCodigoProdutoChange(Sender: TObject);
 var codigo: string;
 begin
  codigo := EdtCodigoProduto.Text;
+
  with CadProdutoDM.qryConsultarProduto do
  begin
   SQL.Clear;
@@ -113,10 +116,10 @@ end;
 procedure TRelEstoqueForm.EdtCodigoTamanhoChange(Sender: TObject);
 var codigo: string;
 begin
+ codigo := EdtCodigoTamanho.Text;
+
  with CadTamanhoDM.qryConsultarTamanho do
  begin
-  codigo := EdtCodigoTamanho.Text;
-
   SQL.Clear;
   SQL.Add('select * from cadtamanho where codigo = :codigo');
   ParamByName('codigo').AsString := codigo;
@@ -136,14 +139,14 @@ begin
   Open;
  end;
 
-  Application.CreateForm(TConsultarCor, ConsultarCor);
-  cor := ConsultarCor.SelecionarCor;
-  if cor <> '' then
-  begin
-    EdtCodigoCor.Text := cor;
-    descricao := ConsultarCor.Descricao;
-    EdtDescricaoCor.Text := descricao;
-  end;
+ Application.CreateForm(TConsultarCor, ConsultarCor);
+ cor := ConsultarCor.SelecionarCor;
+
+ if cor <> '' then begin
+  EdtCodigoCor.Text := cor;
+  descricao := ConsultarCor.Descricao;
+  EdtDescricaoCor.Text := descricao;
+ end;
 end;
 
 procedure TRelEstoqueForm.SBDepositoClick(Sender: TObject);
@@ -156,14 +159,14 @@ begin
   Open;
  end;
 
-  Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
-  codigo := ConsultarDeposito.SelecionarDeposito;
-  if codigo <> '' then
-  begin
-    EdtCodigoDeposito.Text := codigo;
-    descricao := ConsultarDeposito.Descricao;
-    EdtDescricaoDeposito.Text := descricao;
-  end;
+ Application.CreateForm(TConsultarDeposito, ConsultarDeposito);
+ codigo := ConsultarDeposito.SelecionarDeposito;
+
+ if codigo <> '' then begin
+  EdtCodigoDeposito.Text := codigo;
+  descricao := ConsultarDeposito.Descricao;
+  EdtDescricaoDeposito.Text := descricao;
+ end;
 end;
 
 procedure TRelEstoqueForm.SBProdutoClick(Sender: TObject);
@@ -178,6 +181,7 @@ begin
 
  Application.CreateForm(TConsultarProduto, ConsultarProduto);
  codigo := ConsultarProduto.SelecionarProduto;
+
  if codigo <> '' then begin
   EdtCodigoProduto.Text := codigo;
   descricao := ConsultarProduto.Descricao;
@@ -197,6 +201,7 @@ begin
 
  Application.CreateForm(TConsultarTamanho, ConsultarTamanho);
  codigo := ConsultarTamanho.SelecionarTamanho;
+
  if codigo <> '' then begin
   EdtCodigoTamanho.Text := codigo;
   descricao := ConsultarTamanho.Descricao;
@@ -209,75 +214,74 @@ var i: Integer;
     produto, cor, tamanho, deposito: string;
     temwhere: boolean;
 begin
-  produto := EdtCodigoProduto.Text;
-  cor := EdtCodigoCor.Text;
-  tamanho := EdtCodigoTamanho.Text;
-  deposito := EdtCodigoDeposito.Text;
+ produto := EdtCodigoProduto.Text;
+ cor := EdtCodigoCor.Text;
+ tamanho := EdtCodigoTamanho.Text;
+ deposito := EdtCodigoDeposito.Text;
 
-  with EstoqueDM.ConsultarEstoque do
-  begin
-   SQL.Clear;
-   SQL.Add('select es.codigo, cp.descricao as produto_desc, ');
-   SQL.Add('es.cor as cor, cc.descricao as cor_desc, ');
-   SQL.Add('es.tamanho as tamanho, ct.descricao as tamanho_desc, ');
-   SQL.Add('es.deposito as deposito, cd.descricao as deposito_desc, ');
-   SQL.Add('es.lote, ');
-   SQL.Add('es.qtde ');
-   SQL.Add('FROM estoque es ');
-   SQL.Add('inner join cadproduto cp on (cp.codigo = es.codigo)');
-   SQL.Add('inner join cadcor cc on (cc.codigo = es.cor)');
-   SQL.Add('inner join cadtamanho ct on (ct.codigo = es.tamanho)');
-   SQL.Add('inner join caddeposito cd on (cd.codigo = es.deposito)');
-   temwhere := False;
+ with EstoqueDM.ConsultarEstoque do
+ begin
+  SQL.Clear;
+  SQL.Add('select es.codigo, cp.descricao as produto_desc, ');
+  SQL.Add('es.cor as cor, cc.descricao as cor_desc, ');
+  SQL.Add('es.tamanho as tamanho, ct.descricao as tamanho_desc, ');
+  SQL.Add('es.deposito as deposito, cd.descricao as deposito_desc, ');
+  SQL.Add('es.lote, ');
+  SQL.Add('es.qtde ');
+  SQL.Add('FROM estoque es ');
+  SQL.Add('inner join cadproduto cp on (cp.codigo = es.codigo)');
+  SQL.Add('inner join cadcor cc on (cc.codigo = es.cor)');
+  SQL.Add('inner join cadtamanho ct on (ct.codigo = es.tamanho)');
+  SQL.Add('inner join caddeposito cd on (cd.codigo = es.deposito)');
+  temwhere := False;
 
-   if produto <> '' then begin
-    if temwhere then begin
-     SQL.Add('AND es.codigo = :produto');
-    end
-    else begin
-     SQL.Add('WHERE es.codigo = :produto');
-     temwhere := True;
-    end;
-   ParamByName('produto').AsString := produto;
+  if produto <> '' then begin
+   if temwhere then begin
+    SQL.Add('AND es.codigo = :produto');
+   end
+   else begin
+    SQL.Add('WHERE es.codigo = :produto');
+    temwhere := True;
    end;
-
-
-   if cor <> '' then begin
-    if temwhere then begin
-     SQL.Add('AND cor = :cor');
-    end
-    else begin
-     SQL.Add('WHERE cor = :cor');
-     temwhere := True;
-    end;
-   ParamByName('cor').AsString := cor;
-   end;
-
-   if deposito <> '' then begin
-    if temwhere then begin
-     SQL.Add('AND deposito = :deposito');
-    end
-    else begin
-     SQL.Add('WHERE deposito = :deposito');
-     temwhere := True;
-    end;
-   ParamByName('deposito').AsString := deposito;
-   end;
-
-   if tamanho <> '' then begin
-    if temwhere then begin
-     SQL.Add('AND tamanho = :tamanho');
-    end
-    else begin
-     SQL.Add('WHERE tamanho = :tamanho');
-     temwhere := true;
-    end;
-   ParamByName('tamanho').AsString := tamanho;
-   end;
-  Open;
+  ParamByName('produto').AsString := produto;
   end;
 
+
+  if cor <> '' then begin
+   if temwhere then begin
+    SQL.Add('AND cor = :cor');
+   end
+   else begin
+    SQL.Add('WHERE cor = :cor');
+    temwhere := True;
+   end;
+  ParamByName('cor').AsString := cor;
+  end;
+
+  if deposito <> '' then begin
+   if temwhere then begin
+    SQL.Add('AND deposito = :deposito');
+   end
+   else begin
+    SQL.Add('WHERE deposito = :deposito');
+    temwhere := True;
+   end;
+  ParamByName('deposito').AsString := deposito;
+  end;
+
+  if tamanho <> '' then begin
+   if temwhere then begin
+    SQL.Add('AND tamanho = :tamanho');
+   end
+   else begin
+    SQL.Add('WHERE tamanho = :tamanho');
+    temwhere := true;
+   end;
+  ParamByName('tamanho').AsString := tamanho;
+  end;
+  Open;
   for i := 0 to Grid.Columns.Count - 1 do
    Grid.Columns[i].Width := Grid.Canvas.TextWidth(Grid.Columns[i].Title.Caption + '     ');
+ end;
 end;
 end.

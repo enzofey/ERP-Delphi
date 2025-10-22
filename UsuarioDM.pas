@@ -13,14 +13,14 @@ uses
 type
   TCadUsuarioDM = class(TDataModule)
     Conexão: TFDConnection;
-    InsertQuery: TFDQuery;
-    LoginQuery: TFDQuery;
-    SenhaQuery: TFDQuery;
-    ConsultarUsuario: TFDQuery;
+    qryInsert: TFDQuery;
+    qryLogin: TFDQuery;
+    qrySenha: TFDQuery;
+    qryConsultarUsuario: TFDQuery;
     dsUsuario: TDataSource;
 	  PGLink: TFDPhysPgDriverLink;
-    UpdateQuery: TFDQuery;
-    DeleteQuery: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryDelete: TFDQuery;
     qryGrid: TFDQuery;
     dsGrid: TDataSource;
   private

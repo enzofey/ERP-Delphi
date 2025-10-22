@@ -344,60 +344,61 @@ end;
 
 procedure TEntradaNFForm.ItensGridClick(Sender: TObject);
 begin
- if ItensGrid.Row > 1 then
+ if ItensGrid.Row > 1 then begin
   EdtCSTICMS.Text := ItensGrid.Cells[9,ItensGrid.Row];
   EdtCSOSN.Text := ItensGrid.Cells[10,ItensGrid.Row];
-  EdtpICMS.Text := ItensGrid.Cells[11,ItensGrid.Row];
-  EdtvBCItem.Text := ItensGrid.Cells[12, ItensGrid.Row];
-  EdtvICMSItem.Text := ItensGrid.Cells[13,ItensGrid.Row];
-  EdtvICMSDesonItem.Text := ItensGrid.Cells[14,ItensGrid.Row];
-  EdtvBCSTItem.Text := ItensGrid.Cells[15,ItensGrid.Row];
-  EdtvICMSSTItem.Text := ItensGrid.Cells[16,ItensGrid.Row];
+  if ItensGrid.Cells[11,ItensGrid.Row] = '' then EdtpICMS.Text := '0' else EdtpICMS.Text := ItensGrid.Cells[11,ItensGrid.Row];
+  if ItensGrid.Cells[12,ItensGrid.Row] = '' then EdtvBCItem.Text := '0' else EdtvBCItem.Text := ItensGrid.Cells[12,ItensGrid.Row];
+  if ItensGrid.Cells[13,ItensGrid.Row] = '' then EdtvICMSItem.Text := '0' else EdtvICMSItem.Text := ItensGrid.Cells[13,ItensGrid.Row];
+  if ItensGrid.Cells[14,ItensGrid.Row] = '' then EdtvICMSDesonItem.Text := '0' else EdtvICMSDesonItem.Text := ItensGrid.Cells[14,ItensGrid.Row];
+  if ItensGrid.Cells[15,ItensGrid.Row] = '' then EdtvBCSTItem.Text := '0' else EdtvBCSTItem.Text := ItensGrid.Cells[15,ItensGrid.Row];
+  if ItensGrid.Cells[16,ItensGrid.Row] = '' then EdtvICMSSTItem.Text := '0' else EdtvICMSSTItem.Text := ItensGrid.Cells[16,ItensGrid.Row];
 
   EdtCSTIPI.Text := ItensGrid.Cells[17,ItensGrid.Row];
   EdtENQIPI.Text := ItensGrid.Cells[18,ItensGrid.Row];
-  EdtpIPI.Text := ItensGrid.Cells[19,ItensGrid.Row];
-  EdtvBCIPIItem.Text := ItensGrid.Cells[20,ItensGrid.Row];
-  EdtvIPIItem.Text := ItensGrid.Cells[21,ItensGrid.Row];
+  if ItensGrid.Cells[19,ItensGrid.Row] = '' then EdtpIPI.Text := '0' else EdtpIPI.Text := ItensGrid.Cells[19,ItensGrid.Row];
+  if ItensGrid.Cells[20,ItensGrid.Row] = '' then EdtvBCIPIItem.Text := '0' else EdtvBCIPIItem.Text := ItensGrid.Cells[20,ItensGrid.Row];
+  if ItensGrid.Cells[21,ItensGrid.Row] = '' then EdtvIPIItem.Text := '0' else EdtvIPIItem.Text := ItensGrid.Cells[21,ItensGrid.Row];
+  if ItensGrid.Cells[58,ItensGrid.Row] = '' then EdtvIPIDevolItem.Text := '0' else EdtvIPIDevolItem.Text := ItensGrid.Cells[58,ItensGrid.Row];
 
   EdtCSTPIS.Text := ItensGrid.Cells[22,ItensGrid.Row];
-  EdtpPIS.Text := ItensGrid.Cells[23,ItensGrid.Row];
-  EdtvBCPISItem.Text := ItensGrid.Cells[24,ItensGrid.Row];
-  EdtvPISItem.Text := ItensGrid.Cells[25,ItensGrid.Row];
+  if ItensGrid.Cells[23,ItensGrid.Row] = '' then EdtpPIS.Text := '0' else EdtpPIS.Text := ItensGrid.Cells[23,ItensGrid.Row];
+  if ItensGrid.Cells[24,ItensGrid.Row] = '' then EdtvBCPISItem.Text := '0' else EdtvBCPISItem.Text := ItensGrid.Cells[24,ItensGrid.Row];
+  if ItensGrid.Cells[25,ItensGrid.Row] = '' then EdtvPISItem.Text := '0' else EdtvPISItem.Text := ItensGrid.Cells[25,ItensGrid.Row];
 
   EdtCSTCOFINS.Text := ItensGrid.Cells[26,ItensGrid.Row];
-  EdtpCOFINS.Text := ItensGrid.Cells[27,ItensGrid.Row];
-  EdtvCOFINSItem.Text := ItensGrid.Cells[28,ItensGrid.Row];
-  EdtvBCCOFINSItem.Text := ItensGrid.Cells[29,ItensGrid.Row];
+  if ItensGrid.Cells[27,ItensGrid.Row] = '' then EdtpCOFINS.Text := '0' else EdtpCOFINS.Text := ItensGrid.Cells[27,ItensGrid.Row];
+  if ItensGrid.Cells[28,ItensGrid.Row] = '' then EdtvCOFINSItem.Text := '0' else EdtvCOFINSItem.Text := ItensGrid.Cells[28,ItensGrid.Row];
+  if ItensGrid.Cells[29,ItensGrid.Row] = '' then EdtvBCCOFINSItem.Text := '0' else EdtvBCCOFINSItem.Text := ItensGrid.Cells[29,ItensGrid.Row];
 
-  EdtpFCPItem.Text := ItensGrid.Cells[31,ItensGrid.Row];
-  EdtvFCPItem.Text := ItensGrid.Cells[32,ItensGrid.Row];
-  EdtvBCFCPItem.Text := ItensGrid.Cells[33,ItensGrid.Row];
-  EdtvBCFCPSTItem.Text := ItensGrid.Cells[34,ItensGrid.Row];
-  EdtvFCPSTItem.Text := ItensGrid.Cells[35,ItensGrid.Row];
-  EdtpFCPSTItem.Text := ItensGrid.Cells[36,ItensGrid.Row];
-  EdtpMVASTItem.Text := ItensGrid.Cells[37,ItensGrid.Row];
+  if ItensGrid.Cells[31,ItensGrid.Row] = '' then EdtpFCPItem.Text := '0' else EdtpFCPItem.Text := ItensGrid.Cells[31,ItensGrid.Row];
+  if ItensGrid.Cells[32,ItensGrid.Row] = '' then EdtvFCPItem.Text := '0' else EdtvFCPItem.Text := ItensGrid.Cells[32,ItensGrid.Row];
+  if ItensGrid.Cells[33,ItensGrid.Row] = '' then EdtvBCFCPItem.Text := '0' else EdtvBCFCPItem.Text := ItensGrid.Cells[33,ItensGrid.Row];
+  if ItensGrid.Cells[34,ItensGrid.Row] = '' then EdtvBCFCPSTItem.Text := '0' else EdtvBCFCPSTItem.Text := ItensGrid.Cells[34,ItensGrid.Row];
+  if ItensGrid.Cells[35,ItensGrid.Row] = '' then EdtvFCPSTItem.Text := '0' else EdtvFCPSTItem.Text := ItensGrid.Cells[35,ItensGrid.Row];
+  if ItensGrid.Cells[36,ItensGrid.Row] = '' then EdtpFCPSTItem.Text := '0' else EdtpFCPSTItem.Text := ItensGrid.Cells[36,ItensGrid.Row];
+  if ItensGrid.Cells[37,ItensGrid.Row] = '' then EdtpMVASTItem.Text := '0' else EdtpMVASTItem.Text := ItensGrid.Cells[37,ItensGrid.Row];
 
-  EdtpRedBCSTItem.Text := ItensGrid.Cells[38,ItensGrid.Row];
-  EdtpICMSSTItem.Text := ItensGrid.Cells[39,ItensGrid.Row];
-  EdtpRedBCItem.Text := ItensGrid.Cells[40,ItensGrid.Row];
-  EdtpDifItem.Text := ItensGrid.Cells[41,ItensGrid.Row];
-  EdtvICMSOpItem.Text := ItensGrid.Cells[42,ItensGrid.Row];
-  EdtvICMSDifItem.Text := ItensGrid.Cells[43,ItensGrid.Row];
-  EdtvBCSTRetItem.Text := ItensGrid.Cells[44,ItensGrid.Row];
-  EdtpSTItem.Text := ItensGrid.Cells[45,ItensGrid.Row];
-  EdtvICMSSubstitutoItem.Text := ItensGrid.Cells[46,ItensGrid.Row];
-  EdtvICMSSTRetItem.Text := ItensGrid.Cells[47,ItensGrid.Row];
-  EdtvBCFCPSTRetItem.Text := ItensGrid.Cells[48,ItensGrid.Row];
-  EdtpFCPSTRetItem.Text := ItensGrid.Cells[49,ItensGrid.Row];
-  EdtvFCPSTRetItem.Text := ItensGrid.Cells[50,ItensGrid.Row];
-  EdtpRedBCEfetItem.Text := ItensGrid.Cells[51,ItensGrid.Row];
-  EdtvBCEfetItem.Text := ItensGrid.Cells[52,ItensGrid.Row];
-  EdtpICMSEfetItem.Text := ItensGrid.Cells[53,ItensGrid.Row];
-  EdtvICMSEfetItem.Text := ItensGrid.Cells[54,ItensGrid.Row];
-  EdtvBCUFDestItem.Text := ItensGrid.Cells[55,ItensGrid.Row];
-  EdtvICMSUFDestItem.Text := ItensGrid.Cells[56,ItensGrid.Row];
-  EdtvIPIDevolItem.Text := ItensGrid.Cells[58,ItensGrid.Row];
+  if ItensGrid.Cells[38,ItensGrid.Row] = '' then EdtpRedBCSTItem.Text := '0' else EdtpRedBCSTItem.Text := ItensGrid.Cells[38,ItensGrid.Row];
+  if ItensGrid.Cells[39,ItensGrid.Row] = '' then EdtpICMSSTItem.Text := '0' else EdtpICMSSTItem.Text := ItensGrid.Cells[39,ItensGrid.Row];
+  if ItensGrid.Cells[40,ItensGrid.Row] = '' then EdtpRedBCItem.Text := '0' else EdtpRedBCItem.Text := ItensGrid.Cells[40,ItensGrid.Row];
+  if ItensGrid.Cells[41,ItensGrid.Row] = '' then EdtpDifItem.Text := '0' else EdtpDifItem.Text := ItensGrid.Cells[41,ItensGrid.Row];
+  if ItensGrid.Cells[42,ItensGrid.Row] = '' then EdtvICMSOpItem.Text := '0' else EdtvICMSOpItem.Text := ItensGrid.Cells[42,ItensGrid.Row];
+  if ItensGrid.Cells[43,ItensGrid.Row] = '' then EdtvICMSDifItem.Text := '0' else EdtvICMSDifItem.Text := ItensGrid.Cells[43,ItensGrid.Row];
+  if ItensGrid.Cells[44,ItensGrid.Row] = '' then EdtvBCSTRetItem.Text := '0' else EdtvBCSTRetItem.Text := ItensGrid.Cells[44,ItensGrid.Row];
+  if ItensGrid.Cells[45,ItensGrid.Row] = '' then EdtpSTItem.Text := '0' else EdtpSTItem.Text := ItensGrid.Cells[45,ItensGrid.Row];
+  if ItensGrid.Cells[46,ItensGrid.Row] = '' then EdtvICMSSubstitutoItem.Text := '0' else EdtvICMSSubstitutoItem.Text := ItensGrid.Cells[46,ItensGrid.Row];
+  if ItensGrid.Cells[47,ItensGrid.Row] = '' then EdtvICMSSTRetItem.Text := '0' else EdtvICMSSTRetItem.Text := ItensGrid.Cells[47,ItensGrid.Row];
+  if ItensGrid.Cells[48,ItensGrid.Row] = '' then EdtvBCFCPSTRetItem.Text := '0' else EdtvBCFCPSTRetItem.Text := ItensGrid.Cells[48,ItensGrid.Row];
+  if ItensGrid.Cells[49,ItensGrid.Row] = '' then EdtpFCPSTRetItem.Text := '0' else EdtpFCPSTRetItem.Text := ItensGrid.Cells[49,ItensGrid.Row];
+  if ItensGrid.Cells[50,ItensGrid.Row] = '' then EdtvFCPSTRetItem.Text := '0' else EdtvFCPSTRetItem.Text := ItensGrid.Cells[50,ItensGrid.Row];
+  if ItensGrid.Cells[51,ItensGrid.Row] = '' then EdtpRedBCEfetItem.Text := '0' else EdtpRedBCEfetItem.Text := ItensGrid.Cells[51,ItensGrid.Row];
+  if ItensGrid.Cells[52,ItensGrid.Row] = '' then EdtvBCEfetItem.Text := '0' else EdtvBCEfetItem.Text := ItensGrid.Cells[52,ItensGrid.Row];
+  if ItensGrid.Cells[53,ItensGrid.Row] = '' then EdtpICMSEfetItem.Text := '0' else EdtpICMSEfetItem.Text := ItensGrid.Cells[53,ItensGrid.Row];
+  if ItensGrid.Cells[54,ItensGrid.Row] = '' then EdtvICMSEfetItem.Text := '0' else EdtvICMSEfetItem.Text := ItensGrid.Cells[54,ItensGrid.Row];
+  if ItensGrid.Cells[55,ItensGrid.Row] = '' then EdtvBCUFDestItem.Text := '0' else EdtvBCUFDestItem.Text := ItensGrid.Cells[55,ItensGrid.Row];
+  if ItensGrid.Cells[56,ItensGrid.Row] = '' then EdtvICMSUFDestItem.Text := '0' else EdtvICMSUFDestItem.Text := ItensGrid.Cells[56,ItensGrid.Row];
+ end;
 end;
 
 procedure TEntradaNFForm.btnIncluirClick(Sender: TObject);
@@ -411,11 +412,6 @@ begin
  btnGravarIncluir.Visible := True;
  btnDesistir.Visible := True;
 
- EdtnNF.Enabled := True;
- EdtSerie.Enabled := True;
- EdtMod.Enabled := True;
- EdtCodigoEntidade.Enabled := True;
- SBEntidade.Enabled := True;
  EdtCodigoNatureza.Enabled := True;
  SBNatureza.Enabled := True;
  EdtCodigoDeposito.Enabled := True;
@@ -464,11 +460,15 @@ begin
  EdtpICMS.Enabled := True;
  EdtCSTICMS.Enabled := True;
  SBCSTICMS.Enabled := True;
+ SBCSOSN.Enabled := True;
  EdtCSTIPI.Enabled := True;
  SBCSTIPI.Enabled := True;
  EdtEnqIPI.Enabled := True;
  SBEnqIPI.Enabled := True;
  EdtpIPI.Enabled := True;
+ EdtvIPIItem.Enabled := True;
+ EdtvIPIDevolItem.Enabled := True;
+ EdtvBCIPIItem.Enabled := True;
  EdtvBCPISItem.Enabled := True;
  EdtCSTPIS.Enabled := True;
  SBCSTPIS.Enabled := True;
@@ -477,9 +477,7 @@ begin
  EdtvBCCOFINSItem.Enabled := True;
  EdtpCOFINS.Enabled := True;
  EdtvCOFINSItem.Enabled := True;
- EdtDtEmissao.Enabled := True;
  EdtDtEntrada.Enabled := True;
- EdtChaveNFE.Enabled := True;
  EdtvFCP.Enabled := True;
  EdtvFCPST.Enabled := True;
  EdtvFCPSTRet.Enabled := True;
@@ -489,7 +487,44 @@ begin
  EdtvpFCPUFDest.Enabled := True;
  EdtpICMSUFDest.Enabled := True;
  EdtvICMSUFDest.Enabled := True;
- btnChaveNFE.Enabled := True;
+ EdtvBCUFDestItem.Enabled := True;
+ EdtvICMSUFDestItem.Enabled := True;
+ EdtvBCFCPItem.Enabled := True;
+ EdtpFCPItem.Enabled := True;
+ EdtvFCPItem.Enabled := True;
+ EdtvBCFCPSTItem.Enabled := True;
+ EdtpFCPSTItem.Enabled := True;
+ EdtvFCPSTItem.Enabled := True;
+ EdtvBCFCPSTRetItem.Enabled := True;
+ EdtpFCPSTRetItem.Enabled := True;
+ EdtvFCPSTRetItem.Enabled := True;
+ EdtpDifItem.Enabled := True;
+ EdtvBCEfetItem.Enabled := True;
+ EdtvBCSTItem.Enabled := True;
+ EdtpSTItem.Enabled := True;
+ EdtvBCSTRetItem.Enabled := True;
+ EdtvICMSSTItem.Enabled := True;
+ EdtvICMSDifItem.Enabled := True;
+ EdtvICMSSubstitutoItem.Enabled := True;
+ EdtvICMSSTRetItem.Enabled := True;
+ EdtpSTItem.Enabled := True;
+ EdtpRedBCEfetItem.Enabled := True;
+ EdtpICMSEfetItem.Enabled := True;
+ EdtvICMSEfetItem.Enabled := True;
+ EdtpMVASTItem.Enabled := True;
+ EdtpRedBCSTItem.Enabled := True;
+ EdtpRedBCItem.Enabled := True;
+ EdtvICMSOpItem.Enabled := True;
+ EdtCSOSN.Enabled := True;
+ EdtpICMSSTItem.Enabled := True;
+ EdtCodigoEntidade.Enabled := True;
+ EdtnNF.Enabled := True;
+ EdtSerie.Enabled := True;
+ EdtMod.Enabled := True;
+ SBEntidade.Enabled := True;
+ EdtChaveNFE.Enabled := True;
+ BtnChaveNFE.Enabled := True;
+ EdtDtEmissao.Enabled := True;
 end;
 
 procedure TEntradaNFForm.btnAlterarClick(Sender: TObject);
@@ -504,8 +539,9 @@ begin
  btnDesistir.Visible := True;
 
  EdtCodigoNatureza.Enabled := True;
- EdtDescricaoNatureza.Enabled := True;
  SBNatureza.Enabled := True;
+ EdtCodigoDeposito.Enabled := True;
+ SBDeposito.Enabled := True;
  EdtvProd.Enabled := True;
  EdtvFrete.Enabled := True;
  EdtvDesc.Enabled := True;
@@ -524,6 +560,18 @@ begin
  EdtvBCST.Enabled := True;
  EdtvST.Enabled := True;
  EdtvNF.Enabled := True;
+ EdtCodigoMoeda.Enabled := True;
+ SBMoeda.Enabled := True;
+ EdtParcela1.Enabled := True;
+ EdtParcela2.Enabled := True;
+ EdtParcela4.Enabled := True;
+ EdtParcela3.Enabled := True;
+ EdtParcela7.Enabled := True;
+ EdtParcela8.Enabled := True;
+ EdtParcela5.Enabled := True;
+ EdtParcela6.Enabled := True;
+ DUPLGrid.Enabled := True;
+ btnGerarDuplicata.Enabled := True;
  ItensGrid.Enabled := True;
  EdtpPIS.Enabled := True;
  EdtvPISItem.Enabled := True;
@@ -538,11 +586,15 @@ begin
  EdtpICMS.Enabled := True;
  EdtCSTICMS.Enabled := True;
  SBCSTICMS.Enabled := True;
+ SBCSOSN.Enabled := True;
  EdtCSTIPI.Enabled := True;
  SBCSTIPI.Enabled := True;
  EdtEnqIPI.Enabled := True;
  SBEnqIPI.Enabled := True;
  EdtpIPI.Enabled := True;
+ EdtvIPIItem.Enabled := True;
+ EdtvIPIDevolItem.Enabled := True;
+ EdtvBCIPIItem.Enabled := True;
  EdtvBCPISItem.Enabled := True;
  EdtCSTPIS.Enabled := True;
  SBCSTPIS.Enabled := True;
@@ -555,11 +607,42 @@ begin
  EdtvFCP.Enabled := True;
  EdtvFCPST.Enabled := True;
  EdtvFCPSTRet.Enabled := True;
+ EdtValorPago.Enabled := True;
  EdtvBCUFDest.Enabled := True;
  EdtvBCFCPUFDest.Enabled := True;
  EdtvpFCPUFDest.Enabled := True;
  EdtpICMSUFDest.Enabled := True;
  EdtvICMSUFDest.Enabled := True;
+ EdtvBCUFDestItem.Enabled := True;
+ EdtvICMSUFDestItem.Enabled := True;
+ EdtvBCFCPItem.Enabled := True;
+ EdtpFCPItem.Enabled := True;
+ EdtvFCPItem.Enabled := True;
+ EdtvBCFCPSTItem.Enabled := True;
+ EdtpFCPSTItem.Enabled := True;
+ EdtvFCPSTItem.Enabled := True;
+ EdtvBCFCPSTRetItem.Enabled := True;
+ EdtpFCPSTRetItem.Enabled := True;
+ EdtvFCPSTRetItem.Enabled := True;
+ EdtpDifItem.Enabled := True;
+ EdtvBCEfetItem.Enabled := True;
+ EdtvBCSTItem.Enabled := True;
+ EdtpSTItem.Enabled := True;
+ EdtvBCSTRetItem.Enabled := True;
+ EdtvICMSSTItem.Enabled := True;
+ EdtvICMSDifItem.Enabled := True;
+ EdtvICMSSubstitutoItem.Enabled := True;
+ EdtvICMSSTRetItem.Enabled := True;
+ EdtpSTItem.Enabled := True;
+ EdtpRedBCEfetItem.Enabled := True;
+ EdtpICMSEfetItem.Enabled := True;
+ EdtvICMSEfetItem.Enabled := True;
+ EdtpMVASTItem.Enabled := True;
+ EdtpRedBCSTItem.Enabled := True;
+ EdtpRedBCItem.Enabled := True;
+ EdtvICMSOpItem.Enabled := True;
+ EdtCSOSN.Enabled := True;
+ EdtpICMSSTItem.Enabled := True;
 end;
 
 procedure TEntradaNFForm.btnDesistirClick(Sender: TObject);
@@ -574,17 +657,9 @@ begin
  btnGravarIncluir.Visible := False;
  btnDesistir.Visible := False;
 
- EdtnNF.Enabled := False;
- EdtSerie.Enabled := False;
- EdtMod.Enabled := False;
- EdtCodigoEntidade.Enabled := False;
- EdtNomeEntidade.Enabled := False;
- SBEntidade.Enabled := False;
  EdtCodigoNatureza.Enabled := False;
- EdtDescricaoNatureza.Enabled := False;
  SBNatureza.Enabled := False;
  EdtCodigoDeposito.Enabled := False;
- EdtDescricaoDeposito.Enabled := False;
  SBDeposito.Enabled := False;
  EdtvProd.Enabled := False;
  EdtvFrete.Enabled := False;
@@ -605,7 +680,6 @@ begin
  EdtvST.Enabled := False;
  EdtvNF.Enabled := False;
  EdtCodigoMoeda.Enabled := False;
- EdtDescricaoMoeda.Enabled := False;
  SBMoeda.Enabled := False;
  EdtParcela1.Enabled := False;
  EdtParcela2.Enabled := False;
@@ -631,11 +705,15 @@ begin
  EdtpICMS.Enabled := False;
  EdtCSTICMS.Enabled := False;
  SBCSTICMS.Enabled := False;
+ SBCSOSN.Enabled := False;
  EdtCSTIPI.Enabled := False;
  SBCSTIPI.Enabled := False;
  EdtEnqIPI.Enabled := False;
  SBEnqIPI.Enabled := False;
  EdtpIPI.Enabled := False;
+ EdtvIPIItem.Enabled := False;
+ EdtvIPIDevolItem.Enabled := False;
+ EdtvBCIPIItem.Enabled := False;
  EdtvBCPISItem.Enabled := False;
  EdtCSTPIS.Enabled := False;
  SBCSTPIS.Enabled := False;
@@ -644,9 +722,7 @@ begin
  EdtvBCCOFINSItem.Enabled := False;
  EdtpCOFINS.Enabled := False;
  EdtvCOFINSItem.Enabled := False;
- EdtDtEmissao.Enabled := False;
  EdtDtEntrada.Enabled := False;
- EdtChaveNFE.Enabled := False;
  EdtvFCP.Enabled := False;
  EdtvFCPST.Enabled := False;
  EdtvFCPSTRet.Enabled := False;
@@ -656,17 +732,40 @@ begin
  EdtvpFCPUFDest.Enabled := False;
  EdtpICMSUFDest.Enabled := False;
  EdtvICMSUFDest.Enabled := False;
- btnChaveNFE.Enabled := False;
+ EdtvBCUFDestItem.Enabled := False;
+ EdtvICMSUFDestItem.Enabled := False;
+ EdtvBCFCPItem.Enabled := False;
+ EdtpFCPItem.Enabled := False;
+ EdtvFCPItem.Enabled := False;
+ EdtvBCFCPSTItem.Enabled := False;
+ EdtpFCPSTItem.Enabled := False;
+ EdtvFCPSTItem.Enabled := False;
+ EdtvBCFCPSTRetItem.Enabled := False;
+ EdtpFCPSTRetItem.Enabled := False;
+ EdtvFCPSTRetItem.Enabled := False;
+ EdtpDifItem.Enabled := False;
+ EdtvBCEfetItem.Enabled := False;
+ EdtvBCSTItem.Enabled := False;
+ EdtpSTItem.Enabled := False;
+ EdtvBCSTRetItem.Enabled := False;
+ EdtvICMSSTItem.Enabled := False;
+ EdtvICMSDifItem.Enabled := False;
+ EdtvICMSSubstitutoItem.Enabled := False;
+ EdtvICMSSTRetItem.Enabled := False;
+ EdtpSTItem.Enabled := False;
+ EdtpRedBCEfetItem.Enabled := False;
+ EdtpICMSEfetItem.Enabled := False;
+ EdtvICMSEfetItem.Enabled := False;
+ EdtpMVASTItem.Enabled := False;
+ EdtpRedBCSTItem.Enabled := False;
+ EdtpRedBCItem.Enabled := False;
+ EdtvICMSOpItem.Enabled := False;
+ EdtCSOSN.Enabled := False;
+ EdtpICMSSTItem.Enabled := False;
+ EdtCodigoEntidade.Enabled := False;
 
- EdtnNF.Clear;
- EdtSerie.Clear;
- EdtMod.Clear;
- EdtCodigoEntidade.Clear;
- EdtNomeEntidade.Clear;
  EdtCodigoNatureza.Clear;
- EdtDescricaoNatureza.Clear;
  EdtCodigoDeposito.Clear;
- EdtDescricaoDeposito.Clear;
  EdtvProd.Clear;
  EdtvFrete.Clear;
  EdtvDesc.Clear;
@@ -686,7 +785,6 @@ begin
  EdtvST.Clear;
  EdtvNF.Clear;
  EdtCodigoMoeda.Clear;
- EdtDescricaoMoeda.Clear;
  EdtParcela1.Clear;
  EdtParcela2.Clear;
  EdtParcela4.Clear;
@@ -710,13 +808,15 @@ begin
  EdtCSTIPI.Clear;
  EdtEnqIPI.Clear;
  EdtpIPI.Clear;
+ EdtvIPIItem.Clear;
+ EdtvIPIDevolItem.Clear;
+ EdtvBCIPIItem.Clear;
  EdtvBCPISItem.Clear;
  EdtCSTPIS.Clear;
  EdtCSTCOFINS.Clear;
  EdtvBCCOFINSItem.Clear;
  EdtpCOFINS.Clear;
  EdtvCOFINSItem.Clear;
- EdtChaveNFE.Clear;
  EdtvFCP.Clear;
  EdtvFCPST.Clear;
  EdtvFCPSTRet.Clear;
@@ -726,154 +826,211 @@ begin
  EdtvpFCPUFDest.Clear;
  EdtpICMSUFDest.Clear;
  EdtvICMSUFDest.Clear;
+ EdtvBCUFDestItem.Clear;
+ EdtvICMSUFDestItem.Clear;
+ EdtvBCFCPItem.Clear;
+ EdtpFCPItem.Clear;
+ EdtvFCPItem.Clear;
+ EdtvBCFCPSTItem.Clear;
+ EdtpFCPSTItem.Clear;
+ EdtvFCPSTItem.Clear;
+ EdtvBCFCPSTRetItem.Clear;
+ EdtpFCPSTRetItem.Clear;
+ EdtvFCPSTRetItem.Clear;
+ EdtpDifItem.Clear;
+ EdtvBCEfetItem.Clear;
+ EdtvBCSTItem.Clear;
+ EdtpSTItem.Clear;
+ EdtvBCSTRetItem.Clear;
+ EdtvICMSSTItem.Clear;
+ EdtvICMSDifItem.Clear;
+ EdtvICMSSubstitutoItem.Clear;
+ EdtvICMSSTRetItem.Clear;
+ EdtpSTItem.Clear;
+ EdtpRedBCEfetItem.Clear;
+ EdtpICMSEfetItem.Clear;
+ EdtvICMSEfetItem.Clear;
+ EdtpMVASTItem.Clear;
+ EdtpRedBCSTItem.Clear;
+ EdtpRedBCItem.Clear;
+ EdtvICMSOpItem.Clear;
+ EdtCSOSN.Clear;
+ EdtpICMSSTItem.Clear;
+ EdtCodigoEntidade.Clear;
 end;
 
 procedure TEntradaNFForm.btnIncluirXMLClick(Sender: TObject);
-var
-  XMLDoc: IXMLDocument;
-  XML, NFe, InfNFe, Ide, emit, det,
-  prod, cProd, qCom, vUnCom, vProd, imposto,
-  ICMS, ICMS00, CSTICMS, vBCICMS, pICMS, vICMS, pFCP, vFCP,
-  ICMS10, vBCFCP, pMVAST, pRedBCST, vBCST, pICMSST, vICMSST, pBCFCPST, pFCPST, vFCPST,
-  ICMS20, pRedBC, vICMSDeson,
-  ICMS30, vBCFCPST,
-  ICMS40,
-  ICMS51, pDif, vICMSOp, vICMSDif,
-  ICMS60, vBCSTRet, pST, vICMSSubstituto, vICMSSTRet, vBCFCPSTRet, pFCPSTRet, vFCPSTRet, pRedBCEfet, vBCEfet, pICMSEfet, vICMSEfet,
-  ICMS70,
-  ICMS90,
-  ICMSSN101, CSOSN, pCredSN, vCredICMSSN,
-  ICMSSN102,
-  ICMSSN201,
-  ICMSSN202,
-  ICMSSN500,
-  ICMSSN900,
-  ICMSUFDest, vBCUFDest, vBCFCPUFDest, pFCPUFDest, pICMSUFDest, pICMSInter, pICMSInterPart, vFCPUFDest, vICMSUFDest, vICMSUFRemet,
-  IPI, cEnq, IPITrib, vBCIPI, pIPI, vIPI, vIPIDevol, IPINT, CSTIPI,
-  PIS, PISAliq, CSTPIS, vBCPIS, pPIS, vPIS, PISNT, PISOutr,
-  COFINS, COFINSNT, COFINSAliq, CSTCOFINS, vBCCOFINS, pCOFINS, vCOFINS,
-  total, ICMSTot, vBCTot, vICMSTot, vICMSDesonTot,
-  vICMSUFDestTot, vFCPTot, vFCPSTTot, vFCPSTRetTot,
-  vBCSTTot, vSTTot, vProdTot, vFreteTot, vSegTot, vDescTot,
-  vIPITot, vIPIDevolTot,
-  vPISTot, vCOFINSTot,
-  vOutroTot, vNFTot, protNFe, infProt, chNFE: IXMLNode;
-  i, row: integer;
+var XMLDoc: IXMLDocument;
+    XML, NFe, InfNFe, Ide, emit, det,
+    prod, cProd, qCom, vUnCom, vProd, imposto,
+    ICMS, ICMS00, CSTICMS, vBCICMS, pICMS, vICMS, pFCP, vFCP,
+    ICMS10, vBCFCP, pMVAST, pRedBCST, vBCST, pICMSST, vICMSST, pBCFCPST, pFCPST, vFCPST,
+    ICMS20, pRedBC, vICMSDeson,
+    ICMS30, vBCFCPST,
+    ICMS40, ICMS51, pDif, vICMSOp, vICMSDif,
+    ICMS60, vBCSTRet, pST, vICMSSubstituto, vICMSSTRet, vBCFCPSTRet, pFCPSTRet, vFCPSTRet, pRedBCEfet, vBCEfet, pICMSEfet, vICMSEfet,
+    ICMS70, ICMS90,
+    ICMSSN101, CSOSN, pCredSN, vCredICMSSN, ICMSSN102, ICMSSN201, ICMSSN202, ICMSSN500, ICMSSN900,
+    ICMSUFDest, vBCUFDest, vBCFCPUFDest, pFCPUFDest, pICMSUFDest, pICMSInter, pICMSInterPart, vFCPUFDest, vICMSUFDest, vICMSUFRemet,
+    IPI, cEnq, IPITrib, vBCIPI, pIPI, vIPI, vIPIDevol, IPINT, CSTIPI,
+    PIS, PISAliq, CSTPIS, vBCPIS, pPIS, vPIS, PISNT, PISOutr,
+    COFINS, COFINSNT, COFINSAliq, CSTCOFINS, vBCCOFINS, pCOFINS, vCOFINS,
+    total, ICMSTot, vBCTot, vICMSTot, vICMSDesonTot,
+    vICMSUFDestTot, vFCPTot, vFCPSTTot, vFCPSTRetTot,
+    vBCSTTot, vSTTot, vProdTot, vFreteTot, vSegTot, vDescTot,
+    vIPITot, vIPIDevolTot,
+    vPISTot, vCOFINSTot,
+    vOutroTot, vNFTot, protNFe, infProt, chNFE: IXMLNode;
+    i, row: integer;
 begin
-  with TOpenDialog.Create(nil) do
+ with TOpenDialog .Create(nil) do
   try
-    Filter := 'Arquivos XML|*.xml';
-    DefaultExt := 'xml';
-    Options := [ofFileMustExist, ofEnableSizing];
+   Filter := 'Arquivos XML|*.xml';
+   DefaultExt := 'xml';
+   Options := [ofFileMustExist, ofEnableSizing];
 
-    if Execute then
-    begin
-     btnIncluir.Visible := False;
-     btnIncluirXML.Visible := False;
-     btnExcluir.Visible := False;
-     btnConsultar.Visible := False;
-     btnAlterar.Visible := False;
+   if Execute then begin
+    btnIncluir.Visible := False;
+    btnIncluirXML.Visible := False;
+    btnExcluir.Visible := False;
+    btnConsultar.Visible := False;
+    btnAlterar.Visible := False;
 
-     btnGravarIncluir.Visible := True;
-     btnDesistir.Visible := True;
+    btnGravarIncluir.Visible := True;
+    btnDesistir.Visible := True;
 
-     EdtCodigoNatureza.Enabled := True;
-     SBNatureza.Enabled := True;
-     EdtCodigoDeposito.Enabled := True;
-     SBDeposito.Enabled := True;
-     EdtvProd.Enabled := True;
-     EdtvFrete.Enabled := True;
-     EdtvDesc.Enabled := True;
-     EdtvSeg.Enabled := True;
-     EdtvOutro.Enabled := True;
-     EdtvBC.Enabled := True;
-     EdtvICMS.Enabled := True;
-     EdtvICMSDeson.Enabled := True;
-     EdtvBcIPI.Enabled := True;
-     EdtvIPI.Enabled := True;
-     EdtvIPIDevol.Enabled := True;
-     EdtvBcPIS.Enabled := True;
-     EdtvPIS.Enabled := True;
-     EdtvBcCOFINS.Enabled := True;
-     EdtvCOFINS.Enabled := True;
-     EdtvBCST.Enabled := True;
-     EdtvST.Enabled := True;
-     EdtvNF.Enabled := True;
-     EdtCodigoMoeda.Enabled := True;
-     SBMoeda.Enabled := True;
-     EdtParcela1.Enabled := True;
-     EdtParcela2.Enabled := True;
-     EdtParcela4.Enabled := True;
-     EdtParcela3.Enabled := True;
-     EdtParcela7.Enabled := True;
-     EdtParcela8.Enabled := True;
-     EdtParcela5.Enabled := True;
-     EdtParcela6.Enabled := True;
-     DUPLGrid.Enabled := True;
-     btnGerarDuplicata.Enabled := True;
-     ItensGrid.Enabled := True;
-     EdtpPIS.Enabled := True;
-     EdtvPISItem.Enabled := True;
-     EdtvBCIPIItem.Enabled := True;
-     EdtvIPIItem.Enabled := True;
-     EdtvIPIDevolItem.Enabled := True;
-     EdtvBCItem.Enabled := True;
-     EdtvICMSItem.Enabled := True;
-     EdtvICMSDesonItem.Enabled := True;
-     EdtvBCSTItem.Enabled := True;
-     EdtvICMSSTItem.Enabled := True;
-     EdtpICMS.Enabled := True;
-     EdtCSTICMS.Enabled := True;
-     SBCSTICMS.Enabled := True;
-     EdtCSTIPI.Enabled := True;
-     SBCSTIPI.Enabled := True;
-     EdtEnqIPI.Enabled := True;
-     SBEnqIPI.Enabled := True;
-     EdtpIPI.Enabled := True;
-     EdtvBCPISItem.Enabled := True;
-     EdtCSTPIS.Enabled := True;
-     SBCSTPIS.Enabled := True;
-     SBCSTCOFINS.Enabled := True;
-     EdtCSTCOFINS.Enabled := True;
-     EdtvBCCOFINSItem.Enabled := True;
-     EdtpCOFINS.Enabled := True;
-     EdtvCOFINSItem.Enabled := True;
-     EdtDtEntrada.Enabled := True;
-     EdtvFCP.Enabled := True;
-     EdtvFCPST.Enabled := True;
-     EdtvFCPSTRet.Enabled := True;
-     EdtValorPago.Enabled := True;
-     EdtvBCUFDest.Enabled := True;
-     EdtvBCFCPUFDest.Enabled := True;
-     EdtvpFCPUFDest.Enabled := True;
-     EdtpICMSUFDest.Enabled := True;
-     EdtvICMSUFDest.Enabled := True;
+    EdtCodigoNatureza.Enabled := True;
+    SBNatureza.Enabled := True;
+    EdtCodigoDeposito.Enabled := True;
+    SBDeposito.Enabled := True;
+    EdtvProd.Enabled := True;
+    EdtvFrete.Enabled := True;
+    EdtvDesc.Enabled := True;
+    EdtvSeg.Enabled := True;
+    EdtvOutro.Enabled := True;
+    EdtvBC.Enabled := True;
+    EdtvICMS.Enabled := True;
+    EdtvICMSDeson.Enabled := True;
+    EdtvBcIPI.Enabled := True;
+    EdtvIPI.Enabled := True;
+    EdtvIPIDevol.Enabled := True;
+    EdtvBcPIS.Enabled := True;
+    EdtvPIS.Enabled := True;
+    EdtvBcCOFINS.Enabled := True;
+    EdtvCOFINS.Enabled := True;
+    EdtvBCST.Enabled := True;
+    EdtvST.Enabled := True;
+    EdtvNF.Enabled := True;
+    EdtCodigoMoeda.Enabled := True;
+    SBMoeda.Enabled := True;
+    EdtParcela1.Enabled := True;
+    EdtParcela2.Enabled := True;
+    EdtParcela4.Enabled := True;
+    EdtParcela3.Enabled := True;
+    EdtParcela7.Enabled := True;
+    EdtParcela8.Enabled := True;
+    EdtParcela5.Enabled := True;
+    EdtParcela6.Enabled := True;
+    DUPLGrid.Enabled := True;
+    btnGerarDuplicata.Enabled := True;
+    ItensGrid.Enabled := True;
+    EdtpPIS.Enabled := True;
+    EdtvPISItem.Enabled := True;
+    EdtvBCIPIItem.Enabled := True;
+    EdtvIPIItem.Enabled := True;
+    EdtvIPIDevolItem.Enabled := True;
+    EdtvBCItem.Enabled := True;
+    EdtvICMSItem.Enabled := True;
+    EdtvICMSDesonItem.Enabled := True;
+    EdtvBCSTItem.Enabled := True;
+    EdtvICMSSTItem.Enabled := True;
+    EdtpICMS.Enabled := True;
+    EdtCSTICMS.Enabled := True;
+    SBCSTICMS.Enabled := True;
+    SBCSOSN.Enabled := True;
+    EdtCSTIPI.Enabled := True;
+    SBCSTIPI.Enabled := True;
+    EdtEnqIPI.Enabled := True;
+    SBEnqIPI.Enabled := True;
+    EdtpIPI.Enabled := True;
+    EdtvIPIItem.Enabled := True;
+    EdtvIPIDevolItem.Enabled := True;
+    EdtvBCIPIItem.Enabled := True;
+    EdtvBCPISItem.Enabled := True;
+    EdtCSTPIS.Enabled := True;
+    SBCSTPIS.Enabled := True;
+    SBCSTCOFINS.Enabled := True;
+    EdtCSTCOFINS.Enabled := True;
+    EdtvBCCOFINSItem.Enabled := True;
+    EdtpCOFINS.Enabled := True;
+    EdtvCOFINSItem.Enabled := True;
+    EdtDtEntrada.Enabled := True;
+    EdtvFCP.Enabled := True;
+    EdtvFCPST.Enabled := True;
+    EdtvFCPSTRet.Enabled := True;
+    EdtValorPago.Enabled := True;
+    EdtvBCUFDest.Enabled := True;
+    EdtvBCFCPUFDest.Enabled := True;
+    EdtvpFCPUFDest.Enabled := True;
+    EdtpICMSUFDest.Enabled := True;
+    EdtvICMSUFDest.Enabled := True;
+    EdtvBCUFDestItem.Enabled := True;
+    EdtvICMSUFDestItem.Enabled := True;
+    EdtvBCFCPItem.Enabled := True;
+    EdtpFCPItem.Enabled := True;
+    EdtvFCPItem.Enabled := True;
+    EdtvBCFCPSTItem.Enabled := True;
+    EdtpFCPSTItem.Enabled := True;
+    EdtvFCPSTItem.Enabled := True;
+    EdtvBCFCPSTRetItem.Enabled := True;
+    EdtpFCPSTRetItem.Enabled := True;
+    EdtvFCPSTRetItem.Enabled := True;
+    EdtpDifItem.Enabled := True;
+    EdtvBCEfetItem.Enabled := True;
+    EdtvBCSTItem.Enabled := True;
+    EdtpSTItem.Enabled := True;
+    EdtvBCSTRetItem.Enabled := True;
+    EdtvICMSSTItem.Enabled := True;
+    EdtvICMSDifItem.Enabled := True;
+    EdtvICMSSubstitutoItem.Enabled := True;
+    EdtvICMSSTRetItem.Enabled := True;
+    EdtpSTItem.Enabled := True;
+   	EdtpRedBCEfetItem.Enabled := True;
+    EdtpICMSEfetItem.Enabled := True;
+    EdtvICMSEfetItem.Enabled := True;
+    EdtpMVASTItem.Enabled := True;
+    EdtpRedBCSTItem.Enabled := True;
+  	EdtpRedBCItem.Enabled := True;
+    EdtvICMSOpItem.Enabled := True;
+    EdtCSOSN.Enabled := True;
+    EdtpICMSSTItem.Enabled := True;
+    EdtCodigoEntidade.Enabled := True;
 
-      XMLDoc := TXMLDocument.Create(nil);
-      XMLDoc.LoadFromFile(FileName);
-      XMLDoc.Active := True;
+    XMLDoc := TXMLDocument.Create(nil);
+    XMLDoc.LoadFromFile(FileName);
+    XMLDoc.Active := True;
 
-      XML := XMLDoc.DocumentElement;
-      if not Assigned(XML) then Abort;
+    XML := XMLDoc.DocumentElement;
+    if not Assigned(XML) then Abort;
 
-      NFe := XML.ChildNodes.FindNode('NFe');
-      InfNFe := NFe.ChildNodes.FindNode('infNFe');
-      Ide := InfNFe.ChildNodes.FindNode('ide');
-      emit := InfNFe.ChildNodes.FindNode('emit');
-      det := InfNFe.ChildNodes.FindNode('det');
+    NFe := XML.ChildNodes.FindNode('NFe');
+    InfNFe := NFe.ChildNodes.FindNode('infNFe');
+    Ide := InfNFe.ChildNodes.FindNode('ide');
+    emit := InfNFe.ChildNodes.FindNode('emit');
+    det := InfNFe.ChildNodes.FindNode('det');
 
-      // TOTAIS
+    // TOTAIS
 
-      total := infNFe.ChildNodes.FindNode('total');
-      ICMSTot := total.ChildNodes.FindNode('ICMSTot');
-      vBCTot := ICMSTot.ChildNodes.FindNode('vBC');
-      vICMSTot := ICMSTot.ChildNodes.FindNode('vICMS');
-      vICMSDesonTot := ICMSTot.ChildNodes.FindNode('vICMSDeson');
-      vICMSUFDestTot := ICMSTot.ChildNodes.FindNode('vICMSUFDest');
-      vFCPTot := ICMSTot.ChildNodes.FindNode('vFCP');
-      vBCSTTot := ICMSTot.ChildNodes.FindNode('vBCST');
-      vSTTot := ICMSTot.ChildNodes.FindNode('vST');
-      vFCPSTTot := ICMSTot.ChildNodes.FindNode('vFCPST');
+    total := infNFe.ChildNodes.FindNode('total');
+    ICMSTot := total.ChildNodes.FindNode('ICMSTot');
+    vBCTot := ICMSTot.ChildNodes.FindNode('vBC');
+    vICMSTot := ICMSTot.ChildNodes.FindNode('vICMS');
+    vICMSDesonTot := ICMSTot.ChildNodes.FindNode('vICMSDeson');
+    vICMSUFDestTot := ICMSTot.ChildNodes.FindNode('vICMSUFDest');
+    vFCPTot := ICMSTot.ChildNodes.FindNode('vFCP');
+    vBCSTTot := ICMSTot.ChildNodes.FindNode('vBCST');
+    vSTTot := ICMSTot.ChildNodes.FindNode('vST');
+    vFCPSTTot := ICMSTot.ChildNodes.FindNode('vFCPST');
       vFCPSTRetTot := ICMSTot.ChildNodes.FindNode('vST');
       vProdTot := ICMSTot.ChildNodes.FindNode('vProd');
       vFreteTot := ICMSTot.ChildNodes.FindNode('vFrete');

@@ -115,46 +115,49 @@ begin
   Abort;
  end;
 
- with CadUsuarioDM.InsertQuery do
- begin
-  SQL.Clear;
-  SQL.Add('insert into usuario (codigo, ativo, usuario, senha, senha_alterada)');
-  SQL.Add('values');
-  SQL.Add('(:codigo, :ativo, :usuario, :senha, :senha_alterada)');
-  CadUsuarioDM.InsertQuery.ParamByName('codigo').AsString := codigo;
-  ParamByName('usuario').AsString := usuario;
-  ParamByName('ativo').AsString := ativo;
-  ParamByName('senha').AsString := senha;
-  ParamByName('senha_alterada').AsString := senha_alterada;
- end;
-
- with LogsDM.InserirLog do
- begin
-  SQL.Clear;
-  SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
-  SQL.Add('values');
-  SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
-  ParamByName('descricao').AsString :=
-  'Inseriu o usuário ' + usuario + ' no código ' + codigo + ' e ativo ' + ativo;
-  ParamByName('tela').AsString := 'CadUsuario';
-  ParamByName('data').AsDatetime := Now;
-  ParamByName('usuario').AsString := UsuarioLogado;
-  ParamByName('emp_id').AsString := EmpresaLogada;
- end;
+ CadUsuarioDM.Conexão.StartTransaction;
  try
- LogsDM.InserirLog.ExecSQL;
- CadUsuarioDM.InsertQuery.ExecSQL;
- showMessage('Inserido com sucesso!');
- EdtUsuario.Enabled := False;
- CBAtivo.Enabled := False;
+  with CadUsuarioDM.qryInsert do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into usuario (codigo, ativo, usuario, senha, senha_alterada)');
+   SQL.Add('values');
+   SQL.Add('(:codigo, :ativo, :usuario, :senha, :senha_alterada)');
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('usuario').AsString := usuario;
+   ParamByName('ativo').AsString := ativo;
+   ParamByName('senha').AsString := senha;
+   ParamByName('senha_alterada').AsString := senha_alterada;
+   ExecSQL;
+  end;
 
- SBEntidade.Enabled := False;
- btnGravarIncluir.Visible := False;
- btnDesistir.Visible := False;
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Inseriu o usuário ' + usuario + ' no código ' + codigo + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadUsuario';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
 
- btnAlterar.Visible := True;
- btnConsultar.Visible := True;
- btnExcluir.Visible := True;
+  CadUsuarioDM.Conexão.Commit;
+  ShowMessage('Inserido com sucesso!');
+  EdtUsuario.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  SBEntidade.Enabled := False;
+  btnGravarIncluir.Visible := False;
+  btnDesistir.Visible := False;
+
+  btnAlterar.Visible := True;
+  btnConsultar.Visible := True;
+  btnExcluir.Visible := True;
 
   with CadUsuarioDM.qryGrid do
   begin
@@ -164,7 +167,8 @@ begin
   end;
 
  except
- ShowMessage('Erro na inclusão!');
+  CadUsuarioDM.Conexão.Rollback;
+  ShowMessage('Erro na inclusão!');
  end;
 end;
 
@@ -210,43 +214,45 @@ begin
   Abort;
  end;
 
- With CadUsuarioDM.UpdateQuery do
- begin
-  SQL.Clear;
-  SQL.Add('update usuario set usuario = :usuario, ativo = :ativo where codigo = :codigo');
-  ParamByName('codigo').AsString := codigo;
-  ParamByName('usuario').AsString := usuario;
-  ParamByName('ativo').AsString := ativo;
- end;
-
- With LogsDM.InserirLog do
- begin
-  SQL.Clear;
-  SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
-  SQL.Add('values');
-  SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
-  ParamByName('descricao').AsString :=
- 'Alterou o usuário ' + usuario + ' no código ' + codigo + ' e ativo ' + ativo;
-  ParamByName('tela').AsString := 'CadUsuario';
-  ParamByName('data').AsDatetime := Now;
-  ParamByName('usuario').AsString := UsuarioLogado;
-  ParamByName('emp_id').AsString := EmpresaLogada;
- end;
-
+ CadUsuarioDM.Conexão.StartTransaction;
  try
- LogsDM.InserirLog.ExecSQL;
- CadUsuarioDM.UpdateQuery.ExecSQL;
- ShowMessage('Alterado com sucesso!');
- EdtUsuario.Enabled := False;
- CBAtivo.Enabled := False;
+  with CadUsuarioDM.qryUpdate do
+  begin
+   SQL.Clear;
+   SQL.Add('update usuario set usuario = :usuario, ativo = :ativo where codigo = :codigo');
+   ParamByName('codigo').AsString := codigo;
+   ParamByName('usuario').AsString := usuario;
+   ParamByName('ativo').AsString := ativo;
+   ExecSQL;
+  end;
 
- btnGravarAlterar.Visible := False;
- btnDesistir.Visible := False;
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Alterou o usuário ' + usuario + ' no código ' + codigo + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadUsuario';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
 
- btnIncluir.Visible := True;
- btnAlterar.Visible := True;
- btnConsultar.Visible := True;
- btnExcluir.Visible := True;
+  CadUsuarioDM.Conexão.Commit;
+  ShowMessage('Alterado com sucesso!');
+  EdtUsuario.Enabled := False;
+  CBAtivo.Enabled := False;
+
+  btnGravarAlterar.Visible := False;
+  btnDesistir.Visible := False;
+
+  btnIncluir.Visible := True;
+  btnAlterar.Visible := True;
+  btnConsultar.Visible := True;
+  btnExcluir.Visible := True;
 
   with CadUsuarioDM.qryGrid do
   begin
@@ -256,6 +262,7 @@ begin
   end;
 
  except
+ CadUsuarioDM.Conexão.Rollback;
  ShowMessage('Erro na alteração!');
  end;
 end;
@@ -263,7 +270,7 @@ end;
 procedure TCadUsuario.btnConsultarClick(Sender: TObject);
 var codigo, usuario, ativo: string;
 begin
- with CadUsuarioDM.ConsultarUsuario do
+ with CadUsuarioDM.qryConsultarUsuario do
  begin
   SQL.Clear;
   SQL.Add('select * from cadusuario');
@@ -272,6 +279,7 @@ begin
 
  Application.CreateForm(TConsultarUsuario, ConsultarUsuario);
  codigo := ConsultarUsuario.SelecionarUsuario;
+
  if codigo <> '' then begin
   EdtCodigo.Text := codigo;
   usuario := ConsultarUsuario.Usuario;
@@ -316,43 +324,46 @@ begin
   Abort;
  end;
 
- With CadUsuarioDM.DeleteQuery do
- begin
-  SQL.Clear;
-  SQL.Add('delete from usuario where codigo = :codigo');
-  ParamByName('codigo').AsString := codigo;
- end;
-
- With LogsDM.InserirLog do
- begin
-  SQL.Clear;
-  SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
-  SQL.Add('values');
-  SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
-  ParamByName('descricao').AsString :=
-  'Excluiu o usuário ' + usuario + ' no código ' + codigo + ' e ativo ' + ativo;
-  ParamByName('tela').AsString := 'CadUsuario';
-  ParamByName('data').AsDatetime := Now;
-  ParamByName('usuario').AsString := UsuarioLogado;
-  ParamByName('emp_id').AsString := EmpresaLogada;
- end;
-
+ CadUsuarioDM.Conexão.StartTransaction;
  try
- LogsDM.InserirLog.ExecSQL;
- CadUsuarioDM.DeleteQuery.ExecSQL;
- ShowMessage('Excluído com sucesso!');
- EdtUsuario.Clear;
- EdtCodigo.Clear;
+  with CadUsuarioDM.qryDelete do
+  begin
+   SQL.Clear;
+   SQL.Add('delete from usuario where codigo = :codigo');
+   ParamByName('codigo').AsString := codigo;
+   ExecSQL;
+  end;
 
- with CadUsuarioDM.qryGrid do
- begin
-  SQL.Clear;
-  SQL.Add('select codigo, usuario, ativo from usuario');
-  Open;
- end;
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+    SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString :=
+   'Excluiu o usuário ' + usuario + ' no código ' + codigo + ' e ativo ' + ativo;
+   ParamByName('tela').AsString := 'CadUsuario';
+   ParamByName('data').AsDatetime := Now;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ExecSQL;
+  end;
+
+  CadUsuarioDM.Conexão.Commit;
+  ShowMessage('Excluído com sucesso!');
+  EdtUsuario.Clear;
+  EdtCodigo.Clear;
+
+  with CadUsuarioDM.qryGrid do
+  begin
+   SQL.Clear;
+   SQL.Add('select codigo, usuario, ativo from usuario');
+   Open;
+  end;
 
  except
- ShowMessage('Erro na exclusão!');
+  CadUsuarioDM.Conexão.Rollback;
+  ShowMessage('Erro na exclusão!');
  end;
 end;
 
@@ -385,8 +396,11 @@ end;
 
 procedure TCadUsuario.GridCellClick(Column: TColumn);
 begin
- EdtCodigo.text := CadUsuarioDM.qryGrid.FieldByName('codigo').AsString;
- EdtUsuario.text := CadUsuarioDM.qryGrid.FieldByName('usuario').AsString;
- if CadUsuarioDM.qryGrid.FieldByName('ativo').AsString = 'S' then CBAtivo.Checked;
+ with CadUsuarioDM.qryGrid do
+ begin
+  EdtCodigo.text := FieldByName('codigo').AsString;
+  EdtUsuario.text := FieldByName('usuario').AsString;
+  if FieldByName('ativo').AsString = 'S' then CBAtivo.Checked;
+ end;
 end;
 end.

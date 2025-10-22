@@ -21,8 +21,6 @@ object RelMovtoForm: TRelMovtoForm
     Height = 956
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 232
     object lblCodigo: TLabel
       Left = 24
       Top = 24

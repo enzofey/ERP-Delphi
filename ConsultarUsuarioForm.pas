@@ -49,10 +49,12 @@ end;
 
 procedure TConsultarUsuario.BtnSelecionarUsuarioClick(Sender: TObject);
 begin
-  UCodigo := CadUsuarioDM.ConsultarUsuario.FieldByName('codigo').AsString;
-  UUsuario := CadUsuarioDM.ConsultarUsuario.FieldByName('usuario').AsString;
-  UAtivo := CadUsuarioDM.ConsultarUsuario.FieldByName('ativo').AsString;
-  Close;
+ with CadUsuarioDM.qryConsultarUsuario do
+ begin
+  UCodigo := FieldByName('codigo').AsString;
+  UUsuario := FieldByName('usuario').AsString;
+  UAtivo := FieldByName('ativo').AsString;
+ end;
+ Close;
 end;
-
 end.

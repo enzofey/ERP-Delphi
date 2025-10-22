@@ -940,7 +940,7 @@ object EntradaNFForm: TEntradaNFForm
         Top = 512
         Width = 929
         Height = 417
-        ActivePage = ICMSUFDestPage
+        ActivePage = ICMSPage
         TabOrder = 1
         object ICMSPage: TTabSheet
           Caption = 'ICMS'
@@ -1306,7 +1306,7 @@ object EntradaNFForm: TEntradaNFForm
             end
             object EdtpRedBCEfetItem: TEdit
               Left = 344
-              Top = 107
+              Top = 99
               Width = 105
               Height = 23
               Enabled = False

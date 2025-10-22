@@ -13,12 +13,12 @@ uses
 type
   TCadEmpresaDM = class(TDataModule)
     Conexão: TFDConnection;
-    InsertQuery: TFDQuery;
+    qryInsert: TFDQuery;
     CBEmpresa: TFDQuery;
-    SelectQuery: TFDQuery;
+    qrySelect: TFDQuery;
 	PGLink: TFDPhysPgDriverLink;
-    UpdateQuery: TFDQuery;
-    DeleteQuery: TFDQuery;
+    qryUpdate: TFDQuery;
+    qryDelete: TFDQuery;
   private
     { Private declarations }
   public

@@ -22,6 +22,7 @@ object CadEmpresa: TCadEmpresa
     Height = 683
     Align = alClient
     TabOrder = 0
+    ExplicitLeft = 24
     object lblRazaoSocial: TLabel
       Left = 31
       Top = 32
@@ -282,8 +283,8 @@ object CadEmpresa: TCadEmpresa
       TabOrder = 15
     end
     object GBBCRT: TGroupBox
-      Left = 442
-      Top = 283
+      Left = 482
+      Top = 262
       Width = 179
       Height = 105
       Caption = 'Regime:'

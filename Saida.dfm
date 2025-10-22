@@ -22,8 +22,6 @@ object MovSaida: TMovSaida
     Height = 956
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1088
-    ExplicitHeight = 606
     object lblCodigoCor: TLabel
       Left = 40
       Top = 96

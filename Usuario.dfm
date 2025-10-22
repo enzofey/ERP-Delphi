@@ -23,10 +23,6 @@ object CadUsuario: TCadUsuario
     ActivePage = CadastroPage
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 1
-    ExplicitTop = 1
-    ExplicitWidth = 1861
-    ExplicitHeight = 954
     object CadastroPage: TTabSheet
       Caption = 'Cadastro'
       object lblAtivo: TLabel

@@ -5,7 +5,9 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, IdHashMessageDigest, IdGlobal, Vcl.Buttons,
-  Usuario, UsuarioDM, ConsultarUsuarioForm;
+  Usuario, UsuarioDM, ConsultarUsuarioForm,
+  LogDM,
+  GlobalUnit;
 
 type
   TAlterarSenhaForm = class(TForm)
@@ -62,65 +64,87 @@ begin
  novasenha := EdtNovaSenha.Text;
  confirmarsenha := EdtConfirmarSenha.Text;
 
- if EdtUsuario.Text = '' then begin
- ShowMessage('Usuário não selecionado!');
- end
- else begin
+ if Usuario = '' then begin
+  ShowMessage('Usuário não selecionado!');
+  Abort;
+ end;
 
- if EdtNovaSenha.Text = '' then begin
- ShowMessage('Senha não pode ficar em branco!')
- end
- else begin
+ if NovaSenha = '' then begin
+  ShowMessage('Senha não pode ficar em branco!');
+  Abort;
+ end;
 
- CadUsuarioDM.SenhaQuery.SQL.Text :=
- 'select * from usuario where usuario = :usuario and senha = :senha';
- CadUsuarioDM.SenhaQuery.ParamByName('usuario').AsString := usuario;
- CadUsuarioDM.SenhaQuery.ParamByName('senha').AsString := GerarHashMD5(senha);
- CadUsuarioDM.SenhaQuery.Open;
+ with CadUsuarioDM.qrySenha do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from usuario where usuario = :usuario and senha = :senha');
+  ParamByName('usuario').AsString := usuario;
+  ParamByName('senha').AsString := GerarHashMD5(senha);
+  Open;
 
- if CadUsuarioDM.SenhaQuery.IsEmpty then begin
- ShowMessage('Usuário e senha não conferem!');
- end
- else begin
+  if IsEmpty then begin
+   ShowMessage('Usuário e senha não conferem!');
+   Abort;
+  end;
+ end;
 
  if novasenha <> confirmarsenha then begin
- ShowMessage('Senhas não são iguais! Favor verifique!');
- end
- else begin
-
- CadUsuarioDM.SenhaQuery.SQL.Text :=
- 'update usuario set senha = :novasenha, senha_alterada = :senha_alterada where usuario = :usuario';
- CadUsuarioDM.SenhaQuery.ParamByName('usuario').AsString := usuario;
- CadUsuarioDM.SenhaQuery.ParamByName('novasenha').AsString := GerarHashMD5(novasenha);
- CadUsuarioDM.SenhaQuery.ParamByName('senha_alterada').AsString := 'S';
- try
- CadUsuarioDM.SenhaQuery.ExecSQL;
- ShowMessage('Senha alterada com sucesso!');
- Close;
- except
- ShowMessage('Erro na alteração!');
+  ShowMessage('Senhas não são iguais! Favor verifique!');
+  Abort;
  end;
-end;
-end;
-end;
-end;
+
+ CadUsuarioDM.Conexão.StartTransaction;
+ try
+  with CadUsuarioDM.qrySenha do
+  begin
+   SQL.Clear;
+   SQL.Add('update usuario set senha = :novasenha, senha_alterada = :senha_alterada where usuario = :usuario');
+   ParamByName('usuario').AsString := usuario;
+   ParamByName('novasenha').AsString := GerarHashMD5(novasenha);
+   ParamByName('senha_alterada').AsString := 'S';
+   ExecSQL;
+  end;
+
+  with LogsDM.InserirLog do
+  begin
+   SQL.Clear;
+   SQL.Add('insert into logs (descricao, tela, data, emp_id, usuario)');
+   SQL.Add('values');
+   SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
+   ParamByName('descricao').AsString := 'Alterou a senha do usuário: ' + usuario;
+   ParamByName('tela').AsString := 'ImpressaoNFe';
+   ParamByName('emp_id').AsString := EmpresaLogada;
+   ParamByName('usuario').AsString := UsuarioLogado;
+   ParamByName('data').AsDateTime := Now;
+   ExecSQL;
+  end;
+
+  CadUsuarioDM.Conexão.Commit;
+  ShowMessage('Senha alterada com sucesso!');
+  Close;
+ except
+  CadUsuarioDM.Conexão.Rollback;
+  ShowMessage('Erro na alteração!');
+ end;
 end;
 
 procedure TAlterarSenhaForm.SBUsuarioClick(Sender: TObject);
 var codigo, usuario, ativo: string;
 begin
-  CadUsuarioDM.ConsultarUsuario.SQL.Clear;
-  CadUsuarioDM.ConsultarUsuario.SQL.Text :=
-  'select * from cadusuario where ativo = :ativo';
-  CadUsuarioDM.ConsultarUsuario.ParamByName('ativo').AsString := 'S';
-  CadUsuarioDM.ConsultarUsuario.Open;
+ with CadUsuarioDM.qryConsultarUsuario do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadusuario where ativo = :ativo');
+  ParamByName('ativo').AsString := 'S';
+  Open;
+ end;
 
-  Application.CreateForm(TConsultarUsuario, ConsultarUsuario);
-  codigo := ConsultarUsuario.SelecionarUsuario;
-  if codigo <> '' then
-  begin
-    usuario := ConsultarUsuario.Usuario;
-    EdtUsuario.Text := usuario;
-  end;
+ Application.CreateForm(TConsultarUsuario, ConsultarUsuario);
+ codigo := ConsultarUsuario.SelecionarUsuario;
+
+ if codigo <> '' then begin
+  usuario := ConsultarUsuario.Usuario;
+  EdtUsuario.Text := usuario;
+ end;
 end;
 end.
