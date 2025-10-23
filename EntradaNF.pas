@@ -874,7 +874,7 @@ var XMLDoc: IXMLDocument;
     ICMSUFDest, vBCUFDest, vBCFCPUFDest, pFCPUFDest, pICMSUFDest, pICMSInter, pICMSInterPart, vFCPUFDest, vICMSUFDest, vICMSUFRemet,
     IPI, cEnq, IPITrib, vBCIPI, pIPI, vIPI, vIPIDevol, IPINT, CSTIPI,
     PIS, PISAliq, CSTPIS, vBCPIS, pPIS, vPIS, PISNT, PISOutr,
-    COFINS, COFINSNT, COFINSAliq, CSTCOFINS, vBCCOFINS, pCOFINS, vCOFINS,
+    COFINS, COFINSNT, COFINSAliq, COFINSOutr, CSTCOFINS, vBCCOFINS, pCOFINS, vCOFINS,
     total, ICMSTot, vBCTot, vICMSTot, vICMSDesonTot,
     vICMSUFDestTot, vFCPTot, vFCPSTTot, vFCPSTRetTot,
     vBCSTTot, vSTTot, vProdTot, vFreteTot, vSegTot, vDescTot,
@@ -882,6 +882,7 @@ var XMLDoc: IXMLDocument;
     vPISTot, vCOFINSTot,
     vOutroTot, vNFTot, protNFe, infProt, chNFE: IXMLNode;
     i, row: integer;
+    ValorBCIPI, ValorBCPIS, ValorBCCOFINS: Double;
 begin
  with TOpenDialog .Create(nil) do
   try
@@ -1233,6 +1234,14 @@ begin
          if Assigned(IPINT) then begin
           CSTIPI := IPINT.ChildNodes.FindNode('CST');
          end;
+
+         IPITrib := IPI.ChildNodes.FindNode('IPITrib');
+         if Assigned(IPITrib) then begin
+          CSTIPI := IPITrib.ChildNodes.FindNode('CST');
+          vBCIPI := IPITrib.ChildNodes.FindNode('vBC');
+          pIPI := IPITrib.ChildNodes.FindNode('pIPI');
+          vIPI := IPITrib.ChildNodes.FindNode('vIPI');
+         end;
         end;
 
         // PIS
@@ -1252,6 +1261,14 @@ begin
          if Assigned(PISNT) then begin
           CSTPIS := PISNT.ChildNodes.FindNode('CST');
          end;
+
+         PISOutr := PIS.ChildNodes.FindNode('PISOutr');
+         if Assigned(PISOutr) then begin
+          CSTPIS := PISOutr.ChildNodes.FindNode('CST');
+          vBCPIS := PISOutr.ChildNodes.FindNode('vBC');
+          pPIS := PISOutr.ChildNodes.FindNode('pPIS');
+          vPIS := PISOutr.ChildNodes.FindNode('vPIS');
+         end;
         end;
 
         // COFINS
@@ -1270,6 +1287,14 @@ begin
          COFINSNT := COFINS.ChildNodes.FindNode('COFINSNT');
          if Assigned(COFINSNT) then begin
           CSTCOFINS := COFINSNT.ChildNodes.FindNode('CST');
+         end;
+
+         COFINSOutr := COFINS.ChildNodes.FindNode('COFINSOutr');
+         if Assigned(COFINSOutr) then begin
+          CSTCOFINS := COFINSOutr.ChildNodes.FindNode('CST');
+          vBCCOFINS := COFINSOutr.ChildNodes.FindNode('vBC');
+          pCOFINS := COFINSOutr.ChildNodes.FindNode('pCOFINS');
+          vCOFINS := COFINSOutr.ChildNodes.FindNode('vCOFINS');
          end;
         end;
 
@@ -1433,6 +1458,14 @@ begin
          if Assigned(cEnq) then ItensGrid.Cells[18,row] := IPI.ChildNodes['cEnq'].Text;
         end;
 
+        if Assigned(IPITrib) then begin
+         if Assigned(CSTIPI) then ItensGrid.Cells[17,row] := IPITrib.ChildNodes['CST'].Text;
+         if Assigned(cEnq) then ItensGrid.Cells[18,row] := IPI.ChildNodes['cEnq'].Text;
+         if Assigned(vBCIPI) then ItensGrid.Cells[20,row] := IPITrib.ChildNodes['vBC'].Text;
+         if Assigned(pIPI) then ItensGrid.Cells[19,row] := IPITrib.ChildNodes['pIPI'].Text;
+         if Assigned(vIPI) then ItensGrid.Cells[21,row] := IPITrib.ChildNodes['vIPI'].Text;
+        end;
+
         // PIS
 
         if Assigned(PISAliq) then begin
@@ -1440,6 +1473,13 @@ begin
          if Assigned(pPIS) then ItensGrid.Cells[23,row] := PISAliq.ChildNodes['pPIS'].Text;
          if Assigned(vBCPIS) then ItensGrid.Cells[24,row] := PISAliq.ChildNodes['vBC'].Text;
          if Assigned(vPIS) then ItensGrid.Cells[25,row] := PISAliq.ChildNodes['vPIS'].Text;
+        end;
+
+        if Assigned(PISOutr) then begin
+         if Assigned(CSTPIS) then ItensGrid.Cells[22,row] := PISOutr.ChildNodes['CST'].Text;
+         if Assigned(pPIS) then ItensGrid.Cells[23,row] := PISOutr.ChildNodes['pPIS'].Text;
+         if Assigned(vBCPIS) then ItensGrid.Cells[24,row] := PISOutr.ChildNodes['vBC'].Text;
+         if Assigned(vPIS) then ItensGrid.Cells[25,row] := PISOutr.ChildNodes['vPIS'].Text;
         end;
 
         if Assigned(PISNT) then begin
@@ -1453,6 +1493,13 @@ begin
          if Assigned(pCOFINS) then ItensGrid.Cells[27,row] := COFINSAliq.ChildNodes['pCOFINS'].Text;
          if Assigned(vCOFINS) then ItensGrid.Cells[28,row] := COFINSAliq.ChildNodes['vCOFINS'].Text;
          if Assigned(vBCCOFINS) then ItensGrid.Cells[29,row] := COFINSAliq.ChildNodes['vBC'].Text;
+        end;
+
+        if Assigned(COFINSOutr) then begin
+         if Assigned(CSTCOFINS) then ItensGrid.Cells[26,row] := COFINSOutr.ChildNodes['CST'].Text;
+         if Assigned(pCOFINS) then ItensGrid.Cells[27,row] := COFINSOutr.ChildNodes['pCOFINS'].Text;
+         if Assigned(vCOFINS) then ItensGrid.Cells[28,row] := COFINSOutr.ChildNodes['vCOFINS'].Text;
+         if Assigned(vBCCOFINS) then ItensGrid.Cells[29,row] := COFINSOutr.ChildNodes['vBC'].Text;
         end;
 
         if Assigned(COFINSNT) then begin
@@ -1474,6 +1521,20 @@ begin
       EdtvFrete.Text := ICMSTot.ChildNodes['vFrete'].Text;
       EdtvSeg.Text := ICMSTot.ChildNodes['vSeg'].Text;
       EdtvDesc.Text := ICMSTot.ChildNodes['vDesc'].Text;
+
+      ValorBCIPI := 0;
+      ValorBCPIS := 0;
+      ValorBCCOFINS := 0;
+      for i := 1 to ItensGrid.RowCount - 1 do
+      begin
+       ValorBCIPI := ValorBCIPI + StrToFloatDef(ItensGrid.Cells[20, i], 0);
+       ValorBCPIS := ValorBCPIS + StrToFloatDef(ItensGrid.Cells[24, i], 0);
+       ValorBCCOFINS := ValorBCCOFINS + StrToFloatDef(ItensGrid.Cells[29,i], 0);
+      end;
+
+      EdtvBCCOFINS.Text := FormatFloat('#,##0.00', ValorBCCOFINS);
+      EdtvBCIPI.Text := FormatFloat('#,##0.00', ValorBCIPI);
+      EdtvBCPIS.Text := FormatFloat('#,##0.00', ValorBCPIS);
       EdtvIPI.Text := ICMSTot.ChildNodes['vIPI'].Text;
       EdtvIPIDevol.Text := ICMSTot.ChildNodes['vIPIDevol'].Text;
       EdtvPIS.Text := ICMSTot.ChildNodes['vPIS'].Text;
@@ -1535,6 +1596,7 @@ end;
 
 procedure TEntradaNFForm.SBDepositoClick(Sender: TObject);
 var codigo, descricao: string;
+    I: integer;
 begin
  with CadDepositoDM.qryConsultarDeposito do
  begin
@@ -1550,6 +1612,11 @@ begin
   EdtCodigoDeposito.Text := codigo;
   descricao := ConsultarDeposito.descricao;
   EdtDescricaoDeposito.Text := Descricao;
+
+  for i := 1 to ItensGrid.RowCount - 1 do
+  begin
+   ItensGrid.Cells[3,i] := codigo;
+  end;
  end;
 end;
 
@@ -1575,6 +1642,7 @@ end;
 
 procedure TEntradaNFForm.SBNaturezaClick(Sender: TObject);
 var natureza, descricao: string;
+    I: integer;
 begin
  with CadNaturezaDM.qryConsultarNatureza do
  begin
@@ -1590,6 +1658,11 @@ begin
   EdtCodigoNatureza.Text := natureza;
   descricao := ConsultarNatureza.descricao;
   EdtDescricaoNatureza.Text := Descricao;
+
+  for i := 1 to ItensGrid.RowCount - 1 do
+  begin
+   ItensGrid.Cells[8,i] := natureza
+  end;
  end;
 end;
 

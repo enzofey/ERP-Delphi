@@ -252,7 +252,6 @@ object EntradaNFForm: TEntradaNFForm
             Height = 23
             Enabled = False
             TabOrder = 0
-            Text = '0'
           end
           object EdtvFrete: TEdit
             Left = 320
@@ -261,7 +260,6 @@ object EntradaNFForm: TEntradaNFForm
             Height = 23
             Enabled = False
             TabOrder = 1
-            Text = '0'
           end
           object EdtvDesc: TEdit
             Left = 544
@@ -270,7 +268,6 @@ object EntradaNFForm: TEntradaNFForm
             Height = 23
             Enabled = False
             TabOrder = 2
-            Text = '0'
           end
           object EdtvSeg: TEdit
             Left = 755
@@ -279,7 +276,6 @@ object EntradaNFForm: TEntradaNFForm
             Height = 23
             Enabled = False
             TabOrder = 3
-            Text = '0'
           end
           object EdtvOutro: TEdit
             Left = 962
@@ -288,7 +284,6 @@ object EntradaNFForm: TEntradaNFForm
             Height = 23
             Enabled = False
             TabOrder = 4
-            Text = '0'
           end
           object GroupICMS: TGroupBox
             Left = 32
@@ -339,7 +334,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvICMS: TEdit
               Left = 56
@@ -348,7 +342,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtvICMSDeson: TEdit
               Left = 94
@@ -357,7 +350,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
             object EdtvBCST: TEdit
               Left = 69
@@ -366,7 +358,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 3
-              Text = '0'
             end
             object EdtvST: TEdit
               Left = 69
@@ -375,7 +366,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 4
-              Text = '0'
             end
           end
           object GroupIPI: TGroupBox
@@ -413,7 +403,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvIPI: TEdit
               Left = 56
@@ -422,7 +411,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtvIPIDevol: TEdit
               Left = 76
@@ -431,7 +419,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
           end
           object GroupPIS: TGroupBox
@@ -462,7 +449,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvPIS: TEdit
               Left = 56
@@ -471,7 +457,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
           end
           object GroupCOFINS: TGroupBox
@@ -502,7 +487,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvCOFINS: TEdit
               Left = 56
@@ -511,7 +495,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
           end
           object EdtvNF: TEdit
@@ -521,7 +504,6 @@ object EntradaNFForm: TEntradaNFForm
             Height = 23
             Enabled = False
             TabOrder = 9
-            Text = '0'
           end
           object DIFALFCPGroup: TGroupBox
             Left = 565
@@ -593,7 +575,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvFCPST: TEdit
               Left = 95
@@ -602,7 +583,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtvFCPSTRet: TEdit
               Left = 132
@@ -611,7 +591,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
             object EdtvBCUFDest: TEdit
               Left = 87
@@ -620,7 +599,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 3
-              Text = '0'
             end
             object EdtvBCFCPUFDest: TEdit
               Left = 95
@@ -629,7 +607,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 4
-              Text = '0'
             end
             object EdtvpFCPUFDest: TEdit
               Left = 99
@@ -638,7 +615,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 5
-              Text = '0'
             end
             object EdtpICMSUFDest: TEdit
               Left = 108
@@ -647,7 +623,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 6
-              Text = '0'
             end
             object EdtvICMSUFDest: TEdit
               Left = 89
@@ -656,7 +631,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 7
-              Text = '0'
             end
           end
         end
@@ -940,7 +914,7 @@ object EntradaNFForm: TEntradaNFForm
         Top = 512
         Width = 929
         Height = 417
-        ActivePage = ICMSPage
+        ActivePage = ICMSUFDestPage
         TabOrder = 1
         object ICMSPage: TTabSheet
           Caption = 'ICMS'
@@ -1133,7 +1107,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvICMSItem: TEdit
               Left = 57
@@ -1142,7 +1115,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtvICMSDesonItem: TEdit
               Left = 95
@@ -1151,7 +1123,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
             object EdtvBCSTItem: TEdit
               Left = 511
@@ -1160,7 +1131,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 3
-              Text = '0'
             end
             object EdtvICMSSTItem: TEdit
               Left = 511
@@ -1169,7 +1139,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 4
-              Text = '0'
             end
             object EdtpICMS: TEdit
               Left = 76
@@ -1178,7 +1147,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 5
-              Text = '0'
             end
             object EdtCSTICMS: TEdit
               Left = 50
@@ -1203,7 +1171,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 8
-              Text = '0'
             end
             object EdtpRedBCSTItem: TEdit
               Left = 567
@@ -1212,7 +1179,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 9
-              Text = '0'
             end
             object EdtpICMSSTItem: TEdit
               Left = 511
@@ -1221,7 +1187,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 10
-              Text = '0'
             end
             object EdtpRedBCItem: TEdit
               Left = 110
@@ -1230,7 +1195,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 11
-              Text = '0'
             end
             object EdtvICMSOpItem: TEdit
               Left = 78
@@ -1239,7 +1203,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 12
-              Text = '0'
             end
             object EdtpDifItem: TEdit
               Left = 78
@@ -1248,7 +1211,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 13
-              Text = '0'
             end
             object EdtvICMSDifItem: TEdit
               Left = 519
@@ -1257,7 +1219,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 14
-              Text = '0'
             end
             object EdtvBCSTRetItem: TEdit
               Left = 734
@@ -1266,7 +1227,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 15
-              Text = '0'
             end
             object EdtvICMSSTRetItem: TEdit
               Left = 739
@@ -1275,7 +1235,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 16
-              Text = '0'
             end
             object EdtpSTItem: TEdit
               Left = 710
@@ -1284,7 +1243,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 17
-              Text = '0'
             end
             object EdtvICMSSubstitutoItem: TEdit
               Left = 734
@@ -1293,7 +1251,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 18
-              Text = '0'
             end
             object EdtvBCEfetItem: TEdit
               Left = 289
@@ -1302,16 +1259,14 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 19
-              Text = '0'
             end
             object EdtpRedBCEfetItem: TEdit
               Left = 344
-              Top = 99
+              Top = 105
               Width = 105
               Height = 23
               Enabled = False
               TabOrder = 20
-              Text = '0'
             end
             object EdtpICMSEfetItem: TEdit
               Left = 318
@@ -1320,7 +1275,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 21
-              Text = '0'
             end
             object EdtvICMSEfetItem: TEdit
               Left = 289
@@ -1329,7 +1283,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 22
-              Text = '0'
             end
           end
         end
@@ -1406,7 +1359,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvIPIItem: TEdit
               Left = 58
@@ -1415,7 +1367,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtvIPIDevolItem: TEdit
               Left = 78
@@ -1424,7 +1375,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
             object EdtCSTIPI: TEdit
               Left = 50
@@ -1449,7 +1399,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 5
-              Text = '0'
             end
           end
         end
@@ -1505,7 +1454,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvPISItem: TEdit
               Left = 54
@@ -1514,7 +1462,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtvBCPISItem: TEdit
               Left = 54
@@ -1523,7 +1470,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
             object EdtCSTPIS: TEdit
               Left = 50
@@ -1595,7 +1541,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtpCOFINS: TEdit
               Left = 75
@@ -1604,7 +1549,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
             object EdtvCOFINSItem: TEdit
               Left = 54
@@ -1613,7 +1557,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 3
-              Text = '0'
             end
           end
         end
@@ -1648,7 +1591,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvICMSUFDestItem: TEdit
               Left = 55
@@ -1657,7 +1599,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
           end
           object GBFCP: TGroupBox
@@ -1737,7 +1678,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 0
-              Text = '0'
             end
             object EdtvFCPItem: TEdit
               Left = 57
@@ -1746,7 +1686,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 1
-              Text = '0'
             end
             object EdtvBCFCPSTItem: TEdit
               Left = 296
@@ -1755,7 +1694,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 2
-              Text = '0'
             end
             object EdtvFCPSTItem: TEdit
               Left = 296
@@ -1764,7 +1702,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 3
-              Text = '0'
             end
             object EdtpFCPItem: TEdit
               Left = 76
@@ -1773,7 +1710,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 4
-              Text = '0'
             end
             object EdtpFCPSTItem: TEdit
               Left = 296
@@ -1782,7 +1718,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 5
-              Text = '0'
             end
             object EdtvBCFCPSTRetItem: TEdit
               Left = 319
@@ -1791,7 +1726,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 6
-              Text = '0'
             end
             object EdtpFCPSTRetItem: TEdit
               Left = 316
@@ -1800,7 +1734,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 7
-              Text = '0'
             end
             object EdtvFCPSTRetItem: TEdit
               Left = 321
@@ -1809,7 +1742,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 23
               Enabled = False
               TabOrder = 8
-              Text = '0'
             end
           end
         end
