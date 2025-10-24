@@ -19,6 +19,8 @@
 /debug/
 /__history/
 /Backup/
+/Win32/
+/Win64/
 
 # Pacotes intermediários
 *.dcp

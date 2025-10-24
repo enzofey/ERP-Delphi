@@ -19,7 +19,7 @@ object EntradaNFForm: TEntradaNFForm
     Top = 0
     Width = 1878
     Height = 989
-    ActivePage = NotaPage
+    ActivePage = ItensPage
     Align = alClient
     TabOrder = 0
     object AcessoPage: TTabSheet
@@ -608,7 +608,7 @@ object EntradaNFForm: TEntradaNFForm
               Enabled = False
               TabOrder = 4
             end
-            object EdtvpFCPUFDest: TEdit
+            object EdtpFCPUFDest: TEdit
               Left = 99
               Top = 192
               Width = 190
