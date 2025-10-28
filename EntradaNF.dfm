@@ -902,7 +902,8 @@ object EntradaNFForm: TEntradaNFForm
         Top = 48
         Width = 1769
         Height = 433
-        ColCount = 65
+        ColCount = 59
+        DefaultColWidth = 100
         FixedCols = 0
         RowCount = 1
         FixedRows = 0
@@ -916,6 +917,38 @@ object EntradaNFForm: TEntradaNFForm
         Height = 417
         ActivePage = ICMSUFDestPage
         TabOrder = 1
+        object GeralPage: TTabSheet
+          Caption = 'Geral'
+          ImageIndex = 5
+          object lblvDescItem: TLabel
+            Left = 352
+            Top = 48
+            Width = 53
+            Height = 15
+            Caption = 'Desconto:'
+          end
+          object lblvFreteItem: TLabel
+            Left = 352
+            Top = 88
+            Width = 29
+            Height = 15
+            Caption = 'Frete:'
+          end
+          object EdtvDescItem: TEdit
+            Left = 411
+            Top = 48
+            Width = 121
+            Height = 23
+            TabOrder = 0
+          end
+          object EdtvFreteItem: TEdit
+            Left = 411
+            Top = 88
+            Width = 121
+            Height = 23
+            TabOrder = 1
+          end
+        end
         object ICMSPage: TTabSheet
           Caption = 'ICMS'
           object GBICMS: TGroupBox
@@ -1310,13 +1343,6 @@ object EntradaNFForm: TEntradaNFForm
               Height = 15
               Caption = 'Valor:'
             end
-            object lblvIPIDevolItem: TLabel
-              Left = 23
-              Top = 186
-              Width = 49
-              Height = 15
-              Caption = 'IPI Devol:'
-            end
             object lblCSTIPI: TLabel
               Left = 21
               Top = 34
@@ -1368,21 +1394,13 @@ object EntradaNFForm: TEntradaNFForm
               Enabled = False
               TabOrder = 1
             end
-            object EdtvIPIDevolItem: TEdit
-              Left = 78
-              Top = 183
-              Width = 130
-              Height = 23
-              Enabled = False
-              TabOrder = 2
-            end
             object EdtCSTIPI: TEdit
               Left = 50
               Top = 31
               Width = 39
               Height = 23
               Enabled = False
-              TabOrder = 3
+              TabOrder = 2
             end
             object EdtEnqIPI: TEdit
               Left = 181
@@ -1390,7 +1408,7 @@ object EntradaNFForm: TEntradaNFForm
               Width = 39
               Height = 23
               Enabled = False
-              TabOrder = 4
+              TabOrder = 3
             end
             object EdtpIPI: TEdit
               Left = 75
@@ -1398,7 +1416,7 @@ object EntradaNFForm: TEntradaNFForm
               Width = 133
               Height = 23
               Enabled = False
-              TabOrder = 5
+              TabOrder = 4
             end
           end
         end
