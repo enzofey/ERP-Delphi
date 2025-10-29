@@ -31,8 +31,6 @@ type
     lblPais: TLabel;
     EdtSiglaPais: TEdit;
     btnFechar: TButton;
-    EdtCodigo: TEdit;
-    lblCodigo: TLabel;
     Pages: TPageControl;
     AcessoPage: TTabSheet;
     CadastroPage: TTabSheet;
@@ -99,30 +97,30 @@ begin
  SBEstado.Enabled := True;
  SBPais.Enabled := True;
 
- EdtCodigo.Clear;
  EdtCidade.Clear;
  EdtPais.Clear;
  EdtEstado.Clear;
  EdtSiglaPais.Clear;
  EdtSiglaEstado.Clear;
+ EdtCodigoIBGE.Clear;
 
- EdtCodigo.Enabled := True;
- EdtCidade.Enabled := True;;
- EdtSiglaPais.Enabled := True;;
+ EdtCodigoIBGE.Enabled := True;
+ EdtCidade.Enabled := True;
+ EdtSiglaPais.Enabled := True;
  EdtSiglaEstado.Enabled := True;
  CBAtivo.Enabled := True;
 end;
 
 procedure TCadCidade.btnGravarIncluirClick(Sender: TObject);
-var codigo, cidade, pais, estado, ativo: string;
+var codigo_ibge, cidade, pais, estado, ativo: string;
 begin
- codigo := EdtCodigo.Text;
+ codigo_ibge := EdtCodigoIBGE.Text;
  cidade := EdtCidade.Text;
  pais := EdtSiglaPais.text;
  estado := EdtSiglaEstado.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
- if Codigo = '' then begin
+ if Codigo_ibge = '' then begin
   ShowMessage('Código IBGE não pode ser vazio!');
   Abort;
  end;
@@ -145,8 +143,8 @@ begin
  with CadCidadeDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadcidade where codigo = :codigo');
-  ParamByName('codigo').AsString := codigo;
+  SQL.Add('select * from cadcidade where codigo_ibge = :codigo_ibge');
+  ParamByName('codigo_ibge').AsString := codigo_ibge;
   Open;
 
   if not IsEmpty then begin
@@ -160,10 +158,10 @@ begin
   with CadCidadeDM.qryInsert do
   begin
    SQL.Clear;
-   SQL.Add('insert into cadcidade (codigo, cidade, pais, estado, ativo)');
+   SQL.Add('insert into cadcidade (codigo_ibge, cidade, pais, estado, ativo)');
    SQL.Add('values');
-   SQL.Add('(:codigo, :cidade, :pais, :estado, :ativo)');
-   ParamByName('codigo').AsString := Codigo;
+   SQL.Add('(:codigo_ibge, :cidade, :pais, :estado, :ativo)');
+   ParamByName('codigo_ibge').AsString := codigo_ibge;
    ParamByName('cidade').AsString := cidade;
    ParamByName('pais').AsString := pais;
    ParamByName('estado').AsString := estado;
@@ -178,7 +176,7 @@ begin
    SQL.Add('values');
    SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
    ParamByName('descricao').AsString :=
-   'Inseriu a cidade ' + cidade + ' no código ' + codigo + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+   'Inseriu a cidade ' + cidade + ' no código IBGE ' + codigo_ibge + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
    ParamByName('tela').AsString := 'CadCidade';
    ParamByName('data').AsDatetime := Now;
    ParamByName('usuario').AsString := UsuarioLogado;
@@ -199,7 +197,7 @@ begin
   SBEstado.Enabled := False;
   SBPais.Enabled := False;
 
-  EdtCodigo.Enabled := False;
+  EdtCodigoIBGE.Enabled := False;
   EdtCidade.Enabled := False;
   EdtSiglaPais.Enabled := False;
   EdtSiglaEstado.Enabled := False;
@@ -212,7 +210,7 @@ end;
 
 procedure TCadCidade.btnAlterarClick(Sender: TObject);
 begin
- if EdtCodigo.Text = '' then begin
+ if EdtCodigoIBGE.Text = '' then begin
   ShowMessage('Nenhuma cidade selecionada');
   Abort;
  end;
@@ -235,15 +233,15 @@ begin
 end;
 
 procedure TCadCidade.btnGravarAlterarClick(Sender: TObject);
-var codigo, cidade, estado, pais, ativo: string;
+var codigo_ibge, cidade, estado, pais, ativo: string;
 begin
- codigo := EdtCodigo.Text;
+ codigo_ibge := EdtCodigoIBGE.Text;
  cidade := EdtCidade.Text;
  Estado := EdtSiglaEstado.Text;
  Pais := EdtSiglaPais.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
- if Codigo = '' then begin
+ if codigo_ibge = '' then begin
   ShowMessage('Código IBGE não pode ser vazio!');
   Abort;
  end;
@@ -268,12 +266,12 @@ begin
   with CadCidadeDM.qryUpdate do
   begin
    SQL.Clear;
-   SQL.Add('update cadcidade set cidade = :cidade, estado = :estado, pais = :pais, ativo = :ativo where codigo = :codigo');
+   SQL.Add('update cadcidade set cidade = :cidade, estado = :estado, pais = :pais, ativo = :ativo where codigo_ibge = :codigo_ibge');
    ParamByName('cidade').AsString := Cidade;
    ParamByName('ativo').AsString := ativo;
    ParamByName('estado').AsString := estado;
    ParamByName('pais').AsString := pais;
-   ParamByName('codigo').AsString := codigo;
+   ParamByName('codigo_ibge').AsString := codigo_ibge;
    ExecSQL;
   end;
 
@@ -284,7 +282,7 @@ begin
    SQL.Add('values');
    SQL.Add('(:descricao, :tela, :data, :emp_id, :usuario)');
    ParamByName('descricao').AsString :=
-   'Alterou a cidade ' + cidade + ' no código ' + codigo + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+   'Alterou a cidade ' + cidade + ' no código IBGE ' + codigo_ibge + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
    ParamByName('tela').AsString := 'CadCidade';
    ParamByName('data').AsDatetime := Now;
    ParamByName('usuario').AsString := UsuarioLogado;
@@ -305,7 +303,7 @@ begin
   SBEstado.Enabled := False;
   SBPais.Enabled := False;
 
-  EdtCodigo.Enabled := False;
+  EdtCodigoIBGE.Enabled := False;
   EdtCidade.Enabled := False;
   EdtSiglaPais.Enabled := False;
   EdtSiglaEstado.Enabled := False;
@@ -330,7 +328,7 @@ begin
  codigo := ConsultarCidade.ConsultarCidade;
  if codigo <> '' then begin
   Edtcidade.Text := ConsultarCidade.cidade;
-  EdtCodigo.Text := ConsultarCidade.codigo;
+  EdtCodigoIBGE.Text := ConsultarCidade.codigo;
   EdtSiglaPais.Text := ConsultarCidade.pais;
   EdtSiglaEstado.Text := ConsultarCidade.estado;
   EdtCodigoIBGE.Text := ConsultarCidade.Codigo_IBGE;
@@ -351,14 +349,14 @@ begin
  SBEstado.Enabled := False;
  SBPais.Enabled := False;
 
- EdtCodigo.Clear;
+ EdtCodigoIBGE.Clear;
  EdtCidade.Clear;
  EdtPais.Clear;
  EdtEstado.Clear;
  EdtSiglaPais.Clear;
  EdtSiglaEstado.Clear;
 
- EdtCodigo.Enabled := False;
+ EdtCodigoIBGE.Enabled := False;
  EdtCidade.Enabled := False;
  EdtSiglaPais.Enabled := False;
  EdtSiglaEstado.Enabled := False;
@@ -366,15 +364,15 @@ begin
 end;
 
 procedure TCadCidade.btnExcluirClick(Sender: TObject);
-var codigo, cidade, estado, pais, ativo: string;
+var codigo_ibge, cidade, estado, pais, ativo: string;
 begin
- codigo := EdtCodigo.Text;
+ codigo_ibge := EdtCodigoIBGE.Text;
  cidade := EdtCidade.Text;
  Estado := EdtSiglaEstado.Text;
  Pais := EdtSiglaPais.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
- if Codigo = '' then begin
+ if codigo_ibge = '' then begin
   ShowMessage('Nenhuma cidade selecionada!');
   Abort;
  end;
@@ -397,8 +395,8 @@ begin
   with CadCidadeDM.qryDelete do
   begin
    SQL.Clear;
-   SQL.Add('delete from cadcidade where codigo = :codigo');
-   ParamByName('codigo').AsString := codigo;
+   SQL.Add('delete from cadcidade where codigo_ibge = :codigo_ibge');
+   ParamByName('codigo_ibge').AsString := codigo_ibge;
    ExecSQL;
   end;
 
@@ -409,7 +407,7 @@ begin
    SQL.Add('values');
    SQL.Add('(:descricao, :tela, :data, :usuario, :emp_id)');
    ParamByName('descricao').AsString :=
-   'Deletou a cidade ' + cidade + ' no código ' + codigo + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
+   'Deletou a cidade ' + cidade + ' no código IBGE ' + codigo_ibge + ' no estado ' + estado + ' no país ' + pais + ' e ativo ' + ativo;
    ParamByName('tela').AsString := 'CadCidade';
    ParamByName('data').AsDatetime := Now;
    ParamByName('usuario').AsString := UsuarioLogado;
@@ -429,13 +427,13 @@ begin
   BtnDesistir.Visible := False;
   SBEstado.Enabled := False;
 
-  EdtCodigo.Enabled := False;
+  EdtCodigoIBGE.Enabled := False;
   EdtCidade.Enabled := False;
   EdtSiglaPais.Enabled := False;
   EdtSiglaEstado.Enabled := False;
   CBAtivo.Enabled := False;
 
-  EdtCodigo.Clear;
+  EdtCodigoIBGE.Clear;
   EdtCidade.Clear;
   EdtPais.Clear;
   EdtEstado.Clear;

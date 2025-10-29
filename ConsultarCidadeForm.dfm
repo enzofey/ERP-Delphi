@@ -2,8 +2,8 @@ object ConsultarCidade: TConsultarCidade
   Left = 0
   Top = 0
   Caption = 'ConsultarCidade'
-  ClientHeight = 301
-  ClientWidth = 676
+  ClientHeight = 372
+  ClientWidth = 877
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,14 +15,15 @@ object ConsultarCidade: TConsultarCidade
   object Panel1: TPanel
     Left = -14
     Top = -11
-    Width = 695
-    Height = 316
+    Width = 895
+    Height = 388
     TabOrder = 0
     object Grid: TDBGrid
-      Left = 32
+      Left = 24
       Top = 24
-      Width = 641
-      Height = 193
+      Width = 857
+      Height = 265
+      DataSource = CadCidadeDM.ConsultarCidade
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -31,8 +32,8 @@ object ConsultarCidade: TConsultarCidade
       TitleFont.Style = []
     end
     object BtnSelecionarCidade: TButton
-      Left = 264
-      Top = 231
+      Left = 352
+      Top = 303
       Width = 145
       Height = 57
       Caption = 'Selecionar'

@@ -8,7 +8,8 @@ uses
   Vcl.Grids, Xml.XMLDoc, Xml.XMLIntf,
   EntidadeDM, ConsultarEntidadeForm,
   NaturezaDM, ConsultarNaturezaForm,
-  DepositoDM, ConsultarDepositoForm;
+  DepositoDM, ConsultarDepositoForm,
+  CidadeDM, EstadoDM, PaisDM;
 
 type
   TEntradaNFForm = class(TForm)
@@ -871,7 +872,7 @@ var XMLDoc: IXMLDocument;
     total, ICMSTot, protNFe, infProt: IXMLNode;
     i, row: integer;
     ValorBCIPI, ValorBCPIS, ValorBCCOFINS, ValorBCDIFAL, ValorAliquotaDIFAL, ValorBCFCP, ValorAliquotaFCP: Double;
-    codigo: string;
+    MaxCodigoEntidade: string;
 begin
  with TOpenDialog.Create(nil) do
   try
@@ -1027,6 +1028,8 @@ begin
      Parambyname('CNPJ').AsString := Emit.ChildNodes['CNPJ'].Text;
      Open;
 
+     if not IsEmpty then EdtCodigoEntidade.Text := FieldByName('codigo').AsString;
+
      if IsEmpty then begin
       ShowMessage('Emitente da NF-e não cadastrado no sistema, cadastrando automaticamente!');
 
@@ -1034,7 +1037,61 @@ begin
       SQL.Add('select max(cast(codigo as integer)) + 1 as codigo from cadentidade');
       Open;
 
-      codigo := FieldByName('codigo').AsString;
+      MaxCodigoEntidade := FieldByName('codigo').AsString;
+
+      with CadPaisDM.qrySelect do
+      begin
+       SQL.Clear;
+       SQL.Add('select * from cadpais where codigo_ibge = :codigo_ibge');
+       ParamByName('codigo_ibge').AsString := EnderEmit.ChildNodes['cPais'].Text;
+       Open;
+
+       if IsEmpty then begin
+        ShowMessage('País do emitente não cadastrado no sistema, cadastrando automaticamente!');
+
+        with CadPaisDM.qryInsert do
+        begin
+         SQL.Clear;
+         SQL.Add('insert into cadpais (sigla, pais, ativo, codigo_ibge)');
+         SQL.Add('values');
+         SQL.Add('(:sigla, :pais, :ativo, :codigo_ibge)');
+         ParamByName('sigla').AsString := COPY(EnderEmit.ChildNodes['xPais'].Text,1,3);
+         ParamByName('pais').AsString := EnderEmit.ChildNodes['xPais'].Text;
+         ParamByName('ativo').AsString := 'S';
+         ParamByName('codigo_ibge').AsString := EnderEmit.ChildNodes['cPais'].Text;
+         ExecSQL;
+         ShowMessage('País cadastrado no sistema, favor verificar o cadastro após finalizar a nota, a fim de evitar problemas fiscais!');
+        end;
+       end;
+      end;
+
+      with CadCidadeDM.qrySelect do
+      begin
+       SQL.Clear;
+       SQL.Add('select * from cadcidade where codigo_ibge = :codigo_ibge');
+       ParamByName('codigo_ibge').AsString := EnderEmit.ChildNodes['cMun'].Text;
+       Open;
+
+       if IsEmpty then begin
+        ShowMessage('Cidade do emitente não cadastrado no sistema, cadastrando automaticamente!');
+
+        with CadCidadeDM.qryInsert do
+        begin
+         SQL.Clear;
+         SQL.Add('insert into cadcidade (codigo_ibge, ativo, estado, pais, cidade)');
+         SQL.Add('values');
+         SQL.Add('(:codigo_ibge, :ativo, :estado, :pais, :cidade)');
+
+         ParamByName('codigo_ibge').AsString := EnderEmit.ChildNodes['cMun'].Text;
+         ParamByName('ativo').AsString := 'S';
+         ParamByName('estado').AsString := EnderEmit.ChildNodes['UF'].Text;
+         ParamByName('pais').AsString := EnderEmit.ChildNodes['cPais'].Text;
+         ParamByName('cidade').AsString := EnderEmit.ChildNodes['xMun'].Text;
+         ExecSQL;
+         ShowMessage('Cidade cadastrada no sistema, favor verificar o cadastro após finalizar a nota, a fim de evitar problemas fiscais!');
+        end;
+       end;
+      end;
 
       with CadEntidadeDM.qryInsert do
       begin
@@ -1045,7 +1102,7 @@ begin
        SQL.Add('(:codigo, :nome, :ativo, :cpf, :telefone, :consumidor_final, :rua, :numero, :estado, :bairro, :cidade, :pais,');
        SQL.Add(':cep, :ie, :tipo, :fantasia)');
 
-       ParamByName('codigo').AsString := codigo;
+       ParamByName('codigo').AsString := MaxCodigoEntidade;
        ParamByName('nome').AsString := Emit.ChildNodes['xNome'].Text;
        ParamByName('ativo').AsString := 'S';
        ParamByName('cpf').AsString := Emit.ChildNodes['CNPJ'].Text;
@@ -1063,11 +1120,11 @@ begin
        ParamByName('fantasia').AsString := Emit.ChildNodes['xFant'].Text;
        ExecSQL;
        ShowMessage('Cadastrado com sucesso, favor verificar o cadastro após finalizar a nota, a fim de evitar problemas fiscais!');
+       EdtCodigoEntidade.Text := MaxCodigoEntidade;
       end;
      end;
     end;
 
-    EdtCodigoEntidade.Text := codigo;
     EdtChaveNFE.Text := infProt.ChildNodes['chNFe'].Text;
     EdtDtEmissao.Date := ISO8601ToDate(Ide.ChildNodes['dhEmi'].Text);
     EdtdtEntrada.Date := Now;

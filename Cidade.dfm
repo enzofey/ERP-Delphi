@@ -19,7 +19,7 @@ object CadCidade: TCadCidade
     Top = 0
     Width = 1862
     Height = 956
-    ActivePage = AcessoPage
+    ActivePage = CadastroPage
     Align = alClient
     TabOrder = 0
     object AcessoPage: TTabSheet
@@ -164,7 +164,7 @@ object CadCidade: TCadCidade
       ImageIndex = 1
       object lblAtivo: TLabel
         Left = 696
-        Top = 48
+        Top = 51
         Width = 31
         Height = 15
         Caption = 'Ativo:'
@@ -176,16 +176,9 @@ object CadCidade: TCadCidade
         Height = 15
         Caption = 'Cidade:'
       end
-      object lblCodigo: TLabel
-        Left = 40
-        Top = 48
-        Width = 42
-        Height = 15
-        Caption = 'C'#243'digo:'
-      end
       object lblCodigoIBGE: TLabel
-        Left = 242
-        Top = 48
+        Left = 40
+        Top = 51
         Width = 69
         Height = 15
         Caption = 'C'#243'digo IBGE:'
@@ -297,7 +290,7 @@ object CadCidade: TCadCidade
       end
       object CBAtivo: TCheckBox
         Left = 733
-        Top = 48
+        Top = 51
         Width = 20
         Height = 17
         Enabled = False
@@ -311,24 +304,15 @@ object CadCidade: TCadCidade
         Enabled = False
         TabOrder = 9
       end
-      object EdtCodigo: TEdit
-        Left = 99
-        Top = 45
-        Width = 121
-        Height = 23
-        Enabled = False
-        NumbersOnly = True
-        TabOrder = 10
-      end
       object EdtCodigoIBGE: TEdit
-        Left = 317
-        Top = 45
+        Left = 115
+        Top = 48
         Width = 121
         Height = 23
         Enabled = False
         MaxLength = 7
         NumbersOnly = True
-        TabOrder = 11
+        TabOrder = 10
       end
       object EdtSiglaEstado: TEdit
         Left = 99
@@ -336,7 +320,7 @@ object CadCidade: TCadCidade
         Width = 38
         Height = 23
         Enabled = False
-        TabOrder = 12
+        TabOrder = 11
         OnChange = EdtSiglaEstadoChange
       end
       object EdtSiglaPais: TEdit
@@ -345,7 +329,7 @@ object CadCidade: TCadCidade
         Width = 38
         Height = 23
         Enabled = False
-        TabOrder = 13
+        TabOrder = 12
         OnChange = EdtSiglaPaisChange
       end
       object EdtEstado: TEdit
@@ -355,7 +339,7 @@ object CadCidade: TCadCidade
         Height = 23
         Enabled = False
         ReadOnly = True
-        TabOrder = 14
+        TabOrder = 13
       end
       object EdtPais: TEdit
         Left = 143
@@ -364,7 +348,7 @@ object CadCidade: TCadCidade
         Height = 23
         Enabled = False
         ReadOnly = True
-        TabOrder = 15
+        TabOrder = 14
       end
     end
   end
