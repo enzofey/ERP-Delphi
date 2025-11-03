@@ -268,7 +268,7 @@ object CadEstado: TCadEstado
         Enabled = False
         TabOrder = 9
       end
-      object EdtPaisSigla: TEdit
+      object EdtPaisCodigoIBGE: TEdit
         Left = 96
         Top = 128
         Width = 49
@@ -276,7 +276,7 @@ object CadEstado: TCadEstado
         Enabled = False
         MaxLength = 3
         TabOrder = 10
-        OnChange = EdtPaisSiglaChange
+        OnChange = EdtPaisCodigoIBGEChange
       end
       object EdtSigla: TEdit
         Left = 201

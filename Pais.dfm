@@ -205,14 +205,6 @@ object CadPaisForm: TCadPaisForm
         Enabled = False
         TabOrder = 7
       end
-      object EdtPais: TEdit
-        Left = 70
-        Top = 83
-        Width = 152
-        Height = 23
-        Enabled = False
-        TabOrder = 8
-      end
       object EdtSigla: TEdit
         Left = 274
         Top = 45
@@ -220,14 +212,15 @@ object CadPaisForm: TCadPaisForm
         Height = 23
         Enabled = False
         MaxLength = 3
-        TabOrder = 9
+        TabOrder = 8
       end
       object Grid: TDBGrid
         Left = 40
         Top = 184
         Width = 1785
         Height = 617
-        TabOrder = 10
+        DataSource = CadPaisDM.ConsultarPais
+        TabOrder = 9
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -12
@@ -239,6 +232,14 @@ object CadPaisForm: TCadPaisForm
         Left = 101
         Top = 45
         Width = 121
+        Height = 23
+        Enabled = False
+        TabOrder = 10
+      end
+      object EdtPais: TEdit
+        Left = 70
+        Top = 83
+        Width = 152
         Height = 23
         Enabled = False
         TabOrder = 11

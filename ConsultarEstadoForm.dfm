@@ -32,6 +32,7 @@ object ConsultarEstado: TConsultarEstado
       Top = 24
       Width = 825
       Height = 305
+      DataSource = CadEstadoDM.ConsultarEstado
       TabOrder = 1
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText

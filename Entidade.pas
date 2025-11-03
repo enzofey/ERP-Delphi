@@ -32,7 +32,7 @@ type
     CBIndIE: TComboBox;
     EdtBairro: TEdit;
     EdtCEP: TEdit;
-    EdtCidade: TEdit;
+    EdtCodigoCidade: TEdit;
     EdtCodigo: TEdit;
     EdtComplemento: TEdit;
     EdtCPF: TEdit;
@@ -42,7 +42,7 @@ type
     EdtIE: TEdit;
     EdtNome: TEdit;
     EdtNumero: TEdit;
-    EdtPais: TEdit;
+    EdtCodigoPais: TEdit;
     EdtRua: TEdit;
     EdtTelefone: TEdit;
     LblAtivo: TLabel;
@@ -99,6 +99,8 @@ type
     btnWWW: TButton;
     lblFantasia: TLabel;
     EdtFantasia: TEdit;
+    EdtPais: TEdit;
+    EdtCidade: TEdit;
     procedure btnIncluirClick(Sender: TObject);
     procedure BtnDesistirClick(Sender: TObject);
     procedure BtnGravarIncluirClick(Sender: TObject);
@@ -127,6 +129,8 @@ type
     procedure EdtCNPJExit(Sender: TObject);
     procedure EdtCPFExit(Sender: TObject);
     procedure btnWWWClick(Sender: TObject);
+    procedure EdtCodigoPaisChange(Sender: TObject);
+    procedure EdtCodigoCidadeChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -145,7 +149,7 @@ var HttpCNPJ, HttpCEP: TNetHTTPClient;
     ResponseCNPJ, ResponseCEP: IHTTPResponse;
     vJSONCNPJ, vJSONCEP: TJSONObject;
     Nome, Fantasia, CEP, Email, Telefone, DDD, CNPJ, Mensagem, Status,
-    Rua, Complemento, Bairro, Cidade, CodigoIBGECidade, CodigoCidade, UF, Pais, CodigoCEP: string;
+    Rua, Complemento, Bairro, Cidade, CodigoIBGECidade, UF, Pais: string;
 begin
  CNPJ := EdtCNPJ.Text;
  HttpCNPJ := TNetHttpClient.Create(nil);
@@ -223,7 +227,7 @@ begin
          with CadCidadeDM.qryConsultarCidade do
          begin
           SQL.Clear;
-          SQL.Add('select codigo from cadcidade where cidade = :cidade');
+          SQL.Add('select codigo_ibge from cadcidade where cidade = :cidade');
           ParamByName('cidade').AsString := cidade;
           Open;
 
@@ -233,20 +237,10 @@ begin
            with CadCidadeDM.qryInsert do
            begin
             SQL.Clear;
-            SQL.Add('insert into cadcidade (codigo, cidade, pais, estado, ativo, codigo_ibge)');
+            SQL.Add('insert into cadcidade (cidade, pais, estado, ativo, codigo_ibge)');
             SQL.Add('values');
-            SQL.Add('(:codigo, :cidade, :pais, :estado, :ativo, :codigo_ibge)');
+            SQL.Add('(:cidade, :pais, :estado, :ativo, :codigo_ibge)');
 
-            with CadCidadeDM.qrySelect do
-            begin
-             SQL.Clear;
-             SQL.Add('select (max(cast(codigo as integer)) + 1) as codigo from cadcidade');
-             Open;
-
-            if FieldByName('codigo').IsNull or IsEmpty then CodigoCidade := '1' else CodigoCidade := FieldByName('codigo').AsString;
-            end;
-
-            ParamByName('codigo').AsString := CodigoCidade;
             ParamByName('cidade').AsString := Cidade;
             ParamByName('pais').AsString := Pais;
             ParamByName('estado').AsString := UF;
@@ -255,27 +249,17 @@ begin
             ExecSQL;
            end;
 
-           with CadCEPDM.qrySelect do
-           begin
-            SQL.Clear;
-            SQL.Add('select (max(cast(codigo as integer)) + 1) as codigoCEP from cadcep');
-            Open;
-
-            if FieldByName('codigoCEP').IsNull or IsEmpty then CodigoCEP := '1' else CodigoCEP := FieldByName('codigoCEP').AsString;
-           end;
-
            with CadCEPDM.qryInsert do
            begin
             SQL.Clear;
-            SQL.Add('insert into cadcep (cep, cidade, estado, pais, ativo, codigo, bairro, rua, complemento)');
+            SQL.Add('insert into cadcep (cep, cidade, estado, pais, ativo, bairro, rua, complemento)');
             SQL.Add('values');
-            SQL.Add('(:cep, :cidade, :estado, :pais, :ativo, :codigo, :bairro, :rua, :complemento)');
+            SQL.Add('(:cep, :cidade, :estado, :pais, :ativo, :bairro, :rua, :complemento)');
             ParamByName('CEP').AsString := CEP;
             ParamByName('cidade').AsString := cidade;
             ParamByName('estado').AsString := UF;
             ParamByName('pais').AsString := pais;
             ParamByName('ativo').AsString := 'S';
-            ParamByName('codigo').AsString := CodigoCEP;
             ParamByName('bairro').AsString := bairro;
             ParamByName('rua').AsString := rua;
             ParamByName('complemento').AsString := complemento;
@@ -349,6 +333,7 @@ begin
   lblIndicadorIE.Visible := False;
   CBIndIE.Visible := False;
   btnWWW.Visible := False;
+  EdtFantasia.Visible := False;
 
   lblCPF.Visible := True;
   EdtCPF.Visible := True;
@@ -362,6 +347,7 @@ begin
   lblIndicadorIE.Visible := True;
   CBIndIE.Visible := True;
   btnWWW.Visible := True;
+  EdtFantasia.Visible := True;
 
   lblCPF.Visible := False;
   EdtCPF.Visible := False;
@@ -388,8 +374,8 @@ begin
  EdtNumero.Clear;
  EdtEstado.Clear;
  EdtBairro.Clear;
- EdtCidade.Clear;
- EdtPais.Clear;
+ EdtCodigoCidade.Clear;
+ EdtCodigoPais.Clear;
  EdtComplemento.Clear;
  EdtCEP.Clear;
  EdtEmail.Clear;
@@ -434,8 +420,8 @@ begin
  numero := Edtnumero.Text;
  estado := Edtestado.Text;
  bairro := Edtbairro.Text;
- cidade := Edtcidade.Text;
- pais := Edtpais.Text;
+ cidade := EdtCodigoCidade.Text;
+ pais := EdtCodigoPais.Text;
  complemento := Edtcomplemento.Text;
  cep := Edtcep.Text;
  email := EdtEmail.Text;
@@ -465,17 +451,21 @@ begin
     ShowMessage('CNPJ não pode ser vazio!');
     Abort;
   end;
-   if CBIndIE.Text = '' then begin
-    ShowMessage('Indicador da IE não pode ser vazio!');
+   if Fantasia = '' then begin
+    ShowMessage('Fantasia não pode ser  vazio!');
     Abort;
    end;
-    if (CBIndIE.ItemIndex = 0) and (EdtIE.Text = '') then begin
-     ShowMessage('IE não pode ser vazio!');
+    if CBIndIE.Text = '' then begin
+     ShowMessage('Indicador da IE não pode ser vazio!');
      Abort;
     end;
-     if Length(EdtCNPJ.Text) <> 14 then begin
-      ShowMessage('CNPJ precisa ter 14 dígitos!');
+     if (CBIndIE.ItemIndex = 0) and (EdtIE.Text = '') then begin
+      ShowMessage('IE não pode ser vazio!');
+      Abort;
      end;
+      if Length(EdtCNPJ.Text) <> 14 then begin
+       ShowMessage('CNPJ precisa ter 14 dígitos!');
+      end;
  end;
 
   if Codigo = '' then begin
@@ -540,11 +530,6 @@ begin
 
   if Email = '' then begin
    ShowMessage('Email não pode ser  vazio!');
-   Abort;
-  end;
-
-  if Fantasia = '' then begin
-   ShowMessage('Fantasia não pode ser  vazio!');
    Abort;
   end;
 
@@ -636,8 +621,8 @@ begin
    EdtNumero.Enabled := False;
    EdtEstado.Enabled := False;
    EdtBairro.Enabled := False;
-   EdtCidade.Enabled := False;
-   EdtPais.Enabled := False;
+   EdtCodigoCidade.Enabled := False;
+   EdtCodigoPais.Enabled := False;
    EdtComplemento.Enabled := False;
    EdtCEP.Enabled := False;
    EdtEmail.Enabled := False;
@@ -705,8 +690,8 @@ begin
  estado := Edtestado.Text;
  bairro := Edtbairro.Text;
  Fantasia := EdtFantasia.Text;
- cidade := Edtcidade.Text;
- pais := Edtpais.Text;
+ cidade := EdtCodigoCidade.Text;
+ pais := EdtCodigoPais.Text;
  complemento := Edtcomplemento.Text;
  cep := Edtcep.Text;
  email := EdtEmail.text;
@@ -740,6 +725,10 @@ begin
      ShowMessage('IE não pode ser vazio!');
      Abort;
     end;
+     if Fantasia = '' then begin
+      ShowMessage('Fantasia não pode ser  vazio!');
+      Abort;
+     end;
  end;
 
   if Codigo = '' then begin
@@ -804,11 +793,6 @@ begin
 
   if Email = '' then begin
    ShowMessage('Email não pode ser  vazio!');
-   Abort;
-  end;
-
-  if Fantasia = '' then begin
-   ShowMessage('Fantasia não pode ser  vazio!');
    Abort;
   end;
 
@@ -885,8 +869,8 @@ begin
   EdtNumero.Enabled := False;
   EdtEstado.Enabled := False;
   EdtBairro.Enabled := False;
-  EdtCidade.Enabled := False;
-  EdtPais.Enabled := False;
+  EdtCodigoCidade.Enabled := False;
+  EdtCodigoPais.Enabled := False;
   EdtComplemento.Enabled := False;
   EdtCEP.Enabled := False;
   EdtEmail.Enabled := False;
@@ -969,6 +953,7 @@ begin
     EdtIE.Clear;
     lblIndicadorIE.Visible := False;
     CBIndIE.Visible := False;
+    EdtFantasia.Visible := False;
 
     lblCPF.Visible := True;
     EdtCPF.Visible := True;
@@ -983,8 +968,8 @@ begin
   EdtFantasia.Text := Fantasia;
   EdtEstado.Text := Estado;
   EdtBairro.Text := Bairro;
-  EdtCidade.Text := Cidade;
-  EdtPais.Text := Pais;
+  EdtCodigoCidade.Text := Cidade;
+  EdtCodigoPais.Text := Pais;
   EdtCEP.Text := CEP;
   EdtEmail.Text := Email;
   EdtComplemento.Text := Complemento;
@@ -1021,8 +1006,8 @@ begin
  EdtNumero.Enabled := False;
  EdtEstado.Enabled := False;
  EdtBairro.Enabled := False;
- EdtCidade.Enabled := False;
- EdtPais.Enabled := False;
+ EdtCodigoCidade.Enabled := False;
+ EdtCodigoPais.Enabled := False;
  EdtComplemento.Enabled := False;
  EdtCEP.Enabled := False;
  EdtIE.Enabled := False;
@@ -1047,8 +1032,8 @@ begin
  EdtNumero.Clear;
  EdtEstado.Clear;
  EdtBairro.Clear;
- EdtCidade.Clear;
- EdtPais.Clear;
+ EdtCodigoCidade.Clear;
+ EdtCodigoPais.Clear;
  EdtComplemento.Clear;
  EdtCEP.Clear;
  EdtIE.Clear;
@@ -1117,8 +1102,8 @@ begin
   EdtNumero.Clear;
   EdtEstado.Clear;
   EdtBairro.Clear;
-  EdtCidade.Clear;
-  EdtPais.Clear;
+  EdtCodigoCidade.Clear;
+  EdtCodigoPais.Clear;
   EdtComplemento.Clear;
   EdtCEP.Clear;
   EdtIE.Clear;
@@ -1152,11 +1137,11 @@ begin
   CEP := ConsultarCEP.CEP;
   EdtCEP.Text := CEP;
   Cidade := ConsultarCEP.Cidade;
-  EdtCidade.Text := Cidade;
+  EdtCodigoCidade.Text := Cidade;
   Estado := ConsultarCEP.Estado;
   EdtEstado.Text := Estado;
   Pais := ConsultarCEP.Pais;
-  EdtPais.Text := Pais;
+  EdtCodigoPais.Text := Pais;
   Complemento := ConsultarCEP.Complemento;
   EdtComplemento.Text := Complemento;
   Bairro := ConsultarCEP.Bairro;
@@ -1179,8 +1164,8 @@ begin
   ParamByName('CEP').AsString := CEP;
   Open;
 
-  EdtCidade.Text := FieldByName('Cidade').AsString;
-  EdtPais.Text := FieldByName('Pais').AsString;
+  EdtCodigoCidade.Text := FieldByName('Cidade').AsString;
+  EdtCodigoPais.Text := FieldByName('Pais').AsString;
   EdtEstado.Text := FieldByName('Estado').AsString;
   EdtBairro.Text := FieldByName('Bairro').AsString;
   EdtRua.Text := FieldByName('rua').AsString;
@@ -1217,8 +1202,8 @@ begin
    EdtRua.Text := FieldByName('Rua').AsString;
    EdtEstado.Text := FieldByName('Estado').AsString;
    EdtBairro.Text := FieldByName('Bairro').AsString;
-   EdtCidade.Text := FieldByName('Cidade').AsString;
-   EdtPais.Text := FieldByName('Pais').AsString;
+   EdtCodigoCidade.Text := FieldByName('Cidade').AsString;
+   EdtCodigoPais.Text := FieldByName('Pais').AsString;
    EdtComplemento.Text := FieldByName('Complemento').AsString;
    EdtCEP.Text := FieldByName('CEP').AsString;
    EdtEmail.Text := FieldByName('Email').AsString;
@@ -1258,8 +1243,8 @@ begin
    EdtRua.Text := FieldByName('Rua').AsString;
    EdtEstado.Text := FieldByName('Estado').AsString;
    EdtBairro.Text := FieldByName('Bairro').AsString;
-   EdtCidade.Text := FieldByName('Cidade').AsString;
-   EdtPais.Text := FieldByName('Pais').AsString;
+   EdtCodigoCidade.Text := FieldByName('Cidade').AsString;
+   EdtCodigoPais.Text := FieldByName('Pais').AsString;
    EdtComplemento.Text := FieldByName('Complemento').AsString;
    EdtCEP.Text := FieldByName('CEP').AsString;
    EdtEmail.Text := FieldByName('Email').AsString;
@@ -1558,6 +1543,38 @@ begin
   Open;
 
   EdtAcessoCidade.Text := FieldByName('cidade').AsString;
+ end;
+end;
+
+procedure TCadEntidade.EdtCodigoCidadeChange(Sender: TObject);
+var codigo_ibge: string;
+begin
+ codigo_ibge := EdtCodigoCidade.Text;
+
+ with CadCidadeDM.qryConsultarCidade do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadcidade where codigo_ibge = :codigo_ibge');
+  ParamByName('codigo_ibge').AsString := codigo_ibge;
+  Open;
+
+  EdtCidade.Text := FieldByName('Cidade').AsString;
+ end;
+end;
+
+procedure TCadEntidade.EdtCodigoPaisChange(Sender: TObject);
+var codigo_ibge: string;
+begin
+ codigo_ibge := EdtCodigoPais.Text;
+
+ with CadPaisDM.qryConsultarPais do
+ begin
+  SQL.Clear;
+  SQL.Add('select * from cadpais where codigo_ibge = :codigo_ibge');
+  ParamByName('codigo_ibge').AsString := codigo_ibge;
+  Open;
+
+  EdtPais.Text := FieldByName('pais').AsString;
  end;
 end;
 

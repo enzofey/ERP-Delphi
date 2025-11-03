@@ -323,14 +323,14 @@ object CadCidade: TCadCidade
         TabOrder = 11
         OnChange = EdtSiglaEstadoChange
       end
-      object EdtSiglaPais: TEdit
+      object EdtCodigo_IBGEPais: TEdit
         Left = 99
         Top = 135
         Width = 38
         Height = 23
         Enabled = False
         TabOrder = 12
-        OnChange = EdtSiglaPaisChange
+        OnChange = EdtCodigo_IBGEPaisChange
       end
       object EdtEstado: TEdit
         Left = 143

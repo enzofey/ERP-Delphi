@@ -205,42 +205,35 @@ object CadCEP: TCadCEP
       end
       object lblCEP: TLabel
         Left = 42
-        Top = 86
+        Top = 54
         Width = 24
         Height = 15
         Caption = 'CEP:'
       end
       object lblCidade: TLabel
         Left = 40
-        Top = 123
+        Top = 91
         Width = 40
         Height = 15
         Caption = 'Cidade:'
       end
-      object lblCodigo: TLabel
-        Left = 40
-        Top = 48
-        Width = 42
-        Height = 15
-        Caption = 'C'#243'digo:'
-      end
       object lblEstado: TLabel
         Left = 40
-        Top = 163
+        Top = 131
         Width = 38
         Height = 15
         Caption = 'Estado:'
       end
       object lblPais: TLabel
         Left = 42
-        Top = 203
+        Top = 171
         Width = 24
         Height = 15
         Caption = 'Pa'#237's:'
       end
       object SBCidade: TSpeedButton
         Left = 279
-        Top = 120
+        Top = 88
         Width = 23
         Height = 23
         Enabled = False
@@ -248,7 +241,7 @@ object CadCEP: TCadCEP
       end
       object SBEstado: TSpeedButton
         Left = 279
-        Top = 160
+        Top = 128
         Width = 23
         Height = 23
         Enabled = False
@@ -256,7 +249,7 @@ object CadCEP: TCadCEP
       end
       object SBPais: TSpeedButton
         Left = 279
-        Top = 200
+        Top = 168
         Width = 23
         Height = 23
         Enabled = False
@@ -264,21 +257,21 @@ object CadCEP: TCadCEP
       end
       object lblBairro: TLabel
         Left = 42
-        Top = 243
+        Top = 211
         Width = 34
         Height = 15
         Caption = 'Bairro:'
       end
       object lblRua: TLabel
         Left = 314
-        Top = 243
+        Top = 211
         Width = 23
         Height = 15
         Caption = 'Rua:'
       end
       object lblComplemento: TLabel
         Left = 42
-        Top = 283
+        Top = 251
         Width = 80
         Height = 15
         Caption = 'Complemento:'
@@ -368,7 +361,7 @@ object CadCEP: TCadCEP
       end
       object EdtCEP: TEdit
         Left = 96
-        Top = 83
+        Top = 51
         Width = 121
         Height = 23
         Enabled = False
@@ -377,74 +370,64 @@ object CadCEP: TCadCEP
         TabOrder = 9
       end
       object EdtCidade: TEdit
-        Left = 152
-        Top = 120
-        Width = 121
+        Left = 176
+        Top = 88
+        Width = 97
         Height = 23
         Enabled = False
         ReadOnly = True
         TabOrder = 10
-        OnChange = EdtCidadeChange
-      end
-      object EdtCodigo: TEdit
-        Left = 96
-        Top = 45
-        Width = 121
-        Height = 23
-        Enabled = False
-        NumbersOnly = True
-        TabOrder = 11
       end
       object EdtEstado: TEdit
         Left = 152
-        Top = 160
+        Top = 128
+        Width = 121
+        Height = 23
+        Enabled = False
+        ReadOnly = True
+        TabOrder = 11
+      end
+      object EdtPais: TEdit
+        Left = 152
+        Top = 168
         Width = 121
         Height = 23
         Enabled = False
         ReadOnly = True
         TabOrder = 12
       end
-      object EdtPais: TEdit
-        Left = 152
-        Top = 200
-        Width = 121
-        Height = 23
-        Enabled = False
-        ReadOnly = True
-        TabOrder = 13
-      end
-      object EdtSiglaPais: TEdit
+      object EdtCodigoIBGEPais: TEdit
         Left = 96
-        Top = 200
+        Top = 168
         Width = 50
         Height = 23
         Enabled = False
         MaxLength = 3
-        TabOrder = 14
-        OnChange = EdtSiglaPaisChange
+        TabOrder = 13
+        OnChange = EdtCodigoIBGEPaisChange
       end
       object EdtSiglaEstado: TEdit
         Left = 96
-        Top = 160
+        Top = 128
         Width = 50
         Height = 23
         Enabled = False
         MaxLength = 2
-        TabOrder = 15
+        TabOrder = 14
         OnChange = EdtSiglaEstadoChange
       end
-      object EdtCodigoCidade: TEdit
+      object EdtCodigoIBGECidade: TEdit
         Left = 96
-        Top = 120
-        Width = 50
+        Top = 88
+        Width = 74
         Height = 23
         Enabled = False
-        TabOrder = 16
-        OnChange = EdtCodigoCidadeChange
+        TabOrder = 15
+        OnChange = EdtCodigoIBGECidadeChange
       end
       object btnWWW: TButton
         Left = 223
-        Top = 86
+        Top = 54
         Width = 50
         Height = 18
         Caption = 'www'
@@ -455,37 +438,35 @@ object CadCEP: TCadCEP
         Font.Name = 'Segoe UI'
         Font.Style = [fsItalic, fsUnderline]
         ParentFont = False
-        TabOrder = 17
+        TabOrder = 16
         OnClick = btnWWWClick
       end
       object EdtBairro: TEdit
         Left = 96
-        Top = 240
+        Top = 208
         Width = 177
         Height = 23
         Enabled = False
-        MaxLength = 3
-        TabOrder = 18
-        OnChange = EdtSiglaPaisChange
+        TabOrder = 17
+        OnChange = EdtCodigoIBGEPaisChange
       end
       object EdtRua: TEdit
         Left = 352
-        Top = 240
+        Top = 208
         Width = 305
         Height = 23
         Enabled = False
-        MaxLength = 3
-        TabOrder = 19
-        OnChange = EdtSiglaPaisChange
+        TabOrder = 18
+        OnChange = EdtCodigoIBGEPaisChange
       end
       object EdtComplemento: TEdit
         Left = 128
-        Top = 280
+        Top = 248
         Width = 529
         Height = 23
         Enabled = False
-        TabOrder = 20
-        OnChange = EdtSiglaPaisChange
+        TabOrder = 19
+        OnChange = EdtCodigoIBGEPaisChange
       end
     end
   end

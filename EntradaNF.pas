@@ -9,7 +9,7 @@ uses
   EntidadeDM, ConsultarEntidadeForm,
   NaturezaDM, ConsultarNaturezaForm,
   DepositoDM, ConsultarDepositoForm,
-  CidadeDM, EstadoDM, PaisDM;
+  CidadeDM, EstadoDM, PaisDM, CepDM;
 
 type
   TEntradaNFForm = class(TForm)
@@ -176,10 +176,6 @@ type
     EdtvBCUFDest: TEdit;
     lblvBCFCPUFDest: TLabel;
     EdtvBCFCPUFDest: TEdit;
-    lblpFCPUFDest: TLabel;
-    EdtpFCPUFDest: TEdit;
-    EdtpICMSUFDest: TEdit;
-    lblpICMSUFDest: TLabel;
     EdtvICMSUFDest: TEdit;
     lblvICMSUFdest: TLabel;
     btnChaveNFE: TButton;
@@ -482,8 +478,6 @@ begin
  EdtValorPago.Enabled := True;
  EdtvBCUFDest.Enabled := True;
  EdtvBCFCPUFDest.Enabled := True;
- EdtpFCPUFDest.Enabled := True;
- EdtpICMSUFDest.Enabled := True;
  EdtvICMSUFDest.Enabled := True;
  EdtvBCUFDestItem.Enabled := True;
  EdtvICMSUFDestItem.Enabled := True;
@@ -608,8 +602,6 @@ begin
  EdtValorPago.Enabled := True;
  EdtvBCUFDest.Enabled := True;
  EdtvBCFCPUFDest.Enabled := True;
- EdtpFCPUFDest.Enabled := True;
- EdtpICMSUFDest.Enabled := True;
  EdtvICMSUFDest.Enabled := True;
  EdtvBCUFDestItem.Enabled := True;
  EdtvICMSUFDestItem.Enabled := True;
@@ -727,8 +719,6 @@ begin
  EdtValorPago.Enabled := False;
  EdtvBCUFDest.Enabled := False;
  EdtvBCFCPUFDest.Enabled := False;
- EdtpFCPUFDest.Enabled := False;
- EdtpICMSUFDest.Enabled := False;
  EdtvICMSUFDest.Enabled := False;
  EdtvBCUFDestItem.Enabled := False;
  EdtvICMSUFDestItem.Enabled := False;
@@ -821,8 +811,6 @@ begin
  EdtValorPago.Clear;
  EdtvBCUFDest.Clear;
  EdtvBCFCPUFDest.Clear;
- EdtpFCPUFDest.Clear;
- EdtpICMSUFDest.Clear;
  EdtvICMSUFDest.Clear;
  EdtvBCUFDestItem.Clear;
  EdtvICMSUFDestItem.Clear;
@@ -960,8 +948,6 @@ begin
     EdtValorPago.Enabled := True;
     EdtvBCUFDest.Enabled := True;
     EdtvBCFCPUFDest.Enabled := True;
-    EdtpFCPUFDest.Enabled := True;
-    EdtpICMSUFDest.Enabled := True;
     EdtvICMSUFDest.Enabled := True;
     EdtvBCUFDestItem.Enabled := True;
     EdtvICMSUFDestItem.Enabled := True;
@@ -1065,6 +1051,32 @@ begin
        end;
       end;
 
+      with CadEstadoDM.qrySelect do
+      begin
+       SQL.Clear;
+       SQL.Add('select * from cadestado where codigo = :codigo');
+       ParamByName('codigo').AsString := Ide.ChildNodes['cUF'].Text;
+       Open;
+
+       if IsEmpty then begin
+        ShowMessage('Estado do emitente não cadastrado no sistema, cadastrando automaticamente!');
+
+        with CadEstadoDM.qryInsert do
+        begin
+         SQL.Clear;
+         SQL.Add('insert into cadestado (codigo, pais, ativo, sigla)');
+         SQL.Add('values');
+         SQL.Add('(:codigo, :pais, :ativo, :sigla)');
+         ParamByName('codigo').AsString := Ide.ChildNodes['cUF'].Text;
+         ParamByName('pais').AsString := EnderEmit.ChildNodes['cPais'].Text;
+         ParamByName('ativo').AsString := 'S';
+         ParamByName('sigla').AsString := EnderEmit.ChildNodes['UF'].Text;
+         ExecSQL;
+         ShowMessage('Estado do emitente cadastrado no sistema, favor verificar o cadastro após finalizar a nota, a fim de evitar problemas fiscais!');
+        end;
+       end;
+      end;
+
       with CadCidadeDM.qrySelect do
       begin
        SQL.Clear;
@@ -1093,14 +1105,45 @@ begin
        end;
       end;
 
+      with CadCEPDM.qrySelect do
+      begin
+       SQL.Clear;
+       SQL.Add('select * from cadcep where cep = :cep');
+       ParamByName('CEP').AsString := EnderEmit.ChildNodes['CEP'].Text;
+       Open;
+
+       If IsEmpty then begin
+        ShowMessage('CEP do emitente não cadastrado no sistema, cadastrando automaticamente!');
+
+        with CadCEPDM.qryInsert do
+        begin
+         SQL.Clear;
+         SQL.Add('insert into cadcep (cep, cidade, estado, pais, ativo, bairro, rua, complemento)');
+         SQL.Add('values');
+         SQL.Add('(:cep, :cidade, :estado, :pais, :ativo, :bairro, :rua, :complemento)');
+
+         ParamByName('cep').AsString := EnderEmit.ChildNodes['CEP'].Text;
+         ParamByName('cidade').AsString := EnderEmit.ChildNodes['cMun'].Text;
+         ParamByName('estado').AsString := EnderEmit.ChildNodes['UF'].Text;
+         ParamByName('pais').AsString := EnderEmit.ChildNodes['cPais'].Text;
+         ParamByName('ativo').AsString := 'S';
+         ParamByName('bairro').AsString := EnderEmit.ChildNodes['xBairro'].Text;
+         ParamByName('rua').AsString := EnderEmit.ChildNodes['xLgr'].Text;
+         ParamByName('complemento').AsString := EnderEmit.ChildNodes['xCpl'].Text;
+         ExecSQL;
+         ShowMessage('CEP cadastrado no sistema, favor verificar o cadastro após finalizar a nota, a fim de evitar problemas fiscais!');
+        end;
+       end;
+      end;
+
       with CadEntidadeDM.qryInsert do
       begin
        SQL.Clear;
        SQL.Add('insert into cadentidade (codigo, nome, ativo, cpf, telefone, consumidor_final, rua, numero, estado, bairro, cidade, pais,');
-       SQL.Add('cep, ie, tipo, fantasia)');
+       SQL.Add('cep, ie, tipo, fantasia, complemento)');
        SQL.Add('values');
        SQL.Add('(:codigo, :nome, :ativo, :cpf, :telefone, :consumidor_final, :rua, :numero, :estado, :bairro, :cidade, :pais,');
-       SQL.Add(':cep, :ie, :tipo, :fantasia)');
+       SQL.Add(':cep, :ie, :tipo, :fantasia, :complemento)');
 
        ParamByName('codigo').AsString := MaxCodigoEntidade;
        ParamByName('nome').AsString := Emit.ChildNodes['xNome'].Text;
@@ -1118,6 +1161,7 @@ begin
        ParamByName('ie').AsString := Emit.ChildNodes['IE'].Text;
        ParamByName('tipo').AsString := '1';
        ParamByName('fantasia').AsString := Emit.ChildNodes['xFant'].Text;
+       ParamByName('complemento').AsString := EnderEmit.ChildNodes['xCpl'].Text;
        ExecSQL;
        ShowMessage('Cadastrado com sucesso, favor verificar o cadastro após finalizar a nota, a fim de evitar problemas fiscais!');
        EdtCodigoEntidade.Text := MaxCodigoEntidade;
@@ -1151,9 +1195,9 @@ begin
       ICMS00 := ICMS.ChildNodes.FindNode('ICMS00');
       if Assigned(ICMS00) then begin
        if Assigned(ICMS00.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS00.ChildNodes['CST'].Text; // CST ICMS
-       if Assigned(ICMS00.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS00.ChildNodes['pICMS'].Text; // ALIQUOTA ICMS
-       if Assigned(ICMS00.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS00.ChildNodes['vBC'].Text; // BASE ICMS
-       if Assigned(ICMS00.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS00.ChildNodes['vICMS'].Text; // VALOR ICMS
+       if Assigned(ICMS00.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS00.ChildNodes['pICMS'].Text else ItensGrid.Cells[11,row] := '0.00'; // ALIQUOTA ICMS
+       if Assigned(ICMS00.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS00.ChildNodes['vBC'].Text else ItensGrid.Cells[12,row] := '0.00'; // BASE ICMS
+       if Assigned(ICMS00.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS00.ChildNodes['vICMS'].Text else ItensGrid.Cells[13,row] := '0.00'; // VALOR ICMS
        ItensGrid.Cells[14,row] := '0.00'; // VALOR ICMS DESONERADO
        ItensGrid.Cells[15,row] := '0.00'; // BASE ICMS ST
        ItensGrid.Cells[16,row] := '0.00'; // VALOR ICMS ST
@@ -1184,96 +1228,141 @@ begin
       ICMS10 := ICMS.ChildNodes.FindNode('ICMS10');
       if Assigned(ICMS10) then begin
        if Assigned(ICMS10.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS10.ChildNodes['CST'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS10.ChildNodes['pICMS'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS10.ChildNodes['vBC'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS10.ChildNodes['vICMS'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS10.ChildNodes['vBCST'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS10.ChildNodes['vICMSST'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS10.ChildNodes['pMVAST'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS10.ChildNodes['pRedBCST'].Text;
-       if Assigned(ICMS10.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS10.ChildNodes['pICMSST'].Text;
+       if Assigned(ICMS10.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS10.ChildNodes['pICMS'].Text else ItensGrid.Cells[11,row] := '0.00';
+       if Assigned(ICMS10.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS10.ChildNodes['vBC'].Text else ItensGrid.Cells[12,row] := '0.00';
+       if Assigned(ICMS10.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS10.ChildNodes['vICMS'].Text else ItensGrid.Cells[13,row] := '0.00';
+       if Assigned(ICMS10.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS10.ChildNodes['vBCST'].Text else ItensGrid.Cells[15,row] := '0.00';
+       if Assigned(ICMS10.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS10.ChildNodes['vICMSST'].Text else ItensGrid.Cells[16,row] := '0.00';
+       if Assigned(ICMS10.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS10.ChildNodes['pMVAST'].Text else ItensGrid.Cells[37,row] := '0.00';
+       if Assigned(ICMS10.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS10.ChildNodes['pRedBCST'].Text else ItensGrid.Cells[38,row] := '0.00';
+       if Assigned(ICMS10.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS10.ChildNodes['pICMSST'].Text else ItensGrid.Cells[39,row] := '0.00';
       end;
 
       ICMS20 := ICMS.ChildNodes.FindNode('ICMS20');
       if Assigned(ICMS20) then begin
        if Assigned(ICMS20.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS20.ChildNodes['CST'].Text;
-       if Assigned(ICMS20.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS20.ChildNodes['pICMS'].Text;
-       if Assigned(ICMS20.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS20.ChildNodes['vBC'].Text;
-       if Assigned(ICMS20.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS20.ChildNodes['vICMS'].Text;
-       if Assigned(ICMS20.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS20.ChildNodes['vICMSDeson'].Text;
-       if Assigned(ICMS20.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS20.ChildNodes['pRedBC'].Text;
+       if Assigned(ICMS20.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS20.ChildNodes['pICMS'].Text else ItensGrid.Cells[11,row] := '0.00';
+       if Assigned(ICMS20.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS20.ChildNodes['vBC'].Text else ItensGrid.Cells[12,row] := '0.00';
+       if Assigned(ICMS20.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS20.ChildNodes['vICMS'].Text else ItensGrid.Cells[13,row] := '0.00';
+       if Assigned(ICMS20.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS20.ChildNodes['vICMSDeson'].Text else ItensGrid.Cells[14,row] := '0.00';
+       if Assigned(ICMS20.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS20.ChildNodes['pRedBC'].Text else ItensGrid.Cells[40,row] := '0.00';
       end;
 
       ICMS30 := ICMS.ChildNodes.FindNode('ICMS30');
       if Assigned(ICMS30) then begin
        if Assigned(ICMS30.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS30.ChildNodes['CST'].Text;
-       if Assigned(ICMS30.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS30.ChildNodes['vICMSDeson'].Text;
-       if Assigned(ICMS30.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS30.ChildNodes['vBCST'].Text;
-       if Assigned(ICMS30.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS30.ChildNodes['vICMSST'].Text;
-       if Assigned(ICMS30.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS30.ChildNodes['pMVAST'].Text;
-       if Assigned(ICMS30.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS30.ChildNodes['pRedBCST'].Text;
-       if Assigned(ICMS30.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS30.ChildNodes['pICMSST'].Text;
+       if Assigned(ICMS30.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS30.ChildNodes['vICMSDeson'].Text else ItensGrid.Cells[14,row] := '0.00';
+       if Assigned(ICMS30.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS30.ChildNodes['vBCST'].Text else ItensGrid.Cells[15,row] := '0.00';
+       if Assigned(ICMS30.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS30.ChildNodes['vICMSST'].Text else ItensGrid.Cells[16,row] := '0.00';
+       if Assigned(ICMS30.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS30.ChildNodes['pMVAST'].Text else ItensGrid.Cells[37,row] := '0.00';
+       if Assigned(ICMS30.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS30.ChildNodes['pRedBCST'].Text else ItensGrid.Cells[38,row] := '0.00';
+       if Assigned(ICMS30.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS30.ChildNodes['pICMSST'].Text else ItensGrid.Cells[39,row] := '0.00';
       end;
 
       ICMS40 := ICMS.ChildNodes.FindNode('ICMS40');
       if Assigned(ICMS40) then begin
        if Assigned(ICMS40.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS40.ChildNodes['CST'].Text;
-       if Assigned(ICMS40.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS40.ChildNodes['vICMSDeson'].Text;
+       ItensGrid.Cells[11,row] := '0.00';
+       ItensGrid.Cells[12,row] := '0.00';
+       ItensGrid.Cells[13,row] := '0.00';
+       if Assigned(ICMS40.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS40.ChildNodes['vICMSDeson'].Text else ItensGrid.Cells[14,row] := '0.00';
+       ItensGrid.Cells[15,row] := '0.00';
+       ItensGrid.Cells[16,row] := '0.00';
+       ItensGrid.Cells[37,row] := '0.00';
+       ItensGrid.Cells[38,row] := '0.00';
+       ItensGrid.Cells[39,row] := '0.00';
+       ItensGrid.Cells[40,row] := '0.00';
+       ItensGrid.Cells[41,row] := '0.00';
+       ItensGrid.Cells[42,row] := '0.00';
+       ItensGrid.Cells[43,row] := '0.00';
+       ItensGrid.Cells[44,row] := '0.00';
+       ItensGrid.Cells[45,row] := '0.00';
+       ItensGrid.Cells[46,row] := '0.00';
+       ItensGrid.Cells[47,row] := '0.00';
+       ItensGrid.Cells[51,row] := '0.00';
+       ItensGrid.Cells[52,row] := '0.00';
+       ItensGrid.Cells[53,row] := '0.00';
+       ItensGrid.Cells[54,row] := '0.00';
       end;
 
       ICMS51 := ICMS.ChildNodes.FindNode('ICMS51');
       if Assigned(ICMS51) then begin
        if Assigned(ICMS51.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS51.ChildNodes['CST'].Text;
-       if Assigned(ICMS51.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS51.ChildNodes['pICMS'].Text;
-       if Assigned(ICMS51.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS51.ChildNodes['vBC'].Text;
-       if Assigned(ICMS51.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS51.ChildNodes['vICMS'].Text;
-       if Assigned(ICMS51.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS51.ChildNodes['pRedBC'].Text;
-       if Assigned(ICMS51.ChildNodes.FindNode('pDif')) then ItensGrid.Cells[42,row] := ICMS51.ChildNodes['pDif'].Text;
-       if Assigned(ICMS51.ChildNodes.FindNode('vICMSOp')) then ItensGrid.Cells[43,row] := ICMS51.ChildNodes['vICMSOp'].Text;
-       if Assigned(ICMS51.ChildNodes.FindNode('vICMSDif')) then ItensGrid.Cells[44,row] := ICMS51.ChildNodes['vICMSDif'].Text;
+       if Assigned(ICMS51.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS51.ChildNodes['pICMS'].Text else ItensGrid.Cells[11,row] := '0.00';
+       if Assigned(ICMS51.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS51.ChildNodes['vBC'].Text else ItensGrid.Cells[12,row] := '0.00';
+       if Assigned(ICMS51.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS51.ChildNodes['vICMS'].Text else ItensGrid.Cells[13,row] := '0.00';
+       ItensGrid.Cells[14,row] := '0.00';
+       ItensGrid.Cells[15,row] := '0.00';
+       ItensGrid.Cells[16,row] := '0.00';
+       ItensGrid.Cells[37,row] := '0.00';
+       ItensGrid.Cells[38,row] := '0.00';
+       ItensGrid.Cells[39,row] := '0.00';
+       if Assigned(ICMS51.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS51.ChildNodes['pRedBC'].Text else ItensGrid.Cells[40,row] := '0.00';
+       ItensGrid.Cells[41,row] := '0.00';
+       if Assigned(ICMS51.ChildNodes.FindNode('pDif')) then ItensGrid.Cells[42,row] := ICMS51.ChildNodes['pDif'].Text else ItensGrid.Cells[42,row] := '0.00';
+       if Assigned(ICMS51.ChildNodes.FindNode('vICMSOp')) then ItensGrid.Cells[43,row] := ICMS51.ChildNodes['vICMSOp'].Text else ItensGrid.Cells[43,row] := '0.00';
+       if Assigned(ICMS51.ChildNodes.FindNode('vICMSDif')) then ItensGrid.Cells[44,row] := ICMS51.ChildNodes['vICMSDif'].Text else ItensGrid.Cells[44,row] := '0.00';
+       ItensGrid.Cells[45,row] := '0.00';
+       ItensGrid.Cells[46,row] := '0.00';
+       ItensGrid.Cells[47,row] := '0.00';
+       ItensGrid.Cells[51,row] := '0.00';
+       ItensGrid.Cells[52,row] := '0.00';
+       ItensGrid.Cells[53,row] := '0.00';
+       ItensGrid.Cells[54,row] := '0.00';
       end;
 
       ICMS60 := ICMS.ChildNodes.FindNode('ICMS60');
       if Assigned(ICMS60) then begin
        if Assigned(ICMS60.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS60.ChildNodes['CST'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('vBCSTRet')) then ItensGrid.Cells[44,row] := ICMS60.ChildNodes['vBCSTRet'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('pST')) then ItensGrid.Cells[45,row] := ICMS60.ChildNodes['pST'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('vICMSSubstituto')) then ItensGrid.Cells[46,row] := ICMS60.ChildNodes['vICMSSubstituto'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('vICMSSTRet')) then ItensGrid.Cells[47,row] := ICMS60.ChildNodes['vICMSSTRet'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('pRedBCEfet')) then ItensGrid.Cells[51,row] := ICMS60.ChildNodes['pRedBCEfet'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('vBCEfet')) then ItensGrid.Cells[52,row] := ICMS60.ChildNodes['vBCEfet'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('pICMSEfet')) then ItensGrid.Cells[53,row] := ICMS60.ChildNodes['pICMSEfet'].Text;
-       if Assigned(ICMS60.ChildNodes.FindNode('vICMSEfet')) then ItensGrid.Cells[54,row] := ICMS60.ChildNodes['vICMSEfet'].Text;
+       if Assigned(ICMS60.ChildNodes.FindNode('vBCSTRet')) then ItensGrid.Cells[44,row] := ICMS60.ChildNodes['vBCSTRet'].Text else ItensGrid.Cells[44,row] := '0.00';
+       if Assigned(ICMS60.ChildNodes.FindNode('pST')) then ItensGrid.Cells[45,row] := ICMS60.ChildNodes['pST'].Text else ItensGrid.Cells[45,row] := '0.00';
+       if Assigned(ICMS60.ChildNodes.FindNode('vICMSSubstituto')) then ItensGrid.Cells[46,row] := ICMS60.ChildNodes['vICMSSubstituto'].Text else ItensGrid.Cells[46,row] := '0.00';
+       if Assigned(ICMS60.ChildNodes.FindNode('vICMSSTRet')) then ItensGrid.Cells[47,row] := ICMS60.ChildNodes['vICMSSTRet'].Text else ItensGrid.Cells[47,row] := '0.00';
+       if Assigned(ICMS60.ChildNodes.FindNode('pRedBCEfet')) then ItensGrid.Cells[51,row] := ICMS60.ChildNodes['pRedBCEfet'].Text else ItensGrid.Cells[51,row] := '0.00';
+       if Assigned(ICMS60.ChildNodes.FindNode('vBCEfet')) then ItensGrid.Cells[52,row] := ICMS60.ChildNodes['vBCEfet'].Text else ItensGrid.Cells[52,row] := '0.00';
+       if Assigned(ICMS60.ChildNodes.FindNode('pICMSEfet')) then ItensGrid.Cells[53,row] := ICMS60.ChildNodes['pICMSEfet'].Text else ItensGrid.Cells[53,row] := '0.00';
+       if Assigned(ICMS60.ChildNodes.FindNode('vICMSEfet')) then ItensGrid.Cells[54,row] := ICMS60.ChildNodes['vICMSEfet'].Text else ItensGrid.Cells[54,row] := '0.00';
       end;
 
       ICMS70 := ICMS.ChildNodes.FindNode('ICMS70');
       if Assigned(ICMS70) then begin
        if Assigned(ICMS70.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS70.ChildNodes['CST'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS70.ChildNodes['pICMS'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS70.ChildNodes['vBC'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS70.ChildNodes['vICMS'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS70.ChildNodes['vICMSDeson'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS70.ChildNodes['vBCST'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS70.ChildNodes['vICMSST'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS70.ChildNodes['pMVAST'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS70.ChildNodes['pRedBCST'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS70.ChildNodes['pICMSST'].Text;
-       if Assigned(ICMS70.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS70.ChildNodes['pRedBC'].Text;
+       if Assigned(ICMS70.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS70.ChildNodes['pICMS'].Text else ItensGrid.Cells[11,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS70.ChildNodes['vBC'].Text else ItensGrid.Cells[12,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS70.ChildNodes['vICMS'].Text else ItensGrid.Cells[13,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS70.ChildNodes['vICMSDeson'].Text else ItensGrid.Cells[14,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS70.ChildNodes['vBCST'].Text else ItensGrid.Cells[15,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS70.ChildNodes['vICMSST'].Text else ItensGrid.Cells[16,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS70.ChildNodes['pMVAST'].Text else ItensGrid.Cells[37,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS70.ChildNodes['pRedBCST'].Text else ItensGrid.Cells[38,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS70.ChildNodes['pICMSST'].Text else ItensGrid.Cells[39,row] := '0.00';
+       if Assigned(ICMS70.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS70.ChildNodes['pRedBC'].Text else ItensGrid.Cells[40,row] := '0.00';
       end;
 
       ICMS90 := ICMS.ChildNodes.FindNode('ICMS90');
       if Assigned(ICMS90) then begin
        if Assigned(ICMS90.ChildNodes.FindNode('CST')) then ItensGrid.Cells[9,row] := ICMS90.ChildNodes['CST'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS90.ChildNodes['pICMS'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS90.ChildNodes['vBC'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS90.ChildNodes['vICMS'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS90.ChildNodes['vICMSDeson'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS90.ChildNodes['vBCST'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS90.ChildNodes['vICMSST'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS90.ChildNodes['pMVAST'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS90.ChildNodes['pRedBCST'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS90.ChildNodes['pICMSST'].Text;
-       if Assigned(ICMS90.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS90.ChildNodes['pRedBC'].Text;
+       if Assigned(ICMS90.ChildNodes.FindNode('pICMS')) then ItensGrid.Cells[11,row] := ICMS90.ChildNodes['pICMS'].Text else ItensGrid.Cells[11,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[12,row] := ICMS90.ChildNodes['vBC'].Text else ItensGrid.Cells[12,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('vICMS')) then ItensGrid.Cells[13,row] := ICMS90.ChildNodes['vICMS'].Text else ItensGrid.Cells[13,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('vICMSDeson')) then ItensGrid.Cells[14,row] := ICMS90.ChildNodes['vICMSDeson'].Text else ItensGrid.Cells[14,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('vBCST')) then ItensGrid.Cells[15,row] := ICMS90.ChildNodes['vBCST'].Text else ItensGrid.Cells[15,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('vICMSST')) then ItensGrid.Cells[16,row] := ICMS90.ChildNodes['vICMSST'].Text else ItensGrid.Cells[16,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('pMVAST')) then ItensGrid.Cells[37,row] := ICMS90.ChildNodes['pMVAST'].Text else ItensGrid.Cells[37,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('pRedBCST')) then ItensGrid.Cells[38,row] := ICMS90.ChildNodes['pRedBCST'].Text else ItensGrid.Cells[38,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('pICMSST')) then ItensGrid.Cells[39,row] := ICMS90.ChildNodes['pICMSST'].Text else ItensGrid.Cells[39,row] := '0.00';
+       if Assigned(ICMS90.ChildNodes.FindNode('pRedBC')) then ItensGrid.Cells[40,row] := ICMS90.ChildNodes['pRedBC'].Text else ItensGrid.Cells[40,row] := '0.00';
+       ItensGrid.Cells[41,0] := '0.00';
+       ItensGrid.Cells[42,0] := '0.00';
+       ItensGrid.Cells[43,0] := '0.00';
+       ItensGrid.Cells[44,0] := '0.00';
+       ItensGrid.Cells[45,0] := '0.00';
+       ItensGrid.Cells[46,0] := '0.00';
+       ItensGrid.Cells[47,0] := '0.00';
+       ItensGrid.Cells[51,0] := '0.00';
+       ItensGrid.Cells[52,0] := '0.00';
+       ItensGrid.Cells[53,0] := '0.00';
+       ItensGrid.Cells[54,0] := '0.00';
       end;
 
       // IPI
@@ -1294,9 +1383,9 @@ begin
       IPITrib := IPI.ChildNodes.FindNode('IPITrib');
       if Assigned(IPITrib) then begin
        if Assigned(IPITrib.ChildNodes.FindNode('CST')) then ItensGrid.Cells[17,row] := IPITrib.ChildNodes['CST'].Text;
-       if Assigned(IPITrib.ChildNodes.FindNode('pIPI')) then ItensGrid.Cells[19,row] := IPITrib.ChildNodes['pIPI'].Text;
-       if Assigned(IPITrib.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[20,row] := IPITrib.ChildNodes['vBC'].Text;
-       if Assigned(IPITrib.ChildNodes.FindNode('vIPI')) then ItensGrid.Cells[21,row] := IPITrib.ChildNodes['vIPI'].Text;
+       if Assigned(IPITrib.ChildNodes.FindNode('pIPI')) then ItensGrid.Cells[19,row] := IPITrib.ChildNodes['pIPI'].Text else ItensGrid.Cells[19,row] := '0.00';
+       if Assigned(IPITrib.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[20,row] := IPITrib.ChildNodes['vBC'].Text else ItensGrid.Cells[20,row] := '0.00';
+       if Assigned(IPITrib.ChildNodes.FindNode('vIPI')) then ItensGrid.Cells[21,row] := IPITrib.ChildNodes['vIPI'].Text else ItensGrid.Cells[21,row] := '0.00';
       end;
 
       // PIS
@@ -1305,9 +1394,9 @@ begin
       PISAliq := PIS.ChildNodes.FindNode('PISAliq');
       if Assigned(PISAliq) then begin
        if Assigned(PISAliq.ChildNodes.FindNode('CST')) then ItensGrid.Cells[22,row] := PISAliq.ChildNodes['CST'].Text;
-       if Assigned(PISAliq.ChildNodes.FindNode('pPIS')) then ItensGrid.Cells[23,row] := PISAliq.ChildNodes['pPIS'].Text;
-       if Assigned(PISAliq.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[24,row] := PISAliq.ChildNodes['vBC'].Text;
-       if Assigned(PISAliq.ChildNodes.FindNode('vPIS')) then ItensGrid.Cells[25,row] := PISAliq.ChildNodes['vPIS'].Text;
+       if Assigned(PISAliq.ChildNodes.FindNode('pPIS')) then ItensGrid.Cells[23,row] := PISAliq.ChildNodes['pPIS'].Text else ItensGrid.Cells[23,row] := '0.00';
+       if Assigned(PISAliq.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[24,row] := PISAliq.ChildNodes['vBC'].Text else ItensGrid.Cells[24,row] := '0.00';
+       if Assigned(PISAliq.ChildNodes.FindNode('vPIS')) then ItensGrid.Cells[25,row] := PISAliq.ChildNodes['vPIS'].Text else ItensGrid.Cells[25,row] := '0.00';
       end;
 
       PISNT := PIS.ChildNodes.FindNode('PISNT');
@@ -1321,9 +1410,9 @@ begin
       PISOutr := PIS.ChildNodes.FindNode('PISOutr');
       if Assigned(PISOutr) then begin
        if Assigned(PISOutr.ChildNodes.FindNode('CST')) then ItensGrid.Cells[22,row] := PISOutr.ChildNodes['CST'].Text;
-       if Assigned(PISOutr.ChildNodes.FindNode('pPIS')) then ItensGrid.Cells[23,row] := PISOutr.ChildNodes['pPIS'].Text;
-       if Assigned(PISOutr.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[24,row] := PISOutr.ChildNodes['vBC'].Text;
-       if Assigned(PISOutr.ChildNodes.FindNode('vPIS')) then ItensGrid.Cells[25,row] := PISOutr.ChildNodes['vPIS'].Text;
+       if Assigned(PISOutr.ChildNodes.FindNode('pPIS')) then ItensGrid.Cells[23,row] := PISOutr.ChildNodes['pPIS'].Text else ItensGrid.Cells[23,row] := '0.00';
+       if Assigned(PISOutr.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[24,row] := PISOutr.ChildNodes['vBC'].Text else ItensGrid.Cells[24,row] := '0.00';
+       if Assigned(PISOutr.ChildNodes.FindNode('vPIS')) then ItensGrid.Cells[25,row] := PISOutr.ChildNodes['vPIS'].Text else ItensGrid.Cells[25,row] := '0.00';
       end;
 
       // COFINS
@@ -1332,9 +1421,9 @@ begin
       COFINSAliq := COFINS.ChildNodes.FindNode('COFINSAliq');
       if Assigned(COFINSAliq) then begin
        if Assigned(COFINSAliq.ChildNodes.FindNode('CST')) then ItensGrid.Cells[26,row] := COFINSAliq.ChildNodes['CST'].Text;
-       if Assigned(COFINSAliq.ChildNodes.FindNode('pCOFINS')) then ItensGrid.Cells[27,row] := COFINSAliq.ChildNodes['pCOFINS'].Text;
-       if Assigned(COFINSAliq.ChildNodes.FindNode('vCOFINS')) then ItensGrid.Cells[28,row] := COFINSAliq.ChildNodes['vCOFINS'].Text;
-       if Assigned(COFINSAliq.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[29,row] := COFINSAliq.ChildNodes['vBC'].Text;
+       if Assigned(COFINSAliq.ChildNodes.FindNode('pCOFINS')) then ItensGrid.Cells[27,row] := COFINSAliq.ChildNodes['pCOFINS'].Text else ItensGrid.Cells[27,row] := '0.00';
+       if Assigned(COFINSAliq.ChildNodes.FindNode('vCOFINS')) then ItensGrid.Cells[28,row] := COFINSAliq.ChildNodes['vCOFINS'].Text else ItensGrid.Cells[28,row] := '0.00';
+       if Assigned(COFINSAliq.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[29,row] := COFINSAliq.ChildNodes['vBC'].Text else ItensGrid.Cells[29,row] := '0.00';
       end;
 
       COFINSNT := COFINS.ChildNodes.FindNode('COFINSNT');
@@ -1348,60 +1437,60 @@ begin
       COFINSOutr := COFINS.ChildNodes.FindNode('COFINSOutr');
       if Assigned(COFINSOutr) then begin
        if Assigned(COFINSOutr.ChildNodes.FindNode('CST')) then ItensGrid.Cells[26,row] := COFINSOutr.ChildNodes['CST'].Text;
-       if Assigned(COFINSOutr.ChildNodes.FindNode('pCOFINS')) then ItensGrid.Cells[27,row] := COFINSOutr.ChildNodes['pCOFINS'].Text;
-       if Assigned(COFINSOutr.ChildNodes.FindNode('vCOFINS')) then ItensGrid.Cells[28,row] := COFINSOutr.ChildNodes['vCOFINS'].Text;
-       if Assigned(COFINSOutr.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[29,row] := COFINSOutr.ChildNodes['vBC'].Text;
+       if Assigned(COFINSOutr.ChildNodes.FindNode('pCOFINS')) then ItensGrid.Cells[27,row] := COFINSOutr.ChildNodes['pCOFINS'].Text else ItensGrid.Cells[27,row] := '0.00';
+       if Assigned(COFINSOutr.ChildNodes.FindNode('vCOFINS')) then ItensGrid.Cells[28,row] := COFINSOutr.ChildNodes['vCOFINS'].Text else ItensGrid.Cells[28,row] := '0.00';
+       if Assigned(COFINSOutr.ChildNodes.FindNode('vBC')) then ItensGrid.Cells[29,row] := COFINSOutr.ChildNodes['vBC'].Text else ItensGrid.Cells[29,row] := '0.00';
       end;
 
       // DIFAL
 
       ICMSUFDest := imposto.ChildNodes.FindNode('ICMSUFDest');
       if Assigned(ICMSUFDest) then begin
-       if Assigned(ICMSUFDest.ChildNodes.FindNode('pFCPUFDest')) then ItensGrid.Cells[31,row] := ICMSUFDest.ChildNodes['pFCPUFDest'].Text;
-       if Assigned(ICMSUFDest.ChildNodes.FindNode('vFCPUFDest')) then ItensGrid.Cells[32,row] := ICMSUFDest.ChildNodes['vFCPUFDest'].Text;
-       if Assigned(ICMSUFDest.ChildNodes.FindNode('vBCFCPUFDest')) then ItensGrid.Cells[33,row] := ICMSUFDest.ChildNodes['vBCFCPUFDest'].Text;
-       if Assigned(ICMSUFDest.ChildNodes.FindNode('vBCUFDest')) then ItensGrid.Cells[55,row] := ICMSUFDest.ChildNodes['vBCUFDest'].Text;
-       if Assigned(ICMSUFDest.ChildNodes.FindNode('vICMSUFDest')) then ItensGrid.Cells[56,row] := ICMSUFDest.ChildNodes['vICMSUFDest'].Text;
-       if Assigned(ICMSUFDest.ChildNodes.FindNode('pICMSUFDest')) then ItensGrid.Cells[58,row] := ICMSUFDest.ChildNodes['pICMSUFDest'].Text;
+       if Assigned(ICMSUFDest.ChildNodes.FindNode('pFCPUFDest')) then ItensGrid.Cells[31,row] := ICMSUFDest.ChildNodes['pFCPUFDest'].Text else ItensGrid.Cells[31,row] := '0.00';
+       if Assigned(ICMSUFDest.ChildNodes.FindNode('vFCPUFDest')) then ItensGrid.Cells[32,row] := ICMSUFDest.ChildNodes['vFCPUFDest'].Text else ItensGrid.Cells[32,row] := '0.00';
+       if Assigned(ICMSUFDest.ChildNodes.FindNode('vBCFCPUFDest')) then ItensGrid.Cells[33,row] := ICMSUFDest.ChildNodes['vBCFCPUFDest'].Text else ItensGrid.Cells[33,row] := '0.00';
+       if Assigned(ICMSUFDest.ChildNodes.FindNode('vBCUFDest')) then ItensGrid.Cells[55,row] := ICMSUFDest.ChildNodes['vBCUFDest'].Text else ItensGrid.Cells[55,row] := '0.00';
+       if Assigned(ICMSUFDest.ChildNodes.FindNode('vICMSUFDest')) then ItensGrid.Cells[56,row] := ICMSUFDest.ChildNodes['vICMSUFDest'].Text else ItensGrid.Cells[56,row] := '0.00';
+       if Assigned(ICMSUFDest.ChildNodes.FindNode('pICMSUFDest')) then ItensGrid.Cells[58,row] := ICMSUFDest.ChildNodes['pICMSUFDest'].Text else ItensGrid.Cells[58,row] := '0.00';
       end;
 
       if not Assigned(ICMSUFDest) then begin
        ItensGrid.Cells[31,row] := '0.00';
        ItensGrid.Cells[32,row] := '0.00';
        ItensGrid.Cells[33,row] := '0.00';
+       ItensGrid.Cells[34,row] := '0.00';
+       ItensGrid.Cells[35,row] := '0.00';
+       ItensGrid.Cells[36,row] := '0.00';
+       ItensGrid.Cells[48,row] := '0.00';
+       ItensGrid.Cells[49,row] := '0.00';
+       ItensGrid.Cells[50,row] := '0.00';
        ItensGrid.Cells[55,row] := '0.00';
        ItensGrid.Cells[56,row] := '0.00';
        ItensGrid.Cells[58,row] := '0.00';
-       ItensGrid.Cells[56,row] := '0.00';
       end;
      end;
     end;
 
     if Assigned(ICMSTot) then begin
-     if Assigned(ICMSTot.ChildNodes.FindNode('vBC')) then EdtvBC.Text := ICMSTot.ChildNodes['vBC'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vICMS')) then EdtvICMS.Text := ICMSTot.ChildNodes['vICMS'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vICMSDeson')) then EdtvICMSDeson.Text := ICMSTot.ChildNodes['vICMSDeson'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vICMSUFDest')) then EdtvICMSUFDest.Text := ICMSTot.ChildNodes['vICMSUFDest'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vFCP')) then EdtvFCP.Text := ICMSTot.ChildNodes['vFCP'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vBCST')) then EdtvBCST.Text := ICMSTot.ChildNodes['vBCST'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vST')) then EdtvST.Text := ICMSTot.ChildNodes['vST'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vFCPST')) then EdtvFCPST.Text := ICMSTot.ChildNodes['vFCPST'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vFCPSTRet')) then EdtvFCPSTRet.Text := ICMSTot.ChildNodes['vFCPSTRet'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vProd')) then EdtvProd.Text := ICMSTot.ChildNodes['vProd'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vFrete')) then EdtvFrete.Text := ICMSTot.ChildNodes['vFrete'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vSeg')) then EdtvSeg.Text := ICMSTot.ChildNodes['vSeg'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vDesc')) then EdtvDesc.Text := ICMSTot.ChildNodes['vDesc'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vIPI')) then EdtvIPI.Text := ICMSTot.ChildNodes['vIPI'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vIPIDevol')) then EdtvIPIDevol.Text := ICMSTot.ChildNodes['vIPIDevol'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vPIS')) then EdtvPIS.Text := ICMSTot.ChildNodes['vPIS'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vCOFINS')) then EdtvCOFINS.Text := ICMSTot.ChildNodes['vCOFINS'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vOutro')) then EdtvOutro.Text := ICMSTot.ChildNodes['vOutro'].Text;
-     if Assigned(ICMSTot.ChildNodes.FindNode('vNF')) then EdtvNF.Text := ICMSTot.ChildNodes['vNF'].Text;
-    end;
-
-    if Assigned(ICMSUFDest) then begin
-     if Assigned(ICMSUFDest.ChildNodes.FindNode('pICMSUFDest')) then EdtpICMSUFDest.Text := ICMSUFDest.ChildNodes['pICMSUFDest'].Text;
-     if Assigned(ICMSUFDest.ChildNodes.FindNode('pFCPUFDest')) then EdtpFCPUFDest.Text := ICMSUFDest.ChildNodes['pFCPUFDest'].Text;
+     if Assigned(ICMSTot.ChildNodes.FindNode('vBC')) then EdtvBC.Text := ICMSTot.ChildNodes['vBC'].Text else EdtvBC.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vICMS')) then EdtvICMS.Text := ICMSTot.ChildNodes['vICMS'].Text else EdtvICMS.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vICMSDeson')) then EdtvICMSDeson.Text := ICMSTot.ChildNodes['vICMSDeson'].Text else EdtvICMSDeson.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vICMSUFDest')) then EdtvICMSUFDest.Text := ICMSTot.ChildNodes['vICMSUFDest'].Text else EdtvICMSUFDest.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vFCP')) then EdtvFCP.Text := ICMSTot.ChildNodes['vFCP'].Text else EdtvFCP.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vBCST')) then EdtvBCST.Text := ICMSTot.ChildNodes['vBCST'].Text else EdtvBCST.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vST')) then EdtvST.Text := ICMSTot.ChildNodes['vST'].Text else EdtvST.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vFCPST')) then EdtvFCPST.Text := ICMSTot.ChildNodes['vFCPST'].Text else EdtvFCPST.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vFCPSTRet')) then EdtvFCPSTRet.Text := ICMSTot.ChildNodes['vFCPSTRet'].Text else EdtvFCPSTRet.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vProd')) then EdtvProd.Text := ICMSTot.ChildNodes['vProd'].Text else EdtvProd.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vFrete')) then EdtvFrete.Text := ICMSTot.ChildNodes['vFrete'].Text else EdtvFrete.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vSeg')) then EdtvSeg.Text := ICMSTot.ChildNodes['vSeg'].Text else EdtvSeg.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vDesc')) then EdtvDesc.Text := ICMSTot.ChildNodes['vDesc'].Text else EdtvDesc.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vIPI')) then EdtvIPI.Text := ICMSTot.ChildNodes['vIPI'].Text else EdtvIPI.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vIPIDevol')) then EdtvIPIDevol.Text := ICMSTot.ChildNodes['vIPIDevol'].Text else EdtvIPIDevol.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vPIS')) then EdtvPIS.Text := ICMSTot.ChildNodes['vPIS'].Text else EdtvPIS.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vCOFINS')) then EdtvCOFINS.Text := ICMSTot.ChildNodes['vCOFINS'].Text else EdtvCOFINS.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vOutro')) then EdtvOutro.Text := ICMSTot.ChildNodes['vOutro'].Text else EdtvOutro.Text := '0.00';
+     if Assigned(ICMSTot.ChildNodes.FindNode('vNF')) then EdtvNF.Text := ICMSTot.ChildNodes['vNF'].Text else EdtvNF.Text := '0.00';
     end;
 
     ValorBCIPI := 0;

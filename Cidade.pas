@@ -29,7 +29,7 @@ type
     EdtSiglaEstado: TEdit;
     lblEstado: TLabel;
     lblPais: TLabel;
-    EdtSiglaPais: TEdit;
+    EdtCodigo_IBGEPais: TEdit;
     btnFechar: TButton;
     Pages: TPageControl;
     AcessoPage: TTabSheet;
@@ -67,7 +67,7 @@ type
     procedure SBConsCidadeClick(Sender: TObject);
     procedure SBConsEstadoClick(Sender: TObject);
     procedure SBConsPaisClick(Sender: TObject);
-    procedure EdtSiglaPaisChange(Sender: TObject);
+    procedure EdtCodigo_IBGEPaisChange(Sender: TObject);
     procedure EdtSiglaEstadoChange(Sender: TObject);
     procedure EdtAcessoCodigoChange(Sender: TObject);
     procedure EdtAcessoSiglaEstadoChange(Sender: TObject);
@@ -98,15 +98,13 @@ begin
  SBPais.Enabled := True;
 
  EdtCidade.Clear;
- EdtPais.Clear;
- EdtEstado.Clear;
- EdtSiglaPais.Clear;
+ EdtCodigo_IBGEPais.Clear;
  EdtSiglaEstado.Clear;
  EdtCodigoIBGE.Clear;
 
  EdtCodigoIBGE.Enabled := True;
  EdtCidade.Enabled := True;
- EdtSiglaPais.Enabled := True;
+ EdtCodigo_IBGEPais.Enabled := True;
  EdtSiglaEstado.Enabled := True;
  CBAtivo.Enabled := True;
 end;
@@ -116,7 +114,7 @@ var codigo_ibge, cidade, pais, estado, ativo: string;
 begin
  codigo_ibge := EdtCodigoIBGE.Text;
  cidade := EdtCidade.Text;
- pais := EdtSiglaPais.text;
+ pais := EdtCodigo_IBGEPais.text;
  estado := EdtSiglaEstado.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
@@ -199,7 +197,7 @@ begin
 
   EdtCodigoIBGE.Enabled := False;
   EdtCidade.Enabled := False;
-  EdtSiglaPais.Enabled := False;
+  EdtCodigo_IBGEPais.Enabled := False;
   EdtSiglaEstado.Enabled := False;
   CBAtivo.Enabled := False;
   except
@@ -227,7 +225,7 @@ begin
  SBPais.Enabled := True;
 
  EdtCidade.Enabled := True;
- EdtSiglaPais.Enabled := True;
+ EdtCodigo_IBGEPais.Enabled := True;
  EdtSiglaEstado.Enabled := True;
  CBAtivo.Enabled := True
 end;
@@ -238,7 +236,7 @@ begin
  codigo_ibge := EdtCodigoIBGE.Text;
  cidade := EdtCidade.Text;
  Estado := EdtSiglaEstado.Text;
- Pais := EdtSiglaPais.Text;
+ Pais := EdtCodigo_IBGEPais.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
  if codigo_ibge = '' then begin
@@ -305,7 +303,7 @@ begin
 
   EdtCodigoIBGE.Enabled := False;
   EdtCidade.Enabled := False;
-  EdtSiglaPais.Enabled := False;
+  EdtCodigo_IBGEPais.Enabled := False;
   EdtSiglaEstado.Enabled := False;
   CBAtivo.Enabled := False;
   except
@@ -328,10 +326,9 @@ begin
  codigo := ConsultarCidade.ConsultarCidade;
  if codigo <> '' then begin
   Edtcidade.Text := ConsultarCidade.cidade;
-  EdtCodigoIBGE.Text := ConsultarCidade.codigo;
-  EdtSiglaPais.Text := ConsultarCidade.pais;
-  EdtSiglaEstado.Text := ConsultarCidade.estado;
   EdtCodigoIBGE.Text := ConsultarCidade.Codigo_IBGE;
+  EdtCodigo_IBGEPais.Text := ConsultarCidade.pais;
+  EdtSiglaEstado.Text := ConsultarCidade.estado;
   CBAtivo.Checked := ConsultarCidade.ativo = 'S';
  end;
 end;
@@ -353,12 +350,12 @@ begin
  EdtCidade.Clear;
  EdtPais.Clear;
  EdtEstado.Clear;
- EdtSiglaPais.Clear;
+ EdtCodigo_IBGEPais.Clear;
  EdtSiglaEstado.Clear;
 
  EdtCodigoIBGE.Enabled := False;
  EdtCidade.Enabled := False;
- EdtSiglaPais.Enabled := False;
+ EdtCodigo_IBGEPais.Enabled := False;
  EdtSiglaEstado.Enabled := False;
  CBAtivo.Enabled := False;
 end;
@@ -369,7 +366,7 @@ begin
  codigo_ibge := EdtCodigoIBGE.Text;
  cidade := EdtCidade.Text;
  Estado := EdtSiglaEstado.Text;
- Pais := EdtSiglaPais.Text;
+ Pais := EdtCodigo_IBGEPais.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
 
  if codigo_ibge = '' then begin
@@ -429,7 +426,7 @@ begin
 
   EdtCodigoIBGE.Enabled := False;
   EdtCidade.Enabled := False;
-  EdtSiglaPais.Enabled := False;
+  EdtCodigo_IBGEPais.Enabled := False;
   EdtSiglaEstado.Enabled := False;
   CBAtivo.Enabled := False;
 
@@ -437,7 +434,7 @@ begin
   EdtCidade.Clear;
   EdtPais.Clear;
   EdtEstado.Clear;
-  EdtSiglaPais.Clear;
+  EdtCodigo_IBGEPais.Clear;
   EdtSiglaEstado.Clear;
   except
   CadCidadeDM.Conexão.Rollback;
@@ -468,7 +465,7 @@ begin
 end;
 
 procedure TCadCidade.SBPaisClick(Sender: TObject);
-var codigo, sigla, pais: string;
+var Codigo_IBGE, pais: string;
 begin
  with CadPaisDM.qryConsultarPais do
  begin
@@ -479,11 +476,10 @@ begin
  end;
 
  Application.CreateForm(TConsultarPais, ConsultarPais);
- codigo := ConsultarPais.SelecionarPais;
+ Codigo_IBGE := ConsultarPais.SelecionarPais;
 
- if codigo <> '' then begin
-  Sigla := ConsultarPais.Sigla;
-  EdtSiglaPais.Text := sigla;
+ if Codigo_IBGE <> '' then begin
+  EdtCodigo_IBGEPais.Text := Codigo_IBGE;
   Pais := ConsultarPais.Pais;
   EdtPais.text := Pais;
  end;
@@ -553,16 +549,16 @@ begin
  end;
 end;
 
-procedure TCadCidade.EdtSiglaPaisChange(Sender: TObject);
-var sigla: string;
+procedure TCadCidade.EdtCodigo_IBGEPaisChange(Sender: TObject);
+var Codigo_IBGE: string;
 begin
- sigla := EdtSiglaPais.Text;
+ Codigo_IBGE := EdtCodigo_IBGEPais.Text;
 
  with CadPaisDM.qryConsultarPais do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadpais where sigla = :sigla');
-  Parambyname('sigla').AsString := sigla;
+  SQL.Add('select * from cadpais where Codigo_IBGE = :Codigo_IBGE');
+  Parambyname('Codigo_IBGE').AsString := Codigo_IBGE;
   Open;
 
   EdtPais.text := FieldByName('pais').AsString;

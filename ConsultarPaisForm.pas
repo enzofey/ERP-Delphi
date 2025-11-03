@@ -19,12 +19,12 @@ type
     PaSigla: String;
     PaPais: String;
     PaAtivo: String;
-    PaCodigo: string;
+    PaCodigo_IBGE: string;
   public
    function SelecionarPais: string;
    function Sigla: string;
    function Pais: string;
-   function Codigo: string;
+   function Codigo_IBGE: string;
   end;
 
 var
@@ -40,7 +40,7 @@ begin
  begin
   PaSigla := FieldByName('sigla').AsString;
   PaPais := FieldByName('Pais').AsString;
-  PaCodigo := FieldByName('Codigo').AsString;
+  PaCodigo_IBGE := FieldByName('Codigo_IBGE').AsString;
  end;
  Close;
 end;
@@ -54,9 +54,9 @@ end;
 
 function TConsultarPais.SelecionarPais: string;
 begin
-  PaCodigo := '';
+  PaCodigo_IBGE := '';
   ShowModal;
-  Result := PaCodigo;
+  Result := PaCodigo_IBGE;
 end;
 
 function TConsultarPais.Sigla: string;
@@ -64,9 +64,9 @@ begin
   Result := PaSigla;
 end;
 
-function TConsultarPais.Codigo: string;
+function TConsultarPais.Codigo_IBGE: string;
 begin
-  Result := PaCodigo;
+  Result := PaCodigo_IBGE;
 end;
 
 function TConsultarPais.Pais: string;

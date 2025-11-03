@@ -21,7 +21,6 @@ type
     CepEstado: string;
     CepPais: string;
     CepAtivo: string;
-    CepCodigo: string;
     CepBairro: string;
     CepRua: string;
     CepComplemento: string;
@@ -32,7 +31,6 @@ type
     function Estado: string;
     function Pais: string;
     function Ativo: string;
-    function Codigo: string;
     function Bairro: string;
     function Rua: string;
     function Complemento: string;
@@ -47,9 +45,9 @@ implementation
 
 function TConsultarCEP.SelecionarCEP: string;
 begin
-  CepCodigo := '';
+  CepCep := '';
   ShowModal;
-  Result := CepCodigo;
+  Result := CepCep;
 end;
 
 function TConsultarCEP.CEP: string;
@@ -70,11 +68,6 @@ end;
 function TConsultarCEP.Complemento: string;
 begin
   Result := CepComplemento;
-end;
-
-function TConsultarCEP.Codigo: string;
-begin
-  Result := CepCodigo;
 end;
 
 function TConsultarCEP.Cidade: string;
@@ -101,7 +94,6 @@ procedure TConsultarCEP.btnSelecionarCEPClick(Sender: TObject);
 begin
  with CadCEPDM.qryConsultarCEP do
  begin
-  CepCodigo := FieldByName('Codigo').AsString;
   CepCep := FieldByName('CEP').AsString;
   CepCidade := FieldByName('Cidade').AsString;
   CepEstado := FieldByName('Estado').AsString;

@@ -30,21 +30,19 @@ type
     CBAtivo: TCheckBox;
     EdtCEP: TEdit;
     EdtCidade: TEdit;
-    EdtCodigo: TEdit;
     EdtEstado: TEdit;
     EdtPais: TEdit;
     lblAtivo: TLabel;
     lblCEP: TLabel;
     lblCidade: TLabel;
-    lblCodigo: TLabel;
     lblEstado: TLabel;
     lblPais: TLabel;
     SBCidade: TSpeedButton;
     SBEstado: TSpeedButton;
     SBPais: TSpeedButton;
-    EdtSiglaPais: TEdit;
+    EdtCodigoIBGEPais: TEdit;
     EdtSiglaEstado: TEdit;
-    EdtCodigoCidade: TEdit;
+    EdtCodigoIBGECidade: TEdit;
     RGAcessoAtivo: TRadioGroup;
     lblAcessoCEP: TLabel;
     EdtAcessoCodigo: TEdit;
@@ -83,15 +81,14 @@ type
     procedure btnGravarAlterarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
     procedure btnFecharClick(Sender: TObject);
-    procedure EdtCodigoCidadeChange(Sender: TObject);
+    procedure EdtCodigoIBGECidadeChange(Sender: TObject);
     procedure EdtSiglaEstadoChange(Sender: TObject);
-    procedure EdtSiglaPaisChange(Sender: TObject);
+    procedure EdtCodigoIBGEPaisChange(Sender: TObject);
     procedure btnAcessoConsultarClick(Sender: TObject);
     procedure EdtAcessoCodigoChange(Sender: TObject);
     procedure EdtAcessoSiglaPaisChange(Sender: TObject);
     procedure EdtAcessoSiglaEstadoChange(Sender: TObject);
     procedure EdtAcessoCodigoCidadeChange(Sender: TObject);
-    procedure EdtCidadeChange(Sender: TObject);
     procedure btnWWWClick(Sender: TObject);
   private
     { Private declarations }
@@ -147,7 +144,7 @@ begin
     with CadCidadeDM.qryConsultarCidade do
     begin
      SQL.Clear;
-     SQL.Add('select codigo from cadcidade where cidade = :cidade');
+     SQL.Add('select codigo_ibge from cadcidade where cidade = :cidade');
      ParamByName('cidade').AsString := cidade;
      Open;
 
@@ -157,20 +154,10 @@ begin
       with CadCidadeDM.qryInsert do
       begin
        SQL.Clear;
-       SQL.Add('insert into cadcidade (codigo, cidade, pais, estado, ativo, codigo_ibge)');
+       SQL.Add('insert into cadcidade (cidade, pais, estado, ativo, codigo_ibge)');
        SQL.Add('values');
-       SQL.Add('(:codigo, :cidade, :pais, :estado, :ativo, :codigo_ibge)');
+       SQL.Add('(:cidade, :pais, :estado, :ativo, :codigo_ibge)');
 
-        with CadCidadeDM.qrySelect do
-        begin
-         SQL.Clear;
-         SQL.Add('select (max(cast(codigo as integer)) + 1) as codigo from cadcidade');
-         Open;
-
-         if FieldByName('codigo').IsNull or IsEmpty then CodigoCidade := '1' else CodigoCidade := FieldByName('codigo').AsString;
-        end;
-
-       ParamByName('codigo').AsString := CodigoCidade;
        ParamByName('cidade').AsString := Cidade;
        ParamByName('pais').AsString := Pais;
        ParamByName('estado').AsString := UF;
@@ -181,18 +168,18 @@ begin
      end;
 
      SQL.Clear;
-     SQL.Add('select codigo from cadcidade where cidade = :cidade');
+     SQL.Add('select codigo_ibge from cadcidade where cidade = :cidade');
      ParamByName('cidade').AsString := cidade;
      Open;
-     CodigoCidade := FieldByName('codigo').AsString;
+     CodigoCidade := FieldByName('codigo_ibge').AsString;
     end;
 
     EdtRua.text := Rua;
     EdtComplemento.text := complemento;
     EdtBairro.text := Bairro;
-    EdtCodigoCidade.text := CodigoCidade;
+    EdtCodigoIBGECidade.text := CodigoCidade;
     EdtSiglaEstado.Text := UF;
-    EdtSiglaPais.Text := Pais;
+    EdtCodigoIBGEPais.Text := Pais;
    finally
    vJSON.Free;
    end;
@@ -206,11 +193,10 @@ end;
 
 procedure TCadCEP.btnIncluirClick(Sender: TObject);
 begin
- EdtCodigo.Enabled := True;
  EdtCEP.Enabled := True;
- EdtCodigoCidade.Enabled := True;
+ EdtCodigoIBGECidade.Enabled := True;
  EdtSiglaEstado.Enabled := True;
- EdtSiglaPais.Enabled := True;
+ EdtCodigoIBGEPais.Enabled := True;
  EdtBairro.Enabled := True;
  EdtRua.Enabled := True;
  EdtComplemento.Enabled := True;
@@ -221,11 +207,10 @@ begin
  SBPais.Enabled := True;
  CBAtivo.Enabled := True;
 
- EdtCodigo.Clear;
  EdtCEP.Clear;
- EdtCodigoCidade.Clear;
+ EdtCodigoIBGECidade.Clear;
  EdtSiglaEstado.Clear;
- EdtSiglaPais.Clear;
+ EdtCodigoIBGEPais.Clear;
 
  btnIncluir.Visible := False;
  btnAlterar.Visible := False;
@@ -238,22 +223,16 @@ begin
 end;
 
 procedure TCadCEP.btnGravarIncluirClick(Sender: TObject);
-var codigo, CEP, Cidade, Estado, Pais, Ativo, Bairro, Rua, Complemento: string;
+var CEP, Cidade, Estado, Pais, Ativo, Bairro, Rua, Complemento: string;
 begin
- codigo := EdtCodigo.Text;
  CEP := EdtCEP.Text;
  Cidade := EdtCidade.Text;
  Estado := EdtSiglaEstado.Text;
- Pais := EdtSiglaPais.Text;
+ Pais := EdtCodigoIBGEPais.Text;
  Bairro := EdtBairro.Text;
  Rua := EdtRua.Text;
  Complemento := EdtComplemento.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
-
- if codigo = '' then begin
-  ShowMessage('Código não pode ser vazio!');
-  Abort;
- End;
 
  if CEP = '' then begin
   ShowMessage('CEP não pode ser vazio!');
@@ -286,16 +265,6 @@ begin
     ShowMessage('CEP já cadastrado!');
     Abort;
    end;
-
-   SQL.Clear;
-   SQL.Add('select * from cadcep where codigo = :codigo');
-   ParamByName('codigo').AsString := codigo;
-   Open;
-
-   if not IsEmpty then begin
-    ShowMessage('Código já cadastrado!');
-    Abort;
-   end;
   end;
 
  CadCEPDM.Conexão.StartTransaction;
@@ -303,15 +272,14 @@ begin
   with CadCEPDM.qryInsert do
   begin
    SQL.Clear;
-   SQL.Add('insert into cadcep (codigo, CEP, cidade, estado, pais, ativo, bairro, rua, complemento)');
+   SQL.Add('insert into cadcep (CEP, cidade, estado, pais, ativo, bairro, rua, complemento)');
    SQL.Add('values');
-   SQL.Add('(:codigo, :CEP, :Cidade, :Estado, :Pais, :Ativo, :Bairro, :Rua, :Complemento)');
+   SQL.Add('(:CEP, :Cidade, :Estado, :Pais, :Ativo, :Bairro, :Rua, :Complemento)');
    ParamByName('CEP').AsString := CEP;
    ParamByName('cidade').AsString := cidade;
    ParamByName('estado').AsString := estado;
    ParamByName('pais').AsString := pais;
    ParamByName('ativo').AsString := ativo;
-   ParamByName('codigo').AsString := codigo;
    ParamByName('Bairro').AsString := Bairro;
    ParamByName('Rua').AsString := Rua;
    ParamByName('Complemento').AsString := Complemento;
@@ -335,11 +303,10 @@ begin
 
   CadCEPDM.Conexão.Commit;
   ShowMessage('Cadastrado com sucesso!');
-  EdtCodigo.Enabled := False;
   EdtCEP.Enabled := False;
-  EdtCodigoCidade.Enabled := False;
+  EdtCodigoIBGECidade.Enabled := False;
   EdtSiglaEstado.Enabled := False;
-  EdtSiglaPais.Enabled := False;
+  EdtCodigoIBGEPais.Enabled := False;
   EdtBairro.Enabled := False;
   EdtRua.Enabled := False;
   EdtComplemento.Enabled := False;
@@ -365,14 +332,14 @@ end;
 
 procedure TCadCEP.btnAlterarClick(Sender: TObject);
 begin
- if EdtCodigo.Text = '' then begin
+ if EdtCEP.Text = '' then begin
   ShowMessage('CEP não selecionado');
   Abort;
  end;
 
- EdtCodigoCidade.Enabled := True;
+ EdtCodigoIBGECidade.Enabled := True;
  EdtSiglaEstado.Enabled := True;
- EdtSiglaPais.Enabled := True;
+ EdtCodigoIBGEPais.Enabled := True;
  EdtBairro.Enabled := True;
  EdtRua.Enabled := True;
  EdtComplemento.Enabled := True;
@@ -394,22 +361,16 @@ begin
 end;
 
 procedure TCadCEP.btnGravarAlterarClick(Sender: TObject);
-var Codigo, CEP, Cidade, Estado, Pais, Ativo, Bairro, Rua, Complemento: string;
+var CEP, Cidade, Estado, Pais, Ativo, Bairro, Rua, Complemento: string;
 begin
- Codigo := EdtCodigo.Text;
  CEP := EdtCEP.Text;
- Cidade := EdtCidade.Text;
+ Cidade := EdtCodigoIBGECidade.Text;
  Estado := EdtSiglaEstado.Text;
- Pais := EdtSiglaPais.Text;
+ Pais := EdtCodigoIBGEPais.Text;
  Bairro := EdtBairro.Text;
  Rua := EdtRua.Text;
  Complemento := EdtComplemento.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
-
- if Codigo = '' then begin
-  ShowMessage('Código não pode ser vazio!');
-  Abort;
- end;
 
  if CEP = '' then begin
   ShowMessage('CEP não pode ser vazio!');
@@ -466,9 +427,9 @@ begin
 
   CadCEPDM.Conexão.Commit;
   ShowMessage('Alterado com sucesso!');
-  EdtCodigoCidade.Enabled := False;
+  EdtCodigoIBGECidade.Enabled := False;
   EdtSiglaEstado.Enabled := False;
-  EdtSiglaPais.Enabled := False;
+  EdtCodigoIBGEPais.Enabled := False;
   EdtBairro.Enabled := False;
   EdtRua.Enabled := False;
   EdtComplemento.Enabled := False;
@@ -495,11 +456,10 @@ end;
 
 procedure TCadCEP.btnDesistirClick(Sender: TObject);
 begin
- EdtCodigo.Enabled := False;
  EdtCEP.Enabled := False;
- EdtCodigoCidade.Enabled := False;
+ EdtCodigoIBGECidade.Enabled := False;
  EdtSiglaEstado.Enabled := False;
- EdtSiglaPais.Enabled := False;
+ EdtCodigoIBGEPais.Enabled := False;
  EdtBairro.Enabled := False;
  EdtRua.Enabled := False;
  EdtComplemento.Enabled := False;
@@ -510,11 +470,10 @@ begin
  SBPais.Enabled := False;
  CBAtivo.Enabled := False;
 
- EdtCodigo.Clear;
  EdtCEP.Clear;
- EdtCodigoCidade.Clear;
+ EdtCodigoIBGECidade.Clear;
  EdtSiglaEstado.Clear;
- EdtSiglaPais.Clear;
+ EdtCodigoIBGEPais.Clear;
  EdtBairro.Clear;
  EdtRua.Clear;
  EdtComplemento.Clear;
@@ -530,9 +489,8 @@ begin
 end;
 
 procedure TCadCEP.btnExcluirClick(Sender: TObject);
-var Codigo, CEP, Cidade, Estado, Pais, Ativo: string;
+var CEP, Cidade, Estado, Pais, Ativo: string;
 begin
- Codigo := EdtCodigo.Text;
  CEP := EdtCEP.Text;
  Cidade := EdtCidade.Text;
  Estado := EdtEstado.Text;
@@ -567,8 +525,8 @@ begin
   with CadCEPDM.qryDelete do
   begin
    SQL.Clear;
-   SQL.Add('delete from cadcep where codigo = :codigo');
-   ParamByName('codigo').AsString := codigo;
+   SQL.Add('delete from cadcep where CEP = :CEP');
+   ParamByName('CEP').AsString := CEP;
    ExecSQL;
   end;
 
@@ -589,11 +547,10 @@ begin
 
   CadCEPDM.Conexão.Commit;
   ShowMessage('Excluído com sucesso');
-  EdtCodigo.Clear;
   EdtCEP.Clear;
-  EdtCodigoCidade.Clear;
+  EdtCodigoIBGECidade.Clear;
   EdtSiglaEstado.Clear;
-  EdtSiglaPais.Clear;
+  EdtCodigoIBGEPais.Clear;
   EdtBairro.Clear;
   EdtRua.Clear;
   EdtComplemento.Clear;
@@ -611,7 +568,7 @@ begin
 end;
 
 procedure TCadCEP.btnConsultarClick(Sender: TObject);
-var Codigo, CEP, Cidade, Estado, Pais, ativo, Bairro, Rua, Complemento: string;
+var CEP, Cidade, Estado, Pais, ativo, Bairro, Rua, Complemento: string;
 begin
  with CadCEPDM.qryConsultarCEP do
  begin
@@ -621,18 +578,17 @@ begin
  end;
 
  Application.CreateForm(TConsultarCEP, ConsultarCEP);
- Codigo := ConsultarCEP.SelecionarCEP;
+ CEP := ConsultarCEP.SelecionarCEP;
 
- if codigo <> '' then begin
-  EdtCodigo.Text := Codigo;
+ if CEP <> '' then begin
   CEP := ConsultarCEP.CEP;
   EdtCEP.Text := CEP;
   Cidade := ConsultarCEP.Cidade;
-  EdtCidade.Text := Cidade;
+  EdtCodigoIBGECidade.Text := Cidade;
   Estado := ConsultarCEP.Estado;
   EdtSiglaEstado.Text := Estado;
   Pais := ConsultarCEP.Pais;
-  EdtSiglaPais.Text := Pais;
+  EdtCodigoIBGEPais.Text := Pais;
   Ativo := ConsultarCEP.Ativo;
   CBAtivo.Checked := Ativo = 'S';
   Bairro := ConsultarCEP.Bairro;
@@ -661,7 +617,7 @@ begin
 end;
 
 procedure TCadCEP.SBCidadeClick(Sender: TObject);
-var codigo, cidade: string;
+var codigo_ibge, cidade: string;
 begin
  with CadCidadeDM.qryConsultarCidade do
  begin
@@ -671,40 +627,24 @@ begin
  end;
 
  Application.CreateForm(TConsultarCidade, ConsultarCidade);
- codigo := ConsultarCidade.ConsultarCidade;
- if codigo <> '' then begin
-  EdtCodigoCidade.Text := codigo;
+ codigo_ibge := ConsultarCidade.ConsultarCidade;
+ if codigo_ibge <> '' then begin
+  EdtCodigoIBGECidade.Text := codigo_ibge;
   Cidade := ConsultarCidade.Cidade;
   EdtCidade.Text := cidade;
  end;
 end;
 
-procedure TCadCEP.EdtCidadeChange(Sender: TObject);
-var cidade: string;
+procedure TCadCEP.EdtCodigoIBGECidadeChange(Sender: TObject);
+var codigo_ibge: string;
 begin
- cidade := EdtCidade.Text;
+ codigo_ibge := EdtCodigoIBGECidade.Text;
 
  with CadCidadeDM.qryConsultarCidade do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadcidade where cidade = :cidade');
-  ParamByName('cidade').AsString := cidade;
-  Open;
-
-  EdtCodigoCidade.Text := FieldByName('codigo').AsString;
- end;
-end;
-
-procedure TCadCEP.EdtCodigoCidadeChange(Sender: TObject);
-var codigo: string;
-begin
- codigo := EdtCodigoCidade.Text;
-
- with CadCidadeDM.qryConsultarCidade do
- begin
-  SQL.Clear;
-  SQL.Add('select * from cadcidade where codigo = :codigo');
-  ParamByName('codigo').AsString := codigo;
+  SQL.Add('select * from cadcidade where codigo_ibge = :codigo_ibge');
+  ParamByName('codigo_ibge').AsString := codigo_ibge;
   Open;
 
   EdtCidade.Text := FieldByName('cidade').AsString;
@@ -712,23 +652,23 @@ begin
 end;
 
 procedure TCadCEP.EdtAcessoCodigoCidadeChange(Sender: TObject);
-var codigo: string;
+var codigo_ibge: string;
 begin
- codigo := EdtAcessoCodigoCidade.Text;
+ codigo_ibge := EdtAcessoCodigoCidade.Text;
 
  with CadCidadeDM.qryConsultarCidade do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadcidade where codigo = :codigo');
-  ParamByName('codigo').AsString := codigo;
+  SQL.Add('select * from cadcidade where codigo_ibge = :codigo_ibge');
+  ParamByName('codigo_ibge').AsString := codigo_ibge;
   Open;
 
- EdtAcessoCidade.Text := FieldByName('cidade').AsString;
+  EdtAcessoCidade.Text := FieldByName('codigo_ibge').AsString;
  end;
 end;
 
 procedure TCadCEP.SBEstadoClick(Sender: TObject);
-var codigo, sigla, estado: string;
+var codigo_ibge, sigla, estado: string;
 begin
  with CadEstadoDM.qryConsultarEstado do
  begin
@@ -739,8 +679,8 @@ begin
  end;
 
  Application.CreateForm(TConsultarEstado, ConsultarEstado);
- codigo := ConsultarEstado.SelecionarEstado;
- if codigo <> '' then begin
+ codigo_ibge := ConsultarEstado.SelecionarEstado;
+ if codigo_ibge <> '' then begin
   sigla := ConsultarEstado.Sigla;
   EdtSiglaEstado.Text := sigla;
   estado := ConsultarEstado.Estado;
@@ -781,7 +721,7 @@ begin
 end;
 
 procedure TCadCEP.SBPaisClick(Sender: TObject);
-var sigla, codigo, pais: string;
+var codigo_ibge, pais: string;
 begin
  with CadPaisDM.qryConsultarPais do
  begin
@@ -792,25 +732,25 @@ begin
  end;
 
  Application.CreateForm(TConsultarPais, ConsultarPais);
- codigo := ConsultarPais.SelecionarPais;
- if codigo <> '' then begin
-  Sigla := ConsultarPais.Sigla;
-  EdtSiglaPais.Text := sigla;
+ codigo_ibge := ConsultarPais.SelecionarPais;
+ if codigo_ibge <> '' then begin
+  Codigo_IBGE := ConsultarPais.Codigo_IBGE;
+  EdtCodigoIBGEPais.Text := Codigo_IBGE;
   Pais := ConsultarPais.Pais;
   EdtPais.Text := Pais;
  end;
 end;
 
-procedure TCadCEP.EdtSiglaPaisChange(Sender: TObject);
-var sigla: string;
+procedure TCadCEP.EdtCodigoIBGEPaisChange(Sender: TObject);
+var codigo_ibge: string;
 begin
- sigla := EdtSiglaPais.Text;
+ codigo_ibge := EdtCodigoIBGEPais.Text;
 
  with CadPaisDM.qryConsultarPais do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadpais where sigla = :sigla');
-  ParamByName('sigla').AsString := sigla;
+  SQL.Add('select * from cadpais where codigo_ibge = :codigo_ibge');
+  ParamByName('codigo_ibge').AsString := codigo_ibge;
   Open;
 
   EdtPais.Text := FieldByName('pais').AsString;

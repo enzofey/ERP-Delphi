@@ -558,14 +558,15 @@ object CadEntidade: TCadEntidade
         TabOrder = 12
         OnChange = EdtCEPChange
       end
-      object EdtCidade: TEdit
+      object EdtCodigoCidade: TEdit
         Left = 348
         Top = 445
-        Width = 269
+        Width = 77
         Height = 23
         Enabled = False
         ReadOnly = True
         TabOrder = 13
+        OnChange = EdtCodigoCidadeChange
       end
       object EdtCodigo: TEdit
         Left = 88
@@ -617,7 +618,7 @@ object CadEntidade: TCadEntidade
       object EdtEstado: TEdit
         Left = 556
         Top = 397
-        Width = 61
+        Width = 41
         Height = 23
         Enabled = False
         MaxLength = 2
@@ -653,14 +654,15 @@ object CadEntidade: TCadEntidade
         NumbersOnly = True
         TabOrder = 22
       end
-      object EdtPais: TEdit
+      object EdtCodigoPais: TEdit
         Left = 80
         Top = 493
-        Width = 121
+        Width = 43
         Height = 23
         Enabled = False
         ReadOnly = True
         TabOrder = 23
+        OnChange = EdtCodigoPaisChange
       end
       object EdtRua: TEdit
         Left = 80
@@ -729,6 +731,24 @@ object CadEntidade: TCadEntidade
         Height = 23
         Enabled = False
         TabOrder = 29
+      end
+      object EdtPais: TEdit
+        Left = 129
+        Top = 493
+        Width = 96
+        Height = 23
+        Enabled = False
+        ReadOnly = True
+        TabOrder = 30
+      end
+      object EdtCidade: TEdit
+        Left = 431
+        Top = 445
+        Width = 186
+        Height = 23
+        Enabled = False
+        ReadOnly = True
+        TabOrder = 31
       end
     end
   end

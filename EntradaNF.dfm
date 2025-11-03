@@ -19,7 +19,7 @@ object EntradaNFForm: TEntradaNFForm
     Top = 0
     Width = 1878
     Height = 989
-    ActivePage = ItensPage
+    ActivePage = NotaPage
     Align = alClient
     TabOrder = 0
     object AcessoPage: TTabSheet
@@ -232,15 +232,15 @@ object EntradaNFForm: TEntradaNFForm
             Caption = 'Valor Seguro:'
           end
           object lblValorOutros: TLabel
-            Left = 888
-            Top = 32
+            Left = 578
+            Top = 376
             Width = 68
             Height = 15
             Caption = 'Valor Outros:'
           end
           object lblvNF: TLabel
-            Left = 898
-            Top = 75
+            Left = 578
+            Top = 411
             Width = 58
             Height = 15
             Caption = 'Valor NF-e:'
@@ -278,8 +278,8 @@ object EntradaNFForm: TEntradaNFForm
             TabOrder = 3
           end
           object EdtvOutro: TEdit
-            Left = 962
-            Top = 29
+            Left = 652
+            Top = 373
             Width = 121
             Height = 23
             Enabled = False
@@ -498,9 +498,9 @@ object EntradaNFForm: TEntradaNFForm
             end
           end
           object EdtvNF: TEdit
-            Left = 962
-            Top = 72
-            Width = 150
+            Left = 652
+            Top = 408
+            Width = 121
             Height = 23
             Enabled = False
             TabOrder = 9
@@ -509,26 +509,26 @@ object EntradaNFForm: TEntradaNFForm
             Left = 565
             Top = 72
             Width = 311
-            Height = 401
+            Height = 281
             Caption = 'DIFAL e FCP'
             TabOrder = 10
             object lblvFCP: TLabel
-              Left = 21
-              Top = 234
+              Left = 13
+              Top = 154
               Width = 53
               Height = 15
               Caption = 'Valor FCP:'
             end
             object lblvFCPST: TLabel
-              Left = 21
-              Top = 275
+              Left = 13
+              Top = 195
               Width = 68
               Height = 15
               Caption = 'Valor FCP ST:'
             end
             object lblvFCPSTRet: TLabel
-              Left = 21
-              Top = 315
+              Left = 13
+              Top = 235
               Width = 105
               Height = 15
               Caption = 'Valor FCP ST Retido:'
@@ -542,52 +542,38 @@ object EntradaNFForm: TEntradaNFForm
             end
             object lblvBCFCPUFDest: TLabel
               Left = 21
-              Top = 155
+              Top = 115
               Width = 51
               Height = 15
               Caption = 'Base FCP:'
             end
-            object lblpFCPUFDest: TLabel
-              Left = 21
-              Top = 195
-              Width = 72
-              Height = 15
-              Caption = 'Al'#237'quota FCP:'
-            end
-            object lblpICMSUFDest: TLabel
-              Left = 21
-              Top = 74
-              Width = 81
-              Height = 15
-              Caption = 'Al'#237'quota DIFAL:'
-            end
             object lblvICMSUFdest: TLabel
               Left = 21
-              Top = 114
+              Top = 74
               Width = 62
               Height = 15
               Caption = 'Valor DIFAL:'
             end
             object EdtvFCP: TEdit
-              Left = 80
-              Top = 231
-              Width = 209
+              Left = 72
+              Top = 151
+              Width = 217
               Height = 23
               Enabled = False
               TabOrder = 0
             end
             object EdtvFCPST: TEdit
-              Left = 95
-              Top = 272
-              Width = 194
+              Left = 87
+              Top = 192
+              Width = 202
               Height = 23
               Enabled = False
               TabOrder = 1
             end
             object EdtvFCPSTRet: TEdit
-              Left = 132
-              Top = 312
-              Width = 157
+              Left = 124
+              Top = 232
+              Width = 165
               Height = 23
               Enabled = False
               TabOrder = 2
@@ -601,36 +587,20 @@ object EntradaNFForm: TEntradaNFForm
               TabOrder = 3
             end
             object EdtvBCFCPUFDest: TEdit
-              Left = 95
-              Top = 152
-              Width = 194
+              Left = 78
+              Top = 112
+              Width = 211
               Height = 23
               Enabled = False
               TabOrder = 4
             end
-            object EdtpFCPUFDest: TEdit
-              Left = 99
-              Top = 192
-              Width = 190
-              Height = 23
-              Enabled = False
-              TabOrder = 5
-            end
-            object EdtpICMSUFDest: TEdit
-              Left = 108
-              Top = 71
-              Width = 181
-              Height = 23
-              Enabled = False
-              TabOrder = 6
-            end
             object EdtvICMSUFDest: TEdit
               Left = 89
-              Top = 111
+              Top = 71
               Width = 200
               Height = 23
               Enabled = False
-              TabOrder = 7
+              TabOrder = 5
             end
           end
         end

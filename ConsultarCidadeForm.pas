@@ -15,7 +15,6 @@ type
     procedure BtnSelecionarCidadeClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    CCodigo: string;
     CAtivo: string;
     CCidade: string;
     CEstado: string;
@@ -23,7 +22,6 @@ type
     CCodigo_IBGE: string;
   public
     function ConsultarCidade: string;
-    function Codigo: string;
     function Ativo: string;
     function Cidade: string;
     function Estado: string;
@@ -40,19 +38,14 @@ implementation
 
 function TConsultarCidade.ConsultarCidade: string;
 begin
-  CCodigo := '';
+  CCodigo_IBGE := '';
   ShowModal;
-  Result := CCodigo;
+  Result := CCodigo_IBGE;
 end;
 
 function TConsultarCidade.Cidade: string;
 begin
   Result := CCidade;
-end;
-
-function TConsultarCidade.Codigo: string;
-begin
-  Result := CCodigo;
 end;
 
 function TConsultarCidade.Pais: string;
@@ -87,7 +80,6 @@ procedure TConsultarCidade.BtnSelecionarCidadeClick(Sender: TObject);
 begin
  with CadCidadeDM.qryConsultarCidade do
  begin
-  CCodigo := FieldByName('codigo').AsString;
   CCidade := FieldByName('cidade').AsString;
   CPais := FieldByName('pais').AsString;
   CEstado := FieldByName('estado').AsString;

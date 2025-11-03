@@ -16,7 +16,6 @@ type
     lblPais: TLabel;
     lblAtivo: TLabel;
     EdtSigla: TEdit;
-    EdtPais: TEdit;
     CBAtivo: TCheckBox;
     Grid: TDBGrid;
     btnIncluir: TButton;
@@ -37,6 +36,7 @@ type
     btnAcessoFechar: TButton;
     btnAcessoConsultar: TButton;
     AcessoGrid: TDBGrid;
+    EdtPais: TEdit;
     EdtCodigo_IBGE: TEdit;
     procedure btnIncluirClick(Sender: TObject);
     procedure btnDesistirClick(Sender: TObject);
@@ -74,13 +74,13 @@ begin
  end;
 
  EdtSigla.Enabled := True;
- EdtPais.Enabled := True;
+ EdtCodigo_IBGE.Enabled := True;
  CBAtivo.Enabled := True;
- Edtcodigo_ibge.Enabled := True;
+ EdtPais.Enabled := True;
 
  EdtSigla.Clear;
+ EdtCodigo_IBGE.Clear;
  EdtPais.Clear;
- Edtcodigo_ibge.Clear;
 
  btnIncluir.Visible := False;
  btnAlterar.Visible := False;
@@ -100,9 +100,8 @@ var sigla, pais, ativo, codigo_ibge: string;
 begin
  sigla := EdtSigla.Text;
  Pais := EdtPais.Text;
- if CBAtivo.Checked then Ativo := 'S'
- else Ativo := 'N';
- codigo_ibge := Edtcodigo_ibge.text;
+ if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
+ codigo_ibge := EdtCodigo_IBGE.text;
 
  if Sigla = '' then begin
   ShowMessage('Sigla não pode ser vazia!');
@@ -122,25 +121,12 @@ begin
  with CadPaisDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadpais where sigla = :sigla');
-  ParambyName('sigla').AsString := sigla;
+  SQL.Add('select * from cadpais where Codigo_IBGE = :Codigo_IBGE');
+  ParambyName('Codigo_IBGE').AsString := Codigo_IBGE;
   Open;
 
-  if IsEmpty then begin
-   ShowMessage('Sigla já cadastrada!');
-   Abort;
-  end;
- end;
-
- with CadPaisDM.qrySelect do
- begin
-  SQL.Clear;
-  SQL.Add('select * from cadpais where codigo_ibge = :codigo_ibge');
-  ParambyName('codigo_ibge').AsString := codigo_ibge;
-  Open;
-
-  if IsEmpty then begin
-   ShowMessage('Código IBGE já cadastrado!');
+  if not IsEmpty then begin
+   ShowMessage('Codigo IBGE já cadastrada!');
    Abort;
   end;
  end;
@@ -178,9 +164,9 @@ begin
   CadPaisDM.Conexão.Commit;
   ShowMessage('Gravado com sucesso!');
   EdtSigla.Enabled := False;
-  EdtPais.Enabled := False;
+  EdtCodigo_IBGE.Enabled := False;
   CBAtivo.Enabled := False;
-  Edtcodigo_ibge.Enabled := False;
+  EdtPais.Enabled := False;
 
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
@@ -208,14 +194,14 @@ end;
 procedure TCadPaisForm.btnAlterarClick(Sender: TObject);
 var I: integer;
 begin
- if Edtcodigo_ibge.Text = '' then begin
+ if EdtCodigo_IBGE.Text = '' then begin
   ShowMessage('País não selecionado!');
   Abort;
  end;
 
- EdtPais.Enabled := True;
+ EdtSigla.Enabled := True;
  CBAtivo.Enabled := True;
- Edtcodigo_ibge.Enabled := True;
+ EdtPais.Enabled := True;
 
  btnIncluir.Visible := False;
  btnAlterar.Visible := False;
@@ -243,7 +229,7 @@ begin
  Sigla := EdtSigla.Text;
  Pais := EdtPais.Text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
- codigo_ibge := Edtcodigo_ibge.Text;
+ codigo_ibge := EdtCodigo_IBGE.Text;
 
  if Sigla = '' then begin
   ShowMessage('Sigla não pode ser vazia!');
@@ -258,19 +244,6 @@ begin
  if codigo_ibge = '' then begin
   ShowMessage('Código do IBGE não pode ser vazio!');
   Abort;
- end;
-
- with CadPaisDM.qrySelect do
- begin
-  SQL.Clear;
-  SQL.Add('select * from cadpais where sigla = :sigla');
-  ParambyName('sigla').AsString := sigla;
-  Open;
-
-  if IsEmpty then begin
-   ShowMessage('Sigla já cadastrada!');
-   Abort;
-  end;
  end;
 
  with CadPaisDM.qrySelect do
@@ -291,7 +264,7 @@ begin
   with CadPaisDM.qryUpdate do
   begin
    SQL.Clear;
-   SQL.Add('update cadpais set pais = :pais, ativo = :ativo, codigo_ibge = :codigo_ibge where sigla = :sigla');
+   SQL.Add('update cadpais set pais = :pais, ativo = :ativo, sigla = :sigla where codigo_ibge = :codigo_ibge');
    ParamByName('sigla').AsString := sigla;
    ParamByName('pais').AsString := pais;
    ParamByName('ativo').AsString := ativo;
@@ -318,9 +291,9 @@ begin
   ShowMessage('Alterado com sucesso!');
 
   EdtSigla.Enabled := False;
-  EdtPais.Enabled := False;
+  EdtCodigo_IBGE.Enabled := False;
   CBAtivo.Enabled := False;
-  Edtcodigo_ibge.Enabled := False;
+  EdtPais.Enabled := False;
 
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
@@ -356,13 +329,13 @@ begin
  end;
 
  EdtSigla.Enabled := False;
- EdtPais.Enabled := False;
+ EdtCodigo_IBGE.Enabled := False;
  CBAtivo.Enabled := False;
- Edtcodigo_ibge.Enabled := False;
+ EdtPais.Enabled := False;
 
  EdtSigla.Clear;
+ EdtCodigo_IBGE.Clear;
  EdtPais.Clear;
- Edtcodigo_ibge.Clear;
 
  btnIncluir.Visible := True;
  btnAlterar.Visible := True;
@@ -377,18 +350,19 @@ begin
 end;
 
 procedure TCadPaisForm.btnExcluirClick(Sender: TObject);
-var pais, sigla, ativo: string;
+var Codigo_IBGE, pais, sigla, ativo: string;
     I: integer;
 begin
  sigla := EdtSigla.Text;
- pais := edtpais.text;
+ pais := EdtCodigo_IBGE.text;
  if CBAtivo.Checked then Ativo := 'S' else Ativo := 'N';
+ Codigo_IBGE := EdtCodigo_IBGE.Text;
 
  with CadPaisDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadCEP where pais = :sigla');
-  ParamByName('sigla').AsString := sigla;
+  SQL.Add('select * from cadCEP where pais = :Codigo_IBGE');
+  ParamByName('Codigo_IBGE').AsString := Codigo_IBGE;
   Open;
 
   if not IsEmpty then begin
@@ -400,8 +374,8 @@ begin
  with CadPaisDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadestado where pais = :sigla');
-  ParamByName('sigla').AsString := sigla;
+  SQL.Add('select * from cadestado where pais = :Codigo_IBGE');
+  ParamByName('Codigo_IBGE').AsString := Codigo_IBGE;
   Open;
 
   if not IsEmpty then begin
@@ -413,8 +387,8 @@ begin
  with CadPaisDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadcidade where pais = :sigla');
-  ParamByName('sigla').AsString := sigla;
+  SQL.Add('select * from cadcidade where pais = :Codigo_IBGE');
+  ParamByName('Codigo_IBGE').AsString := Codigo_IBGE;
   Open;
 
   if not IsEmpty then begin
@@ -426,8 +400,8 @@ begin
  with CadPaisDM.qrySelect do
  begin
   SQL.Clear;
-  SQL.Add('select * from cadentidade where pais = :sigla');
-  ParamByName('sigla').AsString := sigla;
+  SQL.Add('select * from cadentidade where pais = :Codigo_IBGE');
+  ParamByName('Codigo_IBGE').AsString := Codigo_IBGE;
   Open;
 
   if not IsEmpty then begin
@@ -441,8 +415,8 @@ begin
   with CadPaisDM.qryDelete do
   begin
    SQL.Clear;
-   SQL.Add('delete from cadpais where sigla = :sigla');
-   ParamByName('sigla').AsString := sigla;
+   SQL.Add('delete from cadpais where Codigo_IBGE = :Codigo_IBGE');
+   ParamByName('Codigo_IBGE').AsString := Codigo_IBGE;
    ExecSQL;
   end;
 
@@ -465,12 +439,12 @@ begin
   CadPaisDM.Conexão.Commit;
 
   EdtSigla.Enabled := False;
-  EdtPais.Enabled := False;
+  EdtCodigo_IBGE.Enabled := False;
   CBAtivo.Enabled := False;
 
   EdtSigla.Clear;
+  EdtCodigo_IBGE.Clear;
   EdtPais.Clear;
-  Edtcodigo_ibge.Clear;
 
   btnIncluir.Visible := True;
   btnAlterar.Visible := True;
@@ -505,9 +479,9 @@ procedure TCadPaisForm.GridCellClick(Column: TColumn);
 begin
  with CadPaisDM.qryConsultarPais do
  begin
-  Edtcodigo_ibge.Text := FieldByName('codigo_IBGE').AsString;
+  EdtPais.Text := FieldByName('Pais').AsString;
   EdtSigla.Text := FieldByName('sigla').AsString;
-  EdtPais.Text := FieldByName('pais').AsString;
+  EdtCodigo_IBGE.Text := FieldByName('Codigo_IBGE').AsString;
   CBAtivo.Checked := FieldByName('ativo').AsString = 'S';
  end;
 end;
