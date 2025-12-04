@@ -115,6 +115,20 @@ object EntradaNFForm: TEntradaNFForm
         Height = 15
         Caption = 'Chave NFE:'
       end
+      object lblPresenca: TLabel
+        Left = 351
+        Top = 88
+        Width = 50
+        Height = 15
+        Caption = 'Presen'#231'a:'
+      end
+      object lblFrete: TLabel
+        Left = 351
+        Top = 128
+        Width = 85
+        Height = 15
+        Caption = 'Frete Por Conta:'
+      end
       object EdtnNF: TEdit
         Left = 97
         Top = 45
@@ -603,6 +617,29 @@ object EntradaNFForm: TEntradaNFForm
               TabOrder = 5
             end
           end
+          object ImportacaoGroup: TGroupBox
+            Left = 301
+            Top = 328
+            Width = 237
+            Height = 105
+            Caption = 'Importa'#231#227'o'
+            TabOrder = 11
+            object lblvII: TLabel
+              Left = 21
+              Top = 26
+              Width = 38
+              Height = 15
+              Caption = 'Valor II:'
+            end
+            object EdtvII: TEdit
+              Left = 62
+              Top = 23
+              Width = 152
+              Height = 23
+              Enabled = False
+              TabOrder = 0
+            end
+          end
         end
         object FinanceiroPage: TTabSheet
           Caption = 'Financeiro'
@@ -853,6 +890,7 @@ object EntradaNFForm: TEntradaNFForm
         Caption = 'Gravar'
         TabOrder = 21
         Visible = False
+        OnClick = btnGravarIncluirClick
       end
       object btnChaveNFE: TButton
         Left = 442
@@ -862,6 +900,38 @@ object EntradaNFForm: TEntradaNFForm
         Enabled = False
         TabOrder = 22
         OnClick = btnIncluirXMLClick
+      end
+      object CBPresenca: TComboBox
+        Left = 407
+        Top = 85
+        Width = 145
+        Height = 23
+        TabOrder = 23
+        Items.Strings = (
+          '0 - N'#227'o se aplica (por exemplo, emiss'#227'o de NF-e de ajuste)'
+          '1 - Opera'#231#227'o presencial'
+          '2 - Opera'#231#227'o n'#227'o presencial, pela internet'
+          '3 - Opera'#231#227'o n'#227'o presencial, teleatendimento'
+          '5 - Opera'#231#227'o presencial, fora do estabelecimento'
+          '9 - Opera'#231#227'o n'#227'o presencial, outros')
+      end
+      object CBFrete: TComboBox
+        Left = 442
+        Top = 125
+        Width = 172
+        Height = 23
+        TabOrder = 24
+        Items.Strings = (
+          '0 - Contrata'#231#227'o do frete por conta do remetente (CIF)'
+          
+            '1 - Contrata'#231#227'o do frete por conta do destinat'#225'rio/remetente (FO' +
+            'B)'
+          '2 - Contrata'#231#227'o do frete por conta de terceiros'
+          '3 - Sem frete'
+          
+            '4 - Contrata'#231#227'o do transporte por conta do remetente (para venda' +
+            ' '#224' ordem/entrega futura)'
+          '9 - Sem ocorr'#234'ncia de transporte')
       end
     end
     object ItensPage: TTabSheet
