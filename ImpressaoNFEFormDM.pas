@@ -1,0 +1,60 @@
+unit ImpressaoNFEFormDM;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.MySQL,
+  FireDAC.Phys.MySQLDef, FireDAC.VCLUI.Wait, FireDAC.Stan.Param, FireDAC.DatS,
+  FireDAC.DApt.Intf, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, FireDAC.Phys.PG, FireDAC.Phys.PGDef, GlobalUnit;
+
+type
+  TImpressaoNFEDM = class(TDataModule)
+    Conexão: TFDConnection;
+    qryGridNota: TFDQuery;
+    dsSelectNota: TDataSource;
+    qryGridNotaIten: TFDQuery;
+    dsSelectNotaIten: TDataSource;
+    qryConsultarFatura: TFDQuery;
+    dsConsultarFatura: TDataSource;
+    PGLink: TFDPhysPgDriverLink;
+    qryNotaIten: TFDQuery;
+    qryNatureza: TFDQuery;
+    qryEmpresa: TFDQuery;
+    qryCEP: TFDQuery;
+    qryCidade: TFDQuery;
+    qryEntidade: TFDQuery;
+    qryPais: TFDQuery;
+    qryProduto: TFDQuery;
+    qryEstado: TFDQuery;
+    qryReceber: TFDQuery;
+    qryNota: TFDQuery;
+    qryNCM: TFDQuery;
+    qryUpdate: TFDQuery;
+    qrySelectEstoque: TFDQuery;
+    qryUpdateEstoque: TFDQuery;
+    qryInsertProdMov: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  ImpressaoNFEDM: TImpressaoNFEDM;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+procedure TImpressaoNFEDM.DataModuleCreate(Sender: TObject);
+begin
+ ConfigurarConexao(Conexão);
+end;
+
+end.

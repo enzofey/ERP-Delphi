@@ -1,0 +1,44 @@
+object ConsultarNCM: TConsultarNCM
+  Left = 0
+  Top = 0
+  Caption = 'ConsultarNCM'
+  ClientHeight = 440
+  ClientWidth = 847
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  OnShow = FormShow
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = -1
+    Top = 0
+    Width = 849
+    Height = 441
+    TabOrder = 0
+    object btnSelecionarNCM: TButton
+      Left = 304
+      Top = 352
+      Width = 145
+      Height = 57
+      Caption = 'Selecionar'
+      TabOrder = 0
+      OnClick = btnSelecionarNCMClick
+    end
+    object Grid: TDBGrid
+      Left = 8
+      Top = 24
+      Width = 825
+      Height = 305
+      DataSource = CadNCMDM.dsGrid
+      TabOrder = 1
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -12
+      TitleFont.Name = 'Segoe UI'
+      TitleFont.Style = []
+    end
+  end
+end

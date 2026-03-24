@@ -1,0 +1,32 @@
+# Delphi/BDS temporários
+*.dcu
+*.~pas
+*.~dfm
+*.local
+*.dsk
+*.identcache
+*.vlb
+
+# Compilação
+*.exe
+*.dll
+*.bpl
+*.dproj.local
+
+# Pastas de build
+/bin/
+/release/
+/debug/
+/__history/
+/Backup/
+/Win32/
+/Win64/
+
+# Pacotes intermediários
+*.dcp
+*.res
+*.map
+
+# Logs e caches
+*.log
+*.cache

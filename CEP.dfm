@@ -1,0 +1,473 @@
+object CadCEP: TCadCEP
+  Left = 0
+  Top = 0
+  Align = alClient
+  BorderStyle = bsNone
+  Caption = 'CadCEP'
+  ClientHeight = 956
+  ClientWidth = 1862
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Visible = True
+  TextHeight = 15
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 1862
+    Height = 956
+    Align = alClient
+    TabOrder = 0
+  end
+  object Pages: TPageControl
+    Left = 0
+    Top = 0
+    Width = 1862
+    Height = 956
+    ActivePage = CadastroPage
+    Align = alClient
+    TabOrder = 1
+    object AcessoPage: TTabSheet
+      Caption = 'Acesso'
+      ImageIndex = 1
+      object lblAcessoCEP: TLabel
+        Left = 40
+        Top = 49
+        Width = 24
+        Height = 15
+        Caption = 'CEP:'
+      end
+      object SBConsCEP: TSpeedButton
+        Left = 271
+        Top = 45
+        Width = 23
+        Height = 23
+      end
+      object lblAcessoEstado: TLabel
+        Left = 40
+        Top = 106
+        Width = 38
+        Height = 15
+        Caption = 'Estado:'
+      end
+      object SBConsEstado: TSpeedButton
+        Left = 271
+        Top = 103
+        Width = 23
+        Height = 23
+      end
+      object lblAecssoCidade: TLabel
+        Left = 40
+        Top = 135
+        Width = 40
+        Height = 15
+        Caption = 'Cidade:'
+      end
+      object SBConsCidade: TSpeedButton
+        Left = 271
+        Top = 132
+        Width = 23
+        Height = 23
+      end
+      object lblAcessoPais: TLabel
+        Left = 40
+        Top = 77
+        Width = 21
+        Height = 15
+        Caption = 'Pa'#237's'
+      end
+      object SBAcessoPais: TSpeedButton
+        Left = 271
+        Top = 74
+        Width = 23
+        Height = 23
+      end
+      object RGAcessoAtivo: TRadioGroup
+        Left = 40
+        Top = 3
+        Width = 254
+        Height = 36
+        Caption = 'Ativo:'
+        Columns = 3
+        Items.Strings = (
+          'Ativos'
+          'Inativos'
+          'Todos')
+        TabOrder = 0
+      end
+      object EdtAcessoCodigo: TEdit
+        Left = 88
+        Top = 45
+        Width = 41
+        Height = 23
+        TabOrder = 1
+        OnChange = EdtAcessoCodigoChange
+      end
+      object EdtAcessoCEP: TEdit
+        Left = 135
+        Top = 45
+        Width = 130
+        Height = 23
+        Enabled = False
+        TabOrder = 2
+      end
+      object btnAcessoFechar: TButton
+        Left = 300
+        Top = 45
+        Width = 89
+        Height = 26
+        Caption = 'Fechar'
+        TabOrder = 3
+        OnClick = btnFecharClick
+      end
+      object btnAcessoConsultar: TButton
+        Left = 300
+        Top = 13
+        Width = 89
+        Height = 26
+        Caption = 'Consultar'
+        TabOrder = 4
+        OnClick = btnAcessoConsultarClick
+      end
+      object EdtAcessoSiglaEstado: TEdit
+        Left = 88
+        Top = 103
+        Width = 41
+        Height = 23
+        TabOrder = 5
+        OnChange = EdtAcessoSiglaEstadoChange
+      end
+      object EdtAcessoEstado: TEdit
+        Left = 135
+        Top = 103
+        Width = 130
+        Height = 23
+        Enabled = False
+        TabOrder = 6
+      end
+      object EdtAcessoCodigoCidade: TEdit
+        Left = 88
+        Top = 132
+        Width = 41
+        Height = 23
+        TabOrder = 7
+        OnChange = EdtAcessoCodigoCidadeChange
+      end
+      object EdtAcessoCidade: TEdit
+        Left = 135
+        Top = 132
+        Width = 130
+        Height = 23
+        Enabled = False
+        TabOrder = 8
+      end
+      object EdtAcessoSiglaPais: TEdit
+        Left = 88
+        Top = 74
+        Width = 41
+        Height = 23
+        TabOrder = 9
+        OnChange = EdtAcessoSiglaPaisChange
+      end
+      object EdtAcessoPais: TEdit
+        Left = 135
+        Top = 74
+        Width = 130
+        Height = 23
+        Enabled = False
+        TabOrder = 10
+      end
+      object AcessoGrid: TDBGrid
+        Left = 40
+        Top = 176
+        Width = 1777
+        Height = 713
+        DataSource = CadCepDM.dsAcesso
+        TabOrder = 11
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -12
+        TitleFont.Name = 'Segoe UI'
+        TitleFont.Style = []
+      end
+    end
+    object CadastroPage: TTabSheet
+      Caption = 'Cadastro'
+      object lblAtivo: TLabel
+        Left = 656
+        Top = 48
+        Width = 31
+        Height = 15
+        Caption = 'Ativo:'
+      end
+      object lblCEP: TLabel
+        Left = 42
+        Top = 54
+        Width = 24
+        Height = 15
+        Caption = 'CEP:'
+      end
+      object lblCidade: TLabel
+        Left = 40
+        Top = 91
+        Width = 40
+        Height = 15
+        Caption = 'Cidade:'
+      end
+      object lblEstado: TLabel
+        Left = 40
+        Top = 131
+        Width = 38
+        Height = 15
+        Caption = 'Estado:'
+      end
+      object lblPais: TLabel
+        Left = 42
+        Top = 171
+        Width = 24
+        Height = 15
+        Caption = 'Pa'#237's:'
+      end
+      object SBCidade: TSpeedButton
+        Left = 279
+        Top = 88
+        Width = 23
+        Height = 23
+        Enabled = False
+        OnClick = SBCidadeClick
+      end
+      object SBEstado: TSpeedButton
+        Left = 279
+        Top = 128
+        Width = 23
+        Height = 23
+        Enabled = False
+        OnClick = SBEstadoClick
+      end
+      object SBPais: TSpeedButton
+        Left = 279
+        Top = 168
+        Width = 23
+        Height = 23
+        Enabled = False
+        OnClick = SBPaisClick
+      end
+      object lblBairro: TLabel
+        Left = 42
+        Top = 211
+        Width = 34
+        Height = 15
+        Caption = 'Bairro:'
+      end
+      object lblRua: TLabel
+        Left = 314
+        Top = 211
+        Width = 23
+        Height = 15
+        Caption = 'Rua:'
+      end
+      object lblComplemento: TLabel
+        Left = 42
+        Top = 251
+        Width = 80
+        Height = 15
+        Caption = 'Complemento:'
+      end
+      object btnAlterar: TButton
+        Left = 191
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Alterar'
+        TabOrder = 0
+        OnClick = btnAlterarClick
+      end
+      object btnConsultar: TButton
+        Left = 342
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Consultar'
+        TabOrder = 1
+        OnClick = btnConsultarClick
+      end
+      object btnDesistir: TButton
+        Left = 191
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Desistir'
+        TabOrder = 2
+        Visible = False
+        OnClick = btnDesistirClick
+      end
+      object btnExcluir: TButton
+        Left = 493
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Excluir'
+        TabOrder = 3
+        OnClick = btnExcluirClick
+      end
+      object btnFechar: TButton
+        Left = 1676
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Fechar'
+        TabOrder = 4
+        OnClick = btnFecharClick
+      end
+      object btnGravarAlterar: TButton
+        Left = 40
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Gravar'
+        TabOrder = 5
+        Visible = False
+        OnClick = btnGravarAlterarClick
+      end
+      object btnGravarIncluir: TButton
+        Left = 40
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Gravar'
+        TabOrder = 6
+        Visible = False
+        OnClick = btnGravarIncluirClick
+      end
+      object btnIncluir: TButton
+        Left = 40
+        Top = 835
+        Width = 145
+        Height = 57
+        Caption = 'Incluir'
+        TabOrder = 7
+        OnClick = btnIncluirClick
+      end
+      object CBAtivo: TCheckBox
+        Left = 693
+        Top = 48
+        Width = 20
+        Height = 17
+        Enabled = False
+        TabOrder = 8
+      end
+      object EdtCEP: TEdit
+        Left = 96
+        Top = 51
+        Width = 121
+        Height = 23
+        Enabled = False
+        MaxLength = 8
+        NumbersOnly = True
+        TabOrder = 9
+      end
+      object EdtCidade: TEdit
+        Left = 176
+        Top = 88
+        Width = 97
+        Height = 23
+        Enabled = False
+        ReadOnly = True
+        TabOrder = 10
+      end
+      object EdtEstado: TEdit
+        Left = 152
+        Top = 128
+        Width = 121
+        Height = 23
+        Enabled = False
+        ReadOnly = True
+        TabOrder = 11
+      end
+      object EdtPais: TEdit
+        Left = 152
+        Top = 168
+        Width = 121
+        Height = 23
+        Enabled = False
+        ReadOnly = True
+        TabOrder = 12
+      end
+      object EdtCodigoIBGEPais: TEdit
+        Left = 96
+        Top = 168
+        Width = 50
+        Height = 23
+        Enabled = False
+        MaxLength = 3
+        TabOrder = 13
+        OnChange = EdtCodigoIBGEPaisChange
+      end
+      object EdtSiglaEstado: TEdit
+        Left = 96
+        Top = 128
+        Width = 50
+        Height = 23
+        Enabled = False
+        MaxLength = 2
+        TabOrder = 14
+        OnChange = EdtSiglaEstadoChange
+      end
+      object EdtCodigoIBGECidade: TEdit
+        Left = 96
+        Top = 88
+        Width = 74
+        Height = 23
+        Enabled = False
+        TabOrder = 15
+        OnChange = EdtCodigoIBGECidadeChange
+      end
+      object btnWWW: TButton
+        Left = 223
+        Top = 54
+        Width = 50
+        Height = 18
+        Caption = 'www'
+        Enabled = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -12
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsItalic, fsUnderline]
+        ParentFont = False
+        TabOrder = 16
+        OnClick = btnWWWClick
+      end
+      object EdtBairro: TEdit
+        Left = 96
+        Top = 208
+        Width = 177
+        Height = 23
+        Enabled = False
+        TabOrder = 17
+        OnChange = EdtCodigoIBGEPaisChange
+      end
+      object EdtRua: TEdit
+        Left = 352
+        Top = 208
+        Width = 305
+        Height = 23
+        Enabled = False
+        TabOrder = 18
+        OnChange = EdtCodigoIBGEPaisChange
+      end
+      object EdtComplemento: TEdit
+        Left = 128
+        Top = 248
+        Width = 529
+        Height = 23
+        Enabled = False
+        TabOrder = 19
+        OnChange = EdtCodigoIBGEPaisChange
+      end
+    end
+  end
+end
